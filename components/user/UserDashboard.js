@@ -6,7 +6,7 @@ import styles from '../styles/userStyle/UserDashboardStyle';
 export default function UserDashboard({ navigation }) {
   const menuItems = [
     { title: 'Inventory', subtitle: 'Materials & Supplies', icon: 'clipboard-list', screen: 'InventoryScreen', color: '#4CAF50' },
-    { title: 'Log', subtitle: 'History & Records', icon: 'file-document-outline', screen: 'RequestLogScreen', color: '#1A4572' }, 
+    { title: 'Request History', subtitle: 'Logs & Records', icon: 'file-document-outline', screen: 'RequestLogScreen', color: '#1A4572' }, 
     { title: 'Calendar', subtitle: 'Block the Date!', icon: 'calendar', screen: 'CalendarScreen', color: '#673AB7' }, 
     { title: 'Pending Requests', subtitle: '', icon: 'clock-alert', screen: 'RequestScreen', color: '#A52A2A' }, 
     { title: 'Policies', subtitle: 'Rules & Regulations', icon: 'file-document', screen: 'PolicyScreen', color: '#7D284D' }, 
