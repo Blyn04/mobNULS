@@ -21,6 +21,7 @@ import RequestLogScreen from './components/user/RequestLogScreen';
 import LogScreen from './components/admin2/LogScreen';
 import InventoryStocks from './components/admin2/InventoryStocks';
 import { RequestListProvider } from './components/contexts/RequestListContext';
+import SearchItems from './components/user/SearchItems';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,6 +49,7 @@ export default function App() {
                   <Stack.Screen name="RequestLogScreen" component={RequestLogScreen} options={{ headerShown: false }} />
                   <Stack.Screen name="LogScreen" component={LogScreen} options={{ headerShown: false }} />
                   <Stack.Screen name="InventoryStocks" component={InventoryStocks} options={{ headerShown: false }} />
+                  <Stack.Screen name="SearchItems" component={SearchItems} options={{ headerShown: false }} />
                 </Stack.Navigator>
               </NavigationContainer>
             </PaperProvider>
