@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from '../styles/userStyle/RequestStyle';
 import { useAuth } from '../contexts/AuthContext';
 import { useRequestList } from '../contexts/RequestListContext';
+import Header from '../Header';
 
 export default function RequestScreen({ navigation }) {
   const { user } = useAuth(); 
@@ -55,16 +56,7 @@ export default function RequestScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('../../assets/icon.png')} style={styles.logo} />
-        <View style={styles.headerText}>
-          <Text style={styles.title}>National University</Text>
-          <Text style={styles.subtitle}>Laboratory System</Text>
-        </View>
-        <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('ProfileScreen')}>
-          <Icon name="account-circle" size={35} color="white" />
-        </TouchableOpacity>
-      </View>
+      <Header/>
 
       <Text style={styles.sectionTitle}>Pending Requests</Text>
       <Text style={styles.subtitle}>View your confirmed requests here.</Text>

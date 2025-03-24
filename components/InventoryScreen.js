@@ -216,6 +216,7 @@ import { Picker } from '@react-native-picker/picker';
 import styles from './styles/InventoryStyle';
 import { useAuth } from '../components/contexts/AuthContext';
 import { useRequestList } from '../components/contexts/RequestListContext';
+import Header from './Header';
 
 export default function InventoryScreen({ navigation }) {
   const { user } = useAuth();  
@@ -313,18 +314,7 @@ export default function InventoryScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('../assets/icon.png')} style={styles.logo} />
-
-        <View style={styles.headerText}>
-          <Text style={styles.title}>National University</Text>
-          <Text style={styles.subtitle}>Laboratory System</Text>
-        </View>
-
-        <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('ProfileScreen')}>
-          <Icon name="account-circle" size={35} color="white" />
-        </TouchableOpacity>
-      </View>
+      <Header/>
 
       <Text style={styles.sectionTitle}>Laboratory Items</Text>
       <TextInput 

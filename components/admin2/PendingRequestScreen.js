@@ -4,6 +4,7 @@ import { Card } from 'react-native-paper';
 import { useRequestList } from '../contexts/RequestListContext';
 import { useAuth } from '../contexts/AuthContext';
 import styles from '../styles/admin2Style/PendingRequestStyle';
+import Header from '../Header';
 
 export default function PendingRequestScreen() {
   const { pendingRequests, moveToApprovedRequests, removeFromPendingRequests, moveToRejectedRequests } = useRequestList();
@@ -82,6 +83,7 @@ export default function PendingRequestScreen() {
 
   return (
     <View style={styles.container}>
+      <Header/>
       <Text style={styles.title}>Pending Requests</Text>
       <FlatList 
         data={pendingRequests} 

@@ -2,11 +2,14 @@ import React from 'react';
 import { View, Text, TouchableOpacity, FlatList, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from '../styles/userStyle/UserDashboardStyle';
+import Header from '../Header';
+import { StatusBar } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function UserDashboard({ navigation }) {
   const menuItems = [
-    { title: 'Inventory', subtitle: 'Materials & Supplies', icon: 'clipboard-list', screen: 'InventoryScreen', color: '#4CAF50' },
-    { title: 'Request History', subtitle: 'Logs & Records', icon: 'file-document-outline', screen: 'RequestLogScreen', color: '#1A4572' }, 
+    { title: 'Requisition', subtitle: 'Materials & Supplies', icon: 'clipboard-list', screen: 'InventoryScreen', color: '#4CAF50' },
+    { title: 'History Log', subtitle: 'Records', icon: 'file-document-outline', screen: 'RequestLogScreen', color: '#1A4572' }, 
     { title: 'Calendar', subtitle: 'Block the Date!', icon: 'calendar', screen: 'CalendarScreen', color: '#673AB7' }, 
     { title: 'Pending Requests', subtitle: '', icon: 'clock-alert', screen: 'RequestScreen', color: '#A52A2A' }, 
     { title: 'Policies', subtitle: 'Rules & Regulations', icon: 'file-document', screen: 'PolicyScreen', color: '#7D284D' }, 
@@ -24,24 +27,12 @@ export default function UserDashboard({ navigation }) {
     </TouchableOpacity>
   );
 
+  
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image 
-          source={require('../../assets/icon.png')} 
-          style={styles.logo} 
-        />
-        <View style={styles.headerText}>
-          <Text style={styles.title}>National University</Text>
-          <Text style={styles.subtitle}>Laboratory System</Text>
-        </View>
-        <TouchableOpacity 
-          style={styles.profileButton} 
-          onPress={() => navigation.navigate('ProfileScreen')}
-        >
-          <Icon name="account-circle" size={35} color="white" />
-        </TouchableOpacity>
-      </View>
+
+    <View style={styles.container2}>
+       <StatusBar style="light" backgroundColor="#1A4572" />
+     <Header/>
 
       <FlatList
         data={menuItems}
@@ -49,6 +40,7 @@ export default function UserDashboard({ navigation }) {
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}
         contentContainerStyle={styles.grid}
+        style={{marginTop: 60}}
       />
 
       <TouchableOpacity 
@@ -59,5 +51,7 @@ export default function UserDashboard({ navigation }) {
         <Text style={styles.cardTitle}>Admin Panel</Text>
       </TouchableOpacity>
     </View>
+  
   );
 }
+    

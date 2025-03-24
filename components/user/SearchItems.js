@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from '../styles/userStyle/SearchItemsStyle';
+import Header from '../Header';
 
 const initialItems = [
   {
@@ -112,17 +113,7 @@ export default function SearchItemsScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('../../assets/icon.png')} style={styles.logo} />
-        <View style={styles.headerText}>
-          <Text style={styles.title}>National University</Text>
-          <Text style={styles.subtitle}>Laboratory System</Text>
-        </View>
-
-        <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('ProfileScreen')}>
-          <Icon name="account-circle" size={35} color="white" />
-        </TouchableOpacity>
-      </View>
+      <Header/>
 
       <View style={styles.content}>
         <Text style={styles.pageTitle}>Search Items</Text>

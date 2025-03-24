@@ -46,6 +46,7 @@ export default StyleSheet.create({
   content: {
     padding: 10,
     flex: 1,
+    marginTop: 70,
   },
 
   pageTitle: {
