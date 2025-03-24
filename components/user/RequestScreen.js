@@ -142,3 +142,124 @@ export default function RequestScreen({ navigation }) {
     </View>
   );
 }
+
+// import React, { useState } from 'react';
+// import { View, FlatList, Text, TouchableOpacity, Image, Modal, TouchableWithoutFeedback } from 'react-native';
+// import { Card } from 'react-native-paper';
+// import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// import styles from '../styles/userStyle/RequestStyle';
+// import { useAuth } from '../contexts/AuthContext';
+// import { useRequestList } from '../contexts/RequestListContext';
+// import Header from '../Header';
+
+// export default function RequestScreen({ navigation }) {
+//   const { user } = useAuth();
+//   const { pendingRequests, removeFromPendingRequests } = useRequestList();
+//   const [selectedRequest, setSelectedRequest] = useState(null);
+//   const [modalVisible, setModalVisible] = useState(false);
+//   const [confirmCancelVisible, setConfirmCancelVisible] = useState(false);
+
+//   const openModal = (item) => {
+//     setSelectedRequest(item);
+//     setModalVisible(true);
+//   };
+
+//   const closeModal = () => {
+//     setModalVisible(false);
+//     setSelectedRequest(null);
+//   };
+
+//   const handleCancelRequest = () => {
+//     setConfirmCancelVisible(true);
+//   };
+
+//   const confirmCancel = () => {
+//     if (selectedRequest) {
+//       removeFromPendingRequests(selectedRequest.id);
+//     }
+//     setModalVisible(false);
+//     setConfirmCancelVisible(false);
+//     alert(`Your request for "${selectedRequest?.name}" has been canceled.`);
+//   };
+
+//   const renderItem = ({ item, index }) => (
+//     <Card style={styles.card}>
+//       <View style={styles.row}>
+//         <Text style={styles.index}>{index + 1}.)</Text>
+//         <Image source={require('../../assets/favicon.png')} style={styles.image} />
+//         <View style={styles.details}>
+//           <Text style={styles.itemName}>{item.name}</Text>
+//           <Text style={styles.detailsText}>Request ID: {item.id}</Text>
+//           <Text style={styles.detailsText}>Date Requested: {item.date}</Text>
+//           <Text style={styles.detailsText}>
+//             Time: {item.startTime?.hour}:{item.startTime?.minute} {item.startTime?.period} -{' '}
+//             {item.endTime?.hour}:{item.endTime?.minute} {item.endTime?.period}
+//           </Text>
+//           <Text style={styles.detailsText}>Usage Type: {item.usageType}</Text>
+//           <Text style={styles.detailsText}>Requestor Name: {item.requestorName}</Text>
+//           <Text style={styles.detailsText}>Course Code: {item.courseCode}</Text>
+//           <Text style={styles.detailsText}>Course Description: {item.courseDescription}</Text>
+//           <Text style={styles.detailsText}>Room: {item.room}</Text>
+//           <Text style={styles.detailsText}>Status: {item.status}</Text>
+
+//           <TouchableOpacity style={styles.button} onPress={() => openModal(item)}>
+//             <Text style={styles.buttonText}>View Details</Text>
+//           </TouchableOpacity>
+//         </View>
+//       </View>
+//     </Card>
+//   );
+
+//   return (
+//     <View style={styles.container}>
+//       <Header />
+
+//       <Text style={styles.sectionTitle}>Pending Requests</Text>
+//       <FlatList data={pendingRequests} keyExtractor={(item) => item.id} renderItem={renderItem} />
+
+//       <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={closeModal}>
+//         <TouchableWithoutFeedback onPress={closeModal}>
+//           <View style={styles.modalContainer}>
+//             <View style={styles.modalContent}>
+//               <Text style={styles.modalTitle}>Request Details</Text>
+//               {selectedRequest && (
+//                 <>
+//                   <Text style={styles.modalLabel}>Request ID: {selectedRequest.id}</Text>
+//                   <Text style={styles.modalLabel}>Date Requested: {selectedRequest.date}</Text>
+//                   <Text style={styles.modalLabel}>
+//                     Time: {selectedRequest.startTime?.hour}:{selectedRequest.startTime?.minute}{' '}
+//                     {selectedRequest.startTime?.period} - {selectedRequest.endTime?.hour}:
+//                     {selectedRequest.endTime?.minute} {selectedRequest.endTime?.period}
+//                   </Text>
+//                   <Text style={styles.modalLabel}>
+//                     Usage Type: {selectedRequest.usageType || 'N/A'}
+//                   </Text>
+//                   <Text style={styles.modalLabel}>
+//                     Requestor Name: {selectedRequest.requestorName || 'Unknown'}
+//                   </Text>
+//                   <Text style={styles.modalLabel}>
+//                     Course Code: {selectedRequest.courseCode || 'N/A'}
+//                   </Text>
+//                   <Text style={styles.modalLabel}>
+//                     Course Description: {selectedRequest.courseDescription || 'N/A'}
+//                   </Text>
+//                   <Text style={styles.modalLabel}>Room: {selectedRequest.room || 'N/A'}</Text>
+//                   <Text style={styles.modalLabel}>Status: {selectedRequest.status || 'Pending'}</Text>
+//                 </>
+//               )}
+
+//               <View style={styles.modalFooter}>
+//                 <TouchableOpacity onPress={closeModal} style={styles.okButton}>
+//                   <Text style={styles.okButtonText}>OK</Text>
+//                 </TouchableOpacity>
+//                 <TouchableOpacity onPress={handleCancelRequest} style={styles.cancelButton}>
+//                   <Text style={styles.cancelButtonText}>Cancel Request</Text>
+//                 </TouchableOpacity>
+//               </View>
+//             </View>
+//           </View>
+//         </TouchableWithoutFeedback>
+//       </Modal>
+//     </View>
+//   );
+// }
