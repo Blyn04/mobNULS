@@ -4,7 +4,6 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-    paddingTop: Platform.OS === 'android' ? 25 : 0, // Add padding for Android
     marginTop: 60, // Prevent content overlap with the header
   },
   
