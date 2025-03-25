@@ -12,7 +12,7 @@ export default function Header() {
       <Image source={require('../assets/icon.png')} style={styles.logo} />
 
       <View style={styles.headerText}>
-        <Text style={styles.title}>National University</Text>
+        <Text style={styles.title}>NU MOA</Text>
         <Text style={styles.subtitle}>Laboratory System</Text>
       </View>
 
