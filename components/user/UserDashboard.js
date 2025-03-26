@@ -29,7 +29,6 @@ export default function UserDashboard({ navigation }) {
 
   
   return (
-
     <View style={styles.container2}>
        <StatusBar style="light" backgroundColor="#1A4572" />
      <Header/>
@@ -51,7 +50,6 @@ export default function UserDashboard({ navigation }) {
         <Text style={styles.cardTitle}>Admin Panel</Text>
       </TouchableOpacity>
     </View>
-  
   );
 }
     
