@@ -3,32 +3,33 @@
 // import { TextInput, Text, Card, HelperText } from 'react-native-paper';
 // import { MaterialCommunityIcons } from '@expo/vector-icons';
 // import CustomButton from './customs/CustomButton';
-// import ForgotPasswordModal from './ForgotPasswordModal';  
+// import ForgotPasswordModal from './ForgotPasswordModal';
 // import styles from './styles/LoginStyle';
+// import { useAuth } from '../components/contexts/AuthContext';  
 
 // export default function LoginScreen({ navigation }) {
+//   const { login } = useAuth();  
 //   const [email, setEmail] = useState('');
 //   const [password, setPassword] = useState('');
 //   const [error, setError] = useState('');
 //   const [loading, setLoading] = useState(false);
+//   const [secureTextEntry, setSecureTextEntry] = useState(true);
 //   const [isForgotPasswordVisible, setForgotPasswordVisible] = useState(false);
-//   const [secureTextEntry, setSecureTextEntry] = useState(true); 
 
 //   const accounts = [
 //     { 
 //       email: 'mikmik@nu-moa.edu.ph', 
 //       password: '123456', 
-//       name: 'Mikmik Rufo', 
-//       role: 'admin', 
-//       department: 'IT Department' 
-//     },
+//       name: 'Mik Mik', 
+//       department: 'IT', 
+//       role: 'admin' },
+
 //     { 
 //       email: 'dubu@nu-moa.edu.ph', 
 //       password: '123456', 
-//       name: 'Dubu Kim', 
-//       role: 'user', 
-//       department: 'Marketing' 
-//     },
+//       name: 'Dubu', 
+//       department: 'Marketing', 
+//       role: 'user' },
 //   ];
 
 //   const handleLogin = () => {
@@ -43,30 +44,14 @@
 //     const account = accounts.find(acc => acc.email === email && acc.password === password);
 
 //     setTimeout(() => {
+//       setLoading(false);
 //       if (account) {
-//         setLoading(false);
-//         const userData = {
-//           name: account.name,
-//           email: account.email,
-//           role: account.role,
-//           department: account.department,
-//         };
-
-//         if (account.role === 'admin') {
-//           navigation.replace('Admin2Dashboard', { userData }); 
-//         } else {
-//           navigation.replace('UserDashboard', { userData });
-//         }
+//         login(account);
+//         navigation.replace(account.role === 'admin' ? 'Admin2Dashboard' : 'UserDashboard');
 //       } else {
-//         setLoading(false);
 //         setError('Invalid email or password');
 //       }
 //     }, 2000);
-//   };
-
-//   const handleResetPassword = (email) => {
-//     console.log(`Password reset link sent to: ${email}`);
-//     setForgotPasswordVisible(false);
 //   };
 
 //   return (
@@ -111,10 +96,6 @@
 //             </TouchableOpacity>
 //           </View>
 
-//           <HelperText type="error" visible={password.length > 0 && password.length < 6}>
-//             Password must be at least 6 characters.
-//           </HelperText>
-
 //           {error ? <Text style={styles.error}>{error}</Text> : null}
 
 //           <CustomButton title="Login" onPress={handleLogin} icon="login" loading={loading} />
@@ -125,11 +106,7 @@
 //         </Card.Content>
 //       </Card>
 
-//       <ForgotPasswordModal
-//         visible={isForgotPasswordVisible}
-//         onClose={() => setForgotPasswordVisible(false)}
-//         onResetPassword={handleResetPassword}
-//       />
+//       <ForgotPasswordModal visible={isForgotPasswordVisible} onClose={() => setForgotPasswordVisible(false)} />
 //     </View>
 //   );
 // }
@@ -143,6 +120,8 @@ import CustomButton from './customs/CustomButton';
 import ForgotPasswordModal from './ForgotPasswordModal';
 import styles from './styles/LoginStyle';
 import { useAuth } from '../components/contexts/AuthContext';  
+import { db } from '../backend/firebase/FirebaseConfig';  
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth();  
@@ -153,23 +132,7 @@ export default function LoginScreen({ navigation }) {
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [isForgotPasswordVisible, setForgotPasswordVisible] = useState(false);
 
-  const accounts = [
-    { 
-      email: 'mikmik@nu-moa.edu.ph', 
-      password: '123456', 
-      name: 'Mik Mik', 
-      department: 'IT', 
-      role: 'admin' },
-
-    { 
-      email: 'dubu@nu-moa.edu.ph', 
-      password: '123456', 
-      name: 'Dubu', 
-      department: 'Marketing', 
-      role: 'user' },
-  ];
-
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       setError('Please enter both email and password');
       return;
@@ -178,17 +141,34 @@ export default function LoginScreen({ navigation }) {
     setError('');
     setLoading(true);
 
-    const account = accounts.find(acc => acc.email === email && acc.password === password);
+    try {
+      const q = query(collection(db, 'accounts'), where('email', '==', email));
+      const querySnapshot = await getDocs(q);
 
-    setTimeout(() => {
-      setLoading(false);
-      if (account) {
-        login(account);
-        navigation.replace(account.role === 'admin' ? 'Admin2Dashboard' : 'UserDashboard');
+      if (querySnapshot.empty) {
+        setError('Invalid email or password');
+        setLoading(false);
+        return;
+      }
+
+      let userData = null;
+      querySnapshot.forEach(doc => {
+        userData = { id: doc.id, ...doc.data() };
+      });
+
+      if (userData.password === password) {
+        login(userData);
+        navigation.replace(userData.role === 'Admin1' ? 'Admin2Dashboard' : 'UserDashboard');
+        
       } else {
         setError('Invalid email or password');
       }
-    }, 2000);
+    } catch (error) {
+      console.error('Login Error:', error);
+      setError('Something went wrong. Try again later.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
