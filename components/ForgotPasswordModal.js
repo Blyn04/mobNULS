@@ -1,51 +1,67 @@
 import React, { useState } from 'react';
-import { View, Modal, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { TextInput, Text, Card, HelperText, Button } from 'react-native-paper';
+import { View, Modal, TouchableOpacity } from 'react-native';
+import { TextInput, Text, Button, HelperText } from 'react-native-paper';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../backend/firebase/FirebaseConfig'; 
 import styles from './styles/ForgotPasswordStyle';
 
-export default function ForgotPasswordModal({ visible, onClose, onResetPassword }) {
+export default function ForgotPasswordModal({ visible, onClose }) {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleReset = () => {
-    if (!email.includes('@')) {
-      setError('Enter a valid email address');
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      setError('Please enter your email.');
+      setSuccess('');
       return;
     }
-    setError('');
-    onResetPassword(email);
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setSuccess('Password reset link sent! Check your email.');
+      setError('');
+      setEmail('');
+
+    } catch (error) {
+      console.error('Forgot Password Error:', error.message);
+      setError('Failed to send reset link. Check your email.');
+      setSuccess('');
+    }
   };
 
   return (
-    <Modal visible={visible} animationType="fade" transparent>
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.modalContainer}>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text style={styles.title}>Forgot Password</Text>
-                <TextInput
-                  label="Email"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  mode="outlined"
-                  style={styles.input}
-                />
-                <HelperText type="error" visible={!!error}>{error}</HelperText>
+    <Modal visible={visible} transparent animationType="fade">
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Forgot Password</Text>
+          <Text style={styles.modalText}>Enter your email to receive a reset link.</Text>
 
-                <Button mode="contained" onPress={handleReset} style={styles.button}>
-                  Reset Password
-                </Button>
-                <TouchableOpacity onPress={onClose}>
-                  <Text style={styles.cancel}>Cancel</Text>
-                </TouchableOpacity>
-              </Card.Content>
-            </Card>
-          </TouchableWithoutFeedback>
+          <TextInput
+            label="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            mode="outlined"
+            style={styles.input}
+          />
+          
+          <HelperText type="error" visible={!!error}>
+            {error}
+          </HelperText>
+          
+          {success ? <Text style={styles.successText}>{success}</Text> : null}
+
+          <Button mode="contained" onPress={handleForgotPassword} style={styles.modalButton}>
+            Send Reset Link
+          </Button>
+
+          <TouchableOpacity onPress={onClose}>
+            <Text style={styles.modalCancel}>Cancel</Text>
+          </TouchableOpacity>
         </View>
-      </TouchableWithoutFeedback>
+      </View>
     </Modal>
   );
 }
