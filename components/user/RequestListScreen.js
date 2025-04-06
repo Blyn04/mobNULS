@@ -213,7 +213,7 @@ export default function RequestListScreen({ navigation }) {
               {selectedRequest && (
                 <>
                   <Text style={styles.modalTitle}>Item Details</Text>
-                  <Text style={styles.modalText}>Item Name: {selectedRequest.name}</Text>
+                  <Text style={styles.modalText}>Item Name: {selectedRequest.itemName}</Text>
                   <Text style={styles.modalText}>Department: {selectedRequest.department}</Text>
                   <Text style={styles.modalText}>Tag: {selectedRequest.tags}</Text>
                   <Text style={styles.modalText}>Quantity:</Text>

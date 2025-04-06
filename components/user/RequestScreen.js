@@ -35,7 +35,7 @@ export default function RequestScreen({ navigation }) {
     }
     setModalVisible(false);
     setConfirmCancelVisible(false);
-    alert(`Your request for "${selectedRequest?.name}" has been canceled.`);
+    alert(`Your request for "${selectedRequest?.itemName}" has been canceled.`);
   };
 
   const renderItem = ({ item, index }) => (
@@ -44,7 +44,7 @@ export default function RequestScreen({ navigation }) {
         <Text style={styles.index}>{index + 1}.)</Text>
         <Image source={require('../../assets/favicon.png')} style={styles.image} />
         <View style={styles.details}>
-          <Text style={styles.itemName}>{item.name}</Text>
+          <Text style={styles.itemName}>{item.itemName}</Text>
           <Text style={styles.department}>Department: <Text style={styles.highlight}>{item.department}</Text></Text>
           <TouchableOpacity style={styles.button} onPress={() => openModal(item)}>
             <Text style={styles.buttonText}>View Details</Text>
@@ -85,7 +85,8 @@ export default function RequestScreen({ navigation }) {
                 <Text style={styles.modalLabel}><Text style={styles.bold}>Requestor:</Text> {user?.name || 'Unknown'}</Text>
                 <Text style={styles.modalLabel}><Text style={styles.bold}>Quantity:</Text> {selectedRequest?.quantity}</Text>
                 <Text style={styles.modalLabel}><Text style={styles.bold}>Department:</Text> {selectedRequest?.department}</Text>
-                <Text style={styles.modalLabel}><Text style={styles.bold}>Tag:</Text> {selectedRequest?.tags}</Text>
+                <Text style={styles.modalLabel}><Text style={styles.bold}>Type:</Text> {selectedRequest?.type}</Text>
+                <Text style={styles.modalLabel}><Text style={styles.bold}>Category:</Text> {selectedRequest?.category}</Text>
                 <Text style={styles.modalLabel}><Text style={styles.bold}>Date:</Text> {selectedRequest?.date}</Text>
                 <Text style={styles.modalLabel}><Text style={styles.bold}>Time:</Text></Text>
                 <Text style={styles.modalText}>
