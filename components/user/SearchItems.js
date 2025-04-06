@@ -38,14 +38,22 @@ export default function SearchItemsScreen({ navigation }) {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    const filteredData = filteredItems.filter(
-      (item) =>
-        item.description.toLowerCase().includes(query.toLowerCase()) ||
-        item.category.toLowerCase().includes(query.toLowerCase()) ||
-        item.location.toLowerCase().includes(query.toLowerCase())
-    );
+    
+    // Ensure properties are not undefined before calling .toLowerCase()
+    const filteredData = filteredItems.filter((item) => {
+      const description = item.itemName ? item.itemName.toLowerCase() : ''; // Change 'itemName' instead of 'description'
+      const category = item.category ? item.category.toLowerCase() : '';
+      const location = item.labRoom ? item.labRoom.toLowerCase() : '';
+  
+      return (
+        description.includes(query.toLowerCase()) ||
+        category.includes(query.toLowerCase()) ||
+        location.includes(query.toLowerCase())
+      );
+    });
+  
     setFilteredItems(filteredData);
-  };
+  };  
 
   const handleLongPress = (item) => {
     setHoveredItem(item);

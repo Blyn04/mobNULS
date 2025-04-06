@@ -16,17 +16,15 @@ export default function InventoryScreen({ navigation }) {
   const { transferToRequestList, requestList } = useRequestList();
 
   const [inventoryItems, setInventoryItems] = useState([]);
-  const [selectedTab, setSelectedTab] = useState('Fixed');
+  const [categories, setCategories] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedDepartment, setSelectedDepartment] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState('');
   const [reason, setReason] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-
-  const categories = ['All', 'Fixed', 'Consumable'];
-  const departments = ['DEPARTMENTS', 'MIKMIK', 'NURSING', 'MEDTECH', 'DENTISTRY', 'OPTOMETRY', 'DENTAL HYGIENE'];
 
   useEffect(() => {
     const fetchInventory = async () => {
@@ -37,20 +35,29 @@ export default function InventoryScreen({ navigation }) {
           id: doc.id,
           ...doc.data()
         }));
-        console.log(inventoryList);  // Debugging: Log inventory data to check if it's being fetched
+
         setInventoryItems(inventoryList);
+
+        const categoriesList = ['All', ...new Set(inventoryList.map(item => item.type))]; 
+        const departmentsList = ['All', ...new Set(inventoryList.map(item => item.department))]; 
+        setCategories(categoriesList);
+        setDepartments(departmentsList);
+
       } catch (error) {
         console.error("Error fetching inventory: ", error);
       }
     };
+
     fetchInventory();
   }, []);
 
-  const filteredItems = inventoryItems.filter(item =>
-    (selectedDepartment === 'DEPARTMENTS' || selectedDepartment === '' || item.department === selectedDepartment) &&
-    (selectedCategory === 'All' || item.type === selectedCategory) &&
-    (item.name?.toLowerCase().includes(searchQuery.toLowerCase()) || '')
-  );  
+  const filteredItems = inventoryItems.filter(item => {
+    const isCategoryMatch = selectedCategory === 'All' || item.type === selectedCategory;
+    const isDepartmentMatch = selectedDepartment === 'All' || item.department === selectedDepartment;
+    
+    return isCategoryMatch && isDepartmentMatch && 
+      (item.itemName?.toLowerCase().includes(searchQuery.toLowerCase()) || '');
+  });
 
   const openModal = (item) => {
     setSelectedItem(item);
@@ -91,7 +98,7 @@ export default function InventoryScreen({ navigation }) {
             <Text style={styles.itemName}>{item.itemName}</Text>
             <Text style={[styles.department, { color: item.color }]}>Department: {item.department}</Text>
             <Text style={styles.itemType}>Type: {item.type}</Text>
-            <Text style={styles.itemType}>Category: {item.category}</Text>
+            <Text style={styles.itemType}>Category: {item.type}</Text>
           </View>
 
           <TouchableOpacity
@@ -143,7 +150,7 @@ export default function InventoryScreen({ navigation }) {
       </View>
 
       <FlatList
-        data={filteredItems.length > 0 ? filteredItems : inventoryItems}  // Fallback to all items if no filter matches
+        data={filteredItems.length > 0 ? filteredItems : inventoryItems}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
@@ -157,7 +164,7 @@ export default function InventoryScreen({ navigation }) {
                   <Image style={styles.modalImage} source={require('../assets/favicon.png')} />
                 </View>
 
-                <Text style={styles.modalItemName}>{selectedItem?.name}</Text>
+                <Text style={styles.modalItemName}>{selectedItem?.itemName}</Text>
                 <Text style={styles.itemType}>Type: {selectedItem?.type}</Text>
 
                 <View style={styles.inputRow}>
