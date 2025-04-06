@@ -136,10 +136,12 @@ export default function RequestListScreen({ navigation }) {
         <Text style={styles.index}>{index + 1}.)</Text>
         <Image source={require('../../assets/favicon.png')} style={styles.image} />
         <View style={styles.details}>
-          <Text style={styles.itemName}>{item.name}</Text>
+          <Text style={styles.itemName}>{item.itemName}</Text>
           <Text style={styles.department}>
             Department: <Text style={styles.highlight}>{item.department}</Text>
           </Text>
+          <Text style={styles.itemType}>Type: {item.type}</Text>
+          <Text style={styles.itemType}>Category: {item.category}</Text>
           <Button mode="contained" style={styles.button} onPress={() => { setSelectedRequest(item); setModalVisible(true); }}>
             Add Quantity
           </Button>
