@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { View, Modal, TouchableOpacity } from 'react-native';
 import { TextInput, Text, Button, HelperText } from 'react-native-paper';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../backend/firebase/FirebaseConfig'; 
+import { auth } from '../backend/firebase/FirebaseConfig';
+import { getDocs, collection, query, where } from 'firebase/firestore';
+import { db } from '../backend/firebase/FirebaseConfig'; // Import Firestore db
 import styles from './styles/ForgotPasswordStyle';
 
 export default function ForgotPasswordModal({ visible, onClose }) {
@@ -18,6 +20,16 @@ export default function ForgotPasswordModal({ visible, onClose }) {
     }
 
     try {
+      const usersCollection = collection(db, 'users'); 
+      const emailQuery = query(usersCollection, where('email', '==', email.trim()));
+      const querySnapshot = await getDocs(emailQuery);
+
+      if (querySnapshot.empty) {
+        setError('This email is not registered.');
+        setSuccess('');
+        return;
+      }
+
       await sendPasswordResetEmail(auth, email);
       setSuccess('Password reset link sent! Check your email.');
       setError('');
