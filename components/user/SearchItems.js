@@ -28,6 +28,7 @@ export default function SearchItemsScreen({ navigation }) {
           ...doc.data()
         }));
         setFilteredItems(items);
+
       } catch (error) {
         console.error("Error fetching items: ", error);
       }
@@ -38,10 +39,9 @@ export default function SearchItemsScreen({ navigation }) {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    
-    // Ensure properties are not undefined before calling .toLowerCase()
+
     const filteredData = filteredItems.filter((item) => {
-      const description = item.itemName ? item.itemName.toLowerCase() : ''; // Change 'itemName' instead of 'description'
+      const description = item.itemName ? item.itemName.toLowerCase() : ''; 
       const category = item.category ? item.category.toLowerCase() : '';
       const location = item.labRoom ? item.labRoom.toLowerCase() : '';
   
@@ -70,9 +70,11 @@ export default function SearchItemsScreen({ navigation }) {
           {item.itemName}
         </Text>
       </View>
+
       <View style={[styles.cell, { flex: 1 }]}>
         <Text style={styles.cellText}>{item.quantity}</Text>
       </View>
+
       <View style={[styles.statusCell, { flex: 2 }]}>
         <Text
           style={[
@@ -85,9 +87,11 @@ export default function SearchItemsScreen({ navigation }) {
           {item.status}
         </Text>
       </View>
+
       <View style={[styles.cell, { flex: 1.5 }]}>
         <Text style={styles.cellText}>{item.category}</Text>
       </View>
+      
       <View style={[styles.cell, { flex: 1.5 }]}>
         <Text style={styles.cellText}>{item.labRoom}</Text>
       </View>
