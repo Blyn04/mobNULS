@@ -8,6 +8,8 @@ import styles from './styles/LoginStyle';
 import { useAuth } from '../components/contexts/AuthContext';  
 import { db } from '../backend/firebase/FirebaseConfig';  
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../backend/firebase/FirebaseConfig'; // Make sure you import auth
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth();  
@@ -17,54 +19,51 @@ export default function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [isForgotPasswordVisible, setForgotPasswordVisible] = useState(false);
-
+  
   const handleLogin = async () => {
     if (!email || !password) {
       setError('Please enter both email and password');
       return;
     }
-
+  
     setError('');
     setLoading(true);
-
+  
     try {
+      // Sign in with Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
+  
+      // Get extra user data from Firestore
       const q = query(collection(db, 'accounts'), where('email', '==', email));
       const querySnapshot = await getDocs(q);
-
+  
       if (querySnapshot.empty) {
-        setError('Invalid email or password');
+        setError('User not found in database.');
         setLoading(false);
         return;
       }
-
+  
       let userData = null;
       querySnapshot.forEach(doc => {
         userData = { id: doc.id, ...doc.data() };
       });
-
-      if (userData.password === password) {
-        login(userData);
-
-        if (userData.role === "Admin1" || userData.role === "Admin2") {
-          navigation.replace("Admin2Dashboard");
-
-        } else {
-          navigation.replace("UserDashboard");
-        }
-        
-
+  
+      login(userData); // Your context method to save the user
+  
+      if (userData.role === "Admin1" || userData.role === "Admin2") {
+        navigation.replace("Admin2Dashboard");
       } else {
-        setError('Invalid email or password');
+        navigation.replace("UserDashboard");
       }
-
+  
     } catch (error) {
       console.error('Login Error:', error);
-      setError('Something went wrong. Try again later.');
-      
+      setError('Invalid email or password.');
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   return (
     <View style={styles.container}>
