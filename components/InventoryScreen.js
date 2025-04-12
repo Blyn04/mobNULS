@@ -96,9 +96,12 @@ export default function InventoryScreen({ navigation }) {
 
           <View style={styles.itemDetails}>
             <Text style={styles.itemName}>{item.itemName}</Text>
+            <Text style={styles.itemType}>Quantity: {item.quantity}</Text>
             <Text style={[styles.department, { color: item.color }]}>Department: {item.department}</Text>
-            <Text style={styles.itemType}>Type: {item.type}</Text>
-            <Text style={styles.itemType}>Category: {item.type}</Text>
+            <Text style={styles.itemType}>Status: {item.status}</Text>
+            <Text style={styles.itemType}>Condition: {item.condition}</Text>
+            <Text style={styles.itemType}>Category: {item.category}</Text>
+            <Text style={styles.itemType}>Usage Type: {item.usageType}</Text>
           </View>
 
           <TouchableOpacity
