@@ -4,41 +4,46 @@ import { TextInput, Text, Button, HelperText } from 'react-native-paper';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../backend/firebase/FirebaseConfig';
 import { getDocs, collection, query, where } from 'firebase/firestore';
-import { db } from '../backend/firebase/FirebaseConfig'; // Import Firestore db
+import { db } from '../backend/firebase/FirebaseConfig';
 import styles from './styles/ForgotPasswordStyle';
 
 export default function ForgotPasswordModal({ visible, onClose }) {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [forgotPasswordError, setForgotPasswordError] = useState('');
+  const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState('');
 
   const handleForgotPassword = async () => {
-    if (!email.trim()) {
-      setError('Please enter your email.');
-      setSuccess('');
+    if (!forgotPasswordEmail.trim()) {
+      setForgotPasswordError("Please enter your email.");
       return;
     }
 
     try {
-      const usersCollection = collection(db, 'users'); 
-      const emailQuery = query(usersCollection, where('email', '==', email.trim()));
-      const querySnapshot = await getDocs(emailQuery);
+      const usersRef = collection(db, "accounts");
+      const q = query(usersRef, where("email", "==", forgotPasswordEmail.trim()));
+      const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        setError('This email is not registered.');
-        setSuccess('');
+        setForgotPasswordError("Email not found. Please check and try again.");
+        setForgotPasswordSuccess("");
         return;
       }
 
-      await sendPasswordResetEmail(auth, email);
-      setSuccess('Password reset link sent! Check your email.');
-      setError('');
-      setEmail('');
+      await sendPasswordResetEmail(auth, forgotPasswordEmail);
+      setForgotPasswordSuccess("Password reset link sent! Please check your email.");
+      setForgotPasswordError("");
+
+      setTimeout(() => {
+        setForgotPasswordEmail("");
+      }, 50);
 
     } catch (error) {
-      console.error('Forgot Password Error:', error.message);
-      setError('Failed to send reset link. Check your email.');
-      setSuccess('');
+      console.error("Error sending reset email:", error.message);
+      setForgotPasswordError("Failed to send reset link. Please check the email.");
+      setForgotPasswordSuccess("");
+      setTimeout(() => {
+        setForgotPasswordEmail("");
+      }, 50);
     }
   };
 
@@ -51,19 +56,21 @@ export default function ForgotPasswordModal({ visible, onClose }) {
 
           <TextInput
             label="Email"
-            value={email}
-            onChangeText={setEmail}
+            value={forgotPasswordEmail}
+            onChangeText={setForgotPasswordEmail}
             keyboardType="email-address"
             autoCapitalize="none"
             mode="outlined"
             style={styles.input}
           />
-          
-          <HelperText type="error" visible={!!error}>
-            {error}
+
+          <HelperText type="error" visible={!!forgotPasswordError}>
+            {forgotPasswordError}
           </HelperText>
-          
-          {success ? <Text style={styles.successText}>{success}</Text> : null}
+
+          {forgotPasswordSuccess ? (
+            <Text style={styles.successText}>{forgotPasswordSuccess}</Text>
+          ) : null}
 
           <Button mode="contained" onPress={handleForgotPassword} style={styles.modalButton}>
             Send Reset Link
