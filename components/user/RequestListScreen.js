@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Platform, View, FlatList, Text, TouchableOpacity, Image, Modal, Alert, ScrollView, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Card, Button } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
 import { Calendar } from 'react-native-calendars';
 import { useRequestList } from '../../components/contexts/RequestListContext';
 import { SafeAreaView } from 'react-native';
@@ -22,6 +23,8 @@ export default function RequestListScreen({ navigation }) {
   const [timePickerType, setTimePickerType] = useState('start');
   const [selectedStartTime, setSelectedStartTime] = useState({ hour: '10', minute: '00', period: 'AM' });
   const [selectedEndTime, setSelectedEndTime] = useState({ hour: '3', minute: '00', period: 'PM' });
+  const [program, setProgram] = useState('');
+  const [room, setRoom] = useState('');
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -102,14 +105,20 @@ export default function RequestListScreen({ navigation }) {
                 ...item,
                 date: selectedDate,
                 reason,
+                program,
+                room,
                 startTime: selectedStartTime || { hour: '10', minute: '00', period: 'AM' },
                 endTime: selectedEndTime || { hour: '3', minute: '00', period: 'PM' }
               }))
-            );            
+            );                      
             Alert.alert("Request Submitted", "Your request has been sent successfully!");
             navigation.navigate('RequestScreen');
-            setReason("")
-
+            setReason("");
+            setRoom("");
+            setProgram('');
+            setSelectedDate('');
+            setSelectedStartTime({ hour: '00', minute: '00', period: 'AM' });
+            setSelectedEndTime({ hour: '00', minute: '00', period: 'PM' });
           },
         },
       ]
@@ -230,7 +239,29 @@ export default function RequestListScreen({ navigation }) {
             </Text>
           </TouchableOpacity>
         </View>
- 
+
+        <View style={styles.programRoomContainer}>
+          <View style={styles.pickerWrapper}>
+            <Picker
+              selectedValue={program}
+              onValueChange={(itemValue) => setProgram(itemValue)}
+              style={{ height: 50, fontSize: 5 }} 
+            >
+              <Picker.Item label="Select Program" value="" />
+              <Picker.Item label="SAM - BSMT" value="SAM - BSMT" />
+              <Picker.Item label="SAH - BSN" value="SAH - BSN" />
+              <Picker.Item label="SHS" value="SHS" />
+            </Picker>
+          </View>
+
+          <TextInput
+            style={styles.roomInput}
+            placeholder="Enter room"
+            value={room}
+            onChangeText={setRoom}
+          />
+        </View>
+
         <TextInput
           style={styles.reasonInput}
           placeholder="Enter reason for borrowing..."

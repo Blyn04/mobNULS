@@ -517,4 +517,29 @@ export default StyleSheet.create({
   removeIcon: {
     padding: 5,
   },
+
+  programRoomContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  
+  pickerWrapper: {
+    flex: 1,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    justifyContent: 'center',
+    height: 45,
+  },
+  
+  roomInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    height: 45,
+  },  
 });
