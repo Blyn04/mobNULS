@@ -135,29 +135,65 @@ export default function RequestListScreen({ navigation }) {
       <View style={styles.row}>
         <Text style={styles.index}>{index + 1}.)</Text>
         <Image source={require('../../assets/favicon.png')} style={styles.image} />
+
         <View style={styles.details}>
           <Text style={styles.itemName}>{item.itemName}</Text>
           <Text style={styles.department}>
             Department: <Text style={styles.highlight}>{item.department}</Text>
           </Text>
+
           <Text style={styles.itemType}>Type: {item.type}</Text>
           <Text style={styles.itemType}>Category: {item.category}</Text>
-          <Button mode="contained" style={styles.button} onPress={() => { setSelectedRequest(item); setModalVisible(true); }}>
-            Add Quantity
-          </Button>
+          <Text style={styles.itemType}>Usage Type: {item.usageType}</Text>
+          <Text style={styles.itemType}>Condition: {item.condition}</Text>
+          
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+            <Text style={{ marginRight: 8 }}>Qty:</Text>
+            <TextInput
+              style={[styles.input, { height: 35, width: 80 }]}
+              value={
+                updatedQuantities[item.id] !== undefined
+                  ? updatedQuantities[item.id]
+                  : item.quantity?.toString() || ''
+              }
+              onChangeText={(value) => {
+                if (/^\d*$/.test(value)) {
+                  setUpdatedQuantities((prev) => ({ ...prev, [item.id]: value }));
+                }
+              }}
+              onBlur={() => {
+                const quantity = updatedQuantities[item.id];
+                if (quantity && parseInt(quantity, 10) > 0) {
+                  const updatedList = requestList.map((i) =>
+                    i.id === item.id ? { ...i, quantity: parseInt(quantity, 10) } : i
+                  );
+                  setRequestList(updatedList);
+
+                } else {
+                  setUpdatedQuantities((prev) => {
+                    const copy = { ...prev };
+                    delete copy[item.id];
+                    return copy;
+                  });
+                }
+              }}
+              keyboardType="numeric"
+              placeholder="0"
+            />
+          </View>
         </View>
         <TouchableOpacity style={styles.removeIcon} onPress={() => removeItem(item.id)}>
           <Icon name="close-circle" size={24} color="red" />
         </TouchableOpacity>
       </View>
     </Card>
-  );
+  );  
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F5' }}>
+    <SafeAreaView style={styles.container}>
       <Header />
   
-      <View style={styles.container}>
+      <View style={styles.container1}>
         {requestList.length === 0 ? (
           <Text style={styles.emptyText}>No items in request list.</Text>
         ) : (
@@ -206,39 +242,6 @@ export default function RequestListScreen({ navigation }) {
         <TouchableOpacity style={styles.requestButton} onPress={requestItems}>
           <Text style={styles.requestButtonText}>Request Now</Text>
         </TouchableOpacity>
-
-        <Modal visible={modalVisible} transparent animationType="slide">
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              {selectedRequest && (
-                <>
-                  <Text style={styles.modalTitle}>Item Details</Text>
-                  <Text style={styles.modalText}>Item Name: {selectedRequest.itemName}</Text>
-                  <Text style={styles.modalText}>Department: {selectedRequest.department}</Text>
-                  <Text style={styles.modalText}>Tag: {selectedRequest.tags}</Text>
-                  <Text style={styles.modalText}>Quantity:</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={updatedQuantities[selectedRequest?.id] || ''}
-                    onChangeText={(value) =>
-                      setUpdatedQuantities((prev) => ({ ...prev, [selectedRequest.id]: value }))
-                    }
-                    keyboardType="numeric"
-                    placeholder="Enter new quantity"
-                  />
-                  <View style={styles.modalButtons}>
-                    <Button mode="contained" onPress={updateQuantity}>
-                      Update
-                    </Button>
-                    <Button mode="outlined" onPress={() => setModalVisible(false)}>
-                      Close
-                    </Button>
-                  </View>
-                </>
-              )}
-            </View>
-          </View>
-        </Modal>
   
         <Modal
           visible={timeModalVisible}
@@ -261,6 +264,7 @@ export default function RequestListScreen({ navigation }) {
                           onPress={() => {
                             if (timePickerType === 'start') {
                               setSelectedStartTime({ ...selectedStartTime, hour: (h + 1).toString() });
+
                             } else {
                               setSelectedEndTime({ ...selectedEndTime, hour: (h + 1).toString() });
                             }
@@ -280,6 +284,7 @@ export default function RequestListScreen({ navigation }) {
                           onPress={() => {
                             if (timePickerType === 'start') {
                               setSelectedStartTime({ ...selectedStartTime, minute: m });
+
                             } else {
                               setSelectedEndTime({ ...selectedEndTime, minute: m });
                             }
@@ -299,6 +304,7 @@ export default function RequestListScreen({ navigation }) {
                           onPress={() => {
                             if (timePickerType === 'start') {
                               setSelectedStartTime({ ...selectedStartTime, period: p });
+                              
                             } else {
                               setSelectedEndTime({ ...selectedEndTime, period: p });
                             }
