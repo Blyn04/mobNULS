@@ -65,17 +65,13 @@ export default function SearchItemsScreen({ navigation }) {
 
   const renderItem = ({ item }) => (
     <View style={styles.row}>
-      <View style={[styles.cell, { flex: 2 }]}>
-        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.cellText}>
-          {item.itemName}
-        </Text>
+      <View style={{ flex: 3 }}>
+        <Text style={styles.cellText} numberOfLines={1}>{item.itemName}</Text>
       </View>
-
-      <View style={[styles.cell, { flex: 1 }]}>
+      <View style={{ flex: 1 }}>
         <Text style={styles.cellText}>{item.quantity}</Text>
       </View>
-
-      <View style={[styles.statusCell, { flex: 2 }]}>
+      <View style={{ flex: 2 }}>
         <Text
           style={[
             styles.status,
@@ -87,78 +83,49 @@ export default function SearchItemsScreen({ navigation }) {
           {item.status}
         </Text>
       </View>
-
-      <View style={[styles.cell, { flex: 1.5 }]}>
+      <View style={{ flex: 2 }}>
         <Text style={styles.cellText}>{item.category}</Text>
-      </View>
-      
-      <View style={[styles.cell, { flex: 1.5 }]}>
-        <Text style={styles.cellText}>{item.labRoom}</Text>
       </View>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <Header />
+    <View style={styles.content}>
+      <Text style={styles.pageTitle}>Search Items</Text>
 
-      <View style={styles.content}>
-        <Text style={styles.pageTitle}>Search Items</Text>
+      <View style={styles.searchContainer}>
+        <Icon name="magnify" size={24} color="#777" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search items, category, location..."
+          value={searchQuery}
+          onChangeText={handleSearch}
+        />
+      </View>
 
-        <View style={styles.searchContainer}>
-          <Icon name="magnify" size={24} color="#777" style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search items, category, location..."
-            value={searchQuery}
-            onChangeText={handleSearch}
-          />
-        </View>
-
-        <ScrollView horizontal contentContainerStyle={{ flexGrow: 1 }}>
+      <View style={{ flex: 1 }}>
+        <View style={styles.tableContainer}>
           <View style={styles.tableContainer}>
             <View style={[styles.row, styles.headerRow]}>
-              <Text style={[styles.headerText, { flex: 2 }]}>Description</Text>
-              <Text style={[styles.headerText, { flex: 1, textAlign: 'center' }]}>Qty</Text>
-              <Text style={[styles.headerText, { flex: 2 }]}>Status</Text>
-              <Text style={[styles.headerText, { flex: 1.5 }]}>Category</Text>
-              <Text style={[styles.headerText, { flex: 1.5 }]}>Location</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Description</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Qty</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Status</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Category</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Location</Text>
             </View>
 
             <FlatList
               data={filteredItems}
               keyExtractor={(item) => item.id}
               renderItem={renderItem}
+              contentContainerStyle={{ flexGrow: 1 }}
               ListEmptyComponent={() => (
                 <Text style={styles.noResults}>No matching items found.</Text>
               )}
             />
           </View>
-        </ScrollView>
+        </View>
       </View>
-
-      <TouchableOpacity style={styles.helpButton}>
-        <Text style={styles.helpText}>Help (?)</Text>
-      </TouchableOpacity>
-
-      {hoveredItem && (
-        <Modal
-          visible={!!hoveredItem}
-          transparent
-          animationType="fade"
-          onRequestClose={closeModal}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Full Description</Text>
-              <Text style={styles.modalText}>{hoveredItem.description}</Text>
-              <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                <Text style={styles.closeButtonText}>Close</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      )}
     </View>
   );
 }

@@ -10,17 +10,16 @@ export default StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#006E5F', 
+    backgroundColor: '#006E5F',
     padding: 12,
     paddingTop: 35,
     justifyContent: 'space-between',
-  },  
+  },
 
   logo: {
     width: 40,
     height: 40,
     marginRight: 10,
-    
   },
 
   headerText: {
@@ -77,22 +76,26 @@ export default StyleSheet.create({
 
   /* Table Section */
   tableContainer: {
+    flex: 1,
     borderWidth: 1,
     borderColor: '#E0E0E0',
     borderRadius: 8,
     backgroundColor: '#FFF',
     overflow: 'hidden',
     marginTop: 10,
-    width: '100%',
-  },
+    width: '100%', // Make it fit the screen
+  },  
 
   headerRow: {
     backgroundColor: '#E0E0E0',
     borderBottomWidth: 1,
     borderColor: '#D6D6D6',
+    flexDirection: 'row',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
   },
 
-  headerText: {
+  tableHeaderText: {
     fontWeight: 'bold',
     color: '#333',
     fontSize: 14,
@@ -104,17 +107,14 @@ export default StyleSheet.create({
     borderColor: '#E0E0E0',
     paddingVertical: 8,
     paddingHorizontal: 10,
-    width: '100%',
   },
 
   cell: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
 
   statusCell: {
-    flex: 2,
     justifyContent: 'center',
   },
 
