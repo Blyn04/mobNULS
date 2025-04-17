@@ -94,6 +94,9 @@ export default function ProfileScreen({ navigation }) {
         <Text style={styles.label}>Email</Text>
         <TextInput style={styles.input} value={user?.email || ''} editable={false} />
 
+        <Text style={styles.label}>Email</Text>
+        <TextInput style={styles.input} value={user?.jobTitle || ''} editable={false} />
+
         <Text style={styles.label}>Department</Text>
         <TextInput style={styles.input} value={user?.department || ''} editable={false} />
       </View>
