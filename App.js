@@ -21,6 +21,7 @@ import LogScreen from './components/admin2/LogScreen';
 import InventoryStocks from './components/admin2/InventoryStocks';
 import { RequestListProvider } from './components/contexts/RequestListContext';
 import SearchItems from './components/user/SearchItems';
+import UserActivityLogScreen from './components/user/UserActivityLogScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,10 +45,11 @@ export default function App() {
                   <Stack.Screen name="Camera" component={CameraScreen} options={{ headerShown: false }} />
                   <Stack.Screen name="RequestScreen" component={RequestScreen} options={{ headerShown: false }} />
                   <Stack.Screen name="RequestListScreen" component={RequestListScreen} options={{ headerShown: false }} />
-                  <Stack.Screen name="RequestLogScreen" component={RequestLogScreen} options={{ headerShown: false }} />
+                  <Stack.Screen name="UserHistoryLogScreen" component={RequestLogScreen} options={{ headerShown: false }} />
                   <Stack.Screen name="LogScreen" component={LogScreen} options={{ headerShown: false }} />
                   <Stack.Screen name="InventoryStocks" component={InventoryStocks} options={{ headerShown: false }} />
                   <Stack.Screen name="SearchItems" component={SearchItems} options={{ headerShown: false }} />
+                  <Stack.Screen name="UserActivityLogScreen" component={UserActivityLogScreen} options={{ headerShown: false }} />
                 </Stack.Navigator>
               </NavigationContainer>
             </PaperProvider>

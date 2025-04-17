@@ -187,4 +187,23 @@ export default StyleSheet.create({
     color: '#FFF',
     fontWeight: 'bold',
   },
+  
+  rowEven: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    backgroundColor: '#f9f9f9',
+  },
+  
+  rowOdd: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    backgroundColor: '#ffffff',
+  },
+  
 });

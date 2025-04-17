@@ -63,8 +63,8 @@ export default function SearchItemsScreen({ navigation }) {
     setHoveredItem(null);
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.row}>
+  const renderItem = ({ item, index }) => (
+    <View style={index % 2 === 0 ? styles.rowEven : styles.rowOdd}>
       <View style={{ flex: 3 }}>
         <Text style={styles.cellText} numberOfLines={1}>{item.itemName}</Text>
       </View>
@@ -87,7 +87,7 @@ export default function SearchItemsScreen({ navigation }) {
         <Text style={styles.cellText}>{item.category}</Text>
       </View>
     </View>
-  );
+  );  
 
   return (
     <View style={styles.content}>
