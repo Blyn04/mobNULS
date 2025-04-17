@@ -178,4 +178,56 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
 
+  modalContent: {
+    width: '90%',
+    maxHeight: '80%',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 12,
+    elevation: 10,
+    alignItems: 'center',
+  },
+  
+  modalText: {
+    fontSize: 14,
+    marginBottom: 8,
+    textAlign: 'left',
+    width: '100%',
+    color: '#333',
+  },
+  
+  tableHeader: {
+    backgroundColor: '#00796B',
+    paddingVertical: 10,
+    paddingHorizontal: 4,
+  },
+  
+  tableHeaderText: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+  },
+  
+  tableCell: {
+    fontSize: 13,
+    color: '#333',
+    textAlign: 'center',
+    paddingHorizontal: 2,
+  },
+  
+  closeButton: {
+    marginTop: 15,
+    backgroundColor: '#00796B',
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    borderRadius: 8,
+  },
+  
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },  
+
 });

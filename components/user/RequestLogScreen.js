@@ -1,93 +1,191 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, ScrollView, TouchableWithoutFeedback } from 'react-native';
-import { DataTable } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../backend/firebase/FirebaseConfig';
+import { useAuth } from '../contexts/AuthContext';
 import styles from '../styles/userStyle/RequestLogStyle';
 import Header from '../Header';
 
-const requests = [
-  { id: '1', name: 'Syringe', department: 'NURSING', date: '2025-02-23', status: 'Approved', tag: 'INF224', quantity: 10 },
-  { id: '2', name: 'Gloves', department: 'NURSING', date: '2025-02-22', status: 'Approved', tag: 'MED223', quantity: 20 },
-  { id: '3', name: 'Stethoscope', department: 'NURSING', date: '2025-02-21', status: 'Approved', tag: 'INF225', quantity: 5 },
-  { id: '4', name: 'Thermometer', department: 'NURSING', date: '2025-02-20', status: 'Approved', tag: 'MED224', quantity: 15 },
-  { id: '5', name: 'Face Mask', department: 'NURSING', date: '2025-02-19', status: 'Approved', tag: 'INF226', quantity: 50 },
-  { id: '6', name: 'Alcohol', department: 'NURSING', date: '2025-02-18', status: 'Rejected', tag: 'MED225', quantity: 30 },
-  { id: '7', name: 'Bandages', department: 'NURSING', date: '2025-02-17', status: 'Rejected', tag: 'INF227', quantity: 40 },
-];
-
-export default function RequestLogScreen() {
-  const [selectedRequest, setSelectedRequest] = useState(null);
+const RequestLogScreen = () => {
+  const { user } = useAuth();
+  const [activityData, setActivityData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
+  const [selectedLog, setSelectedLog] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const openModal = (request) => {
-    setSelectedRequest(request);
+  useEffect(() => {
+    const fetchActivityLogs = async () => {
+      try {
+        if (!user) return;
+        const activityRef = collection(db, `accounts/${user.id}/historylog`);
+        const querySnapshot = await getDocs(activityRef);
+
+        const logs = querySnapshot.docs.map((doc, index) => {
+          const data = doc.data();
+          const logDate =
+            data.cancelledAt?.toDate?.() ||
+            data.timestamp?.toDate?.() ||
+            new Date();
+
+          const isCancelled = data.status === 'CANCELLED';
+          const action = isCancelled
+            ? 'Cancelled a request'
+            : data.action || 'Modified a request';
+
+          const by =
+            action === 'Request Approved'
+              ? data.approvedBy
+              : data.userName || 'Unknown User';
+
+          return {
+            key: doc.id || index.toString(),
+            date: logDate.toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+            }),
+            rawDate: logDate,
+            action,
+            by,
+            fullData: data,
+          };
+        });
+
+        const sortedLogs = logs.sort((a, b) => b.rawDate - a.rawDate);
+        setActivityData(sortedLogs);
+        setFilteredData(sortedLogs);
+      } catch (error) {
+        console.error('Failed to fetch activity logs:', error);
+      }
+    };
+
+    fetchActivityLogs();
+  }, [user]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const filtered = activityData.filter(
+      (item) =>
+        item.date.includes(query) ||
+        item.action.toLowerCase().includes(query.toLowerCase()) ||
+        item.by.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredData(filtered);
+  };
+
+  const handleRowPress = (log) => {
+    setSelectedLog(log.fullData);
     setModalVisible(true);
   };
 
   return (
     <View style={styles.container}>
-      <Header />
+      <Header/>
+      <Text style={styles.pageTitle}>Request Log</Text>
 
-      <View style={styles.content}>
-        <Text style={styles.pageTitle}>Requests Log</Text>
+      <TextInput
+        style={[styles.modalText, { borderBottomWidth: 1, marginBottom: 10 }]}
+        placeholder="Search"
+        value={searchQuery}
+        onChangeText={handleSearch}
+      />
 
-        <View style={{ flex: 1 }}>
-          <DataTable>
-          <DataTable.Header style={styles.tableHeader}>
-            <DataTable.Title textStyle={styles.tableHeaderText} style={{ flex: 2 }}>Date</DataTable.Title>
-            <DataTable.Title textStyle={styles.tableHeaderText} style={{ flex: 2 }}>Action</DataTable.Title>
-            <DataTable.Title textStyle={styles.tableHeaderText} style={{ flex: 2 }}>By</DataTable.Title>
-          </DataTable.Header>
-
-          {requests.map((item) => (
-            <DataTable.Row key={item.id} style={styles.tableRow} onPress={() => openModal(item)}>
-              <DataTable.Cell textStyle={styles.tableCell} style={{ flex: 2 }}>{item.date}</DataTable.Cell>
-              <DataTable.Cell textStyle={styles.tableCell} style={{ flex: 2 }}>
-                <Text style={[styles.viewLinkText, item.status === 'Approved' ? styles.statusApproved : styles.statusRejected]}>
-                  {item.status}
-                </Text>
-              </DataTable.Cell>
-              <DataTable.Cell textStyle={styles.tableCell} style={{ flex: 2 }}>{item.department}</DataTable.Cell>
-            </DataTable.Row>
-          ))}
-          </DataTable>
-        </View>
+      {/* Table Header */}
+      <View style={[styles.tableHeader, { flexDirection: 'row' }]}>
+        <Text style={[styles.tableHeaderText, { flex: 1 }]}>Date</Text>
+        <Text style={[styles.tableHeaderText, { flex: 1 }]}>Action</Text>
+        <Text style={[styles.tableHeaderText, { flex: 1 }]}>By</Text>
       </View>
 
-      <TouchableOpacity style={styles.helpButton}>
-        <Text style={styles.helpText}>Help (?)</Text>
-      </TouchableOpacity>
+      <ScrollView style={styles.content}>
+        {filteredData.map((log, index) => (
+          <TouchableOpacity
+            key={log.key}
+            onPress={() => handleRowPress(log)}
+            style={index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}
+          >
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={[styles.tableCell, { flex: 1 }]}>{log.date}</Text>
+              <Text style={[styles.tableCell, { flex: 1 }]}>{log.action}</Text>
+              <Text style={[styles.tableCell, { flex: 1 }]}>{log.by}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
 
-      <Modal visible={modalVisible} transparent animationType="fade">
-        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View style={styles.modalOverlay}>
-            <TouchableWithoutFeedback onPress={() => { /* prevent modal from closing when content is tapped */ }}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Request Details</Text>
-                {selectedRequest && (
-                  <>
-                    <Text style={styles.modalText}>Item: {selectedRequest.name}</Text>
-                    <Text style={styles.modalText}>Department: {selectedRequest.department}</Text>
-                    <Text style={styles.modalText}>Date: {selectedRequest.date}</Text>
-                    <Text style={styles.modalText}>Tag: {selectedRequest.tag}</Text>
-                    <Text style={styles.modalText}>Quantity: {selectedRequest.quantity}</Text>
-                    <Text
-                      style={[
-                        styles.modalText,
-                        selectedRequest.status === 'Approved' ? styles.statusApproved : styles.statusRejected,
-                      ]}
-                    >
-                      Status: {selectedRequest.status}
-                    </Text>
-                  </>
-                )}
-                <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-                  <Text style={styles.closeButtonText}>Close</Text>
-                </TouchableOpacity>
+      <Modal visible={modalVisible} transparent animationType="slide">
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>
+        {selectedLog?.status === 'CANCELLED'
+          ? 'Cancelled a Request'
+          : selectedLog?.action || 'Modified a Request'}
+      </Text>
+
+      <ScrollView style={{ maxHeight: 400, width: '100%' }}>
+        <Text style={styles.modalText}>By: {selectedLog?.userName || 'Unknown User'}</Text>
+        <Text style={styles.modalText}>Program: {selectedLog?.program || 'N/A'}</Text>
+        <Text style={styles.modalText}>Reason: {selectedLog?.reason || 'N/A'}</Text>
+        <Text style={styles.modalText}>Room: {selectedLog?.room || 'N/A'}</Text>
+        <Text style={styles.modalText}>
+          Time:{' '}
+          {selectedLog?.timeFrom && selectedLog?.timeTo
+            ? `${selectedLog.timeFrom} - ${selectedLog.timeTo}`
+            : 'N/A'}
+        </Text>
+        <Text style={styles.modalText}>Date Required: {selectedLog?.dateRequired || 'N/A'}</Text>
+
+        <Text style={[styles.modalText, { fontWeight: 'bold', marginTop: 10 }]}>Items:</Text>
+
+        {(selectedLog?.filteredMergedData || selectedLog?.requestList)?.length > 0 ? (
+          <View style={{ marginTop: 10 }}>
+            <View style={[styles.tableHeader, { flexDirection: 'row', borderTopLeftRadius: 5, borderTopRightRadius: 5 }]}>
+              <Text style={[styles.tableHeaderText, { flex: 2 }]}>Item</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Qty</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Category</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Condition</Text>
+            </View>
+
+            {(selectedLog?.filteredMergedData || selectedLog?.requestList).map((item, index) => (
+              <View
+                key={index}
+                style={[
+                  index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd,
+                  { flexDirection: 'row', paddingVertical: 8, paddingHorizontal: 4 },
+                ]}
+              >
+                <Text style={[styles.tableCell, { flex: 2 }]}>{item.itemName}</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>{item.quantity}</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>{item.category || '—'}</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>{item.condition || '—'}</Text>
               </View>
-            </TouchableWithoutFeedback>
+            ))}
           </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+        ) : (
+          <Text style={styles.modalText}>None</Text>
+        )}
+      </ScrollView>
+
+      <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+        <Text style={styles.closeButtonText}>Close</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
     </View>
   );
-}
+};
+
+export default RequestLogScreen;

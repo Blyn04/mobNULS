@@ -49,8 +49,8 @@ export default function LoginScreen({ navigation }) {
         userData = { id: doc.id, ...doc.data() };
       });
   
-      login(userData); // Your context method to save the user
-  
+      login(userData);  // Set user data in context
+
       if (userData.role === "Admin1" || userData.role === "Admin2") {
         navigation.replace("Admin2Dashboard");
       } else {
