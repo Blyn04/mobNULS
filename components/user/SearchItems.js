@@ -91,6 +91,8 @@ export default function SearchItemsScreen({ navigation }) {
 
   return (
     <View style={styles.content}>
+      <Header/>
+
       <Text style={styles.pageTitle}>Search Items</Text>
 
       <View style={styles.searchContainer}>

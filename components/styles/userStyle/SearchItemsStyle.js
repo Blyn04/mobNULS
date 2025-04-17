@@ -6,26 +6,6 @@ export default StyleSheet.create({
     backgroundColor: '#F9F9F9',
   },
 
-  /* Header Section */
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#006E5F',
-    padding: 12,
-    paddingTop: 35,
-    justifyContent: 'space-between',
-  },
-
-  logo: {
-    width: 40,
-    height: 40,
-    marginRight: 10,
-  },
-
-  headerText: {
-    flex: 1,
-  },
-
   title: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -45,7 +25,6 @@ export default StyleSheet.create({
   content: {
     padding: 10,
     flex: 1,
-    marginTop: 70,
   },
 
   pageTitle: {
@@ -53,6 +32,7 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
+    marginTop: 80,
   },
 
   /* Search Section */
