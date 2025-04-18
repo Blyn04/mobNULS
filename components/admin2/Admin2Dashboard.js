@@ -16,6 +16,7 @@ export default function Admin2Dashboard({ navigation }) {
     { title: 'Request Log', subtitle: 'Records', icon: 'file-document-outline', screen: 'RequestLogScreen', color: '#1A4572' }, 
     { title: 'Calendar', subtitle: 'Block the Date!', icon: 'calendar', color: '#673AB7', screen: 'CalendarScreen' },
     { title: 'QR Scanner', subtitle: 'Asset Monitoring', icon: 'qrcode-scan', color: '#FFC107', screen: 'CameraScreen' },
+    { title: 'Borrow Catalog', subtitle: 'Asset Monitoring', icon: 'qrcode-scan', color: '#FFC107', screen: 'BorrowCatalogScreen' },
   ];
 
   const renderItem = ({ item }) => (

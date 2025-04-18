@@ -29,6 +29,7 @@ import LogScreen from './components/admin2/LogScreen';
 import InventoryStocks from './components/admin2/InventoryStocks';
 import SearchItems from './components/user/SearchItems';
 import UserActivityLogScreen from './components/user/UserActivityLogScreen';
+import BorrowCatalogScreen from './components/admin2/BorrowCatalogScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -157,6 +158,10 @@ const CustomAdminDrawerContent = ({ navigation }) => {
         <Title style={styles.drawerItem}>QR Scanner</Title>
       </TouchableOpacity>
 
+      <TouchableOpacity onPress={() => navigation.navigate('BorrowCatalogScreen')}>
+        <Title style={styles.drawerItem}>Borrow Catalog</Title>
+      </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.logoutButton} 
         onPress={() => {
@@ -232,6 +237,7 @@ const AdminDrawer = () => {
       <Drawer.Screen name="InventoryStocks" component={InventoryStocks} />
       <Drawer.Screen name="ActivityLogScreen" component={ActivityLogScreen} />
       <Drawer.Screen name="CalendarScreen" component={CalendarScreen} />
+      <Drawer.Screen name="BorrowCatalogScreen" component={BorrowCatalogScreen} />
     </Drawer.Navigator>
   );
 };
