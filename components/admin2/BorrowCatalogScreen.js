@@ -12,6 +12,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../backend/firebase/FirebaseConfig";
 import styles from "../styles/admin2Style/BorrowCatalogStyle";
 import ApprovedRequestModal from "../customs/ApprovedRequestModal";
+import Header from "../Header";
 
 const BorrowCatalogScreen = () => {
   const [catalog, setCatalog] = useState([]);
@@ -148,6 +149,8 @@ const BorrowCatalogScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Header/>
+
       <TextInput
         placeholder="Search"
         value={searchQuery}
