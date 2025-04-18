@@ -48,32 +48,32 @@ const CustomDrawerContent = ({ navigation }) => {
         <Title style={styles.drawerItem}>User Dashboard</Title>
       </TouchableOpacity>
 
+      <TouchableOpacity onPress={() => navigation.navigate('InventoryScreen')}>
+        <Title style={styles.drawerItem}>Requisition</Title>
+      </TouchableOpacity>
+      
+      <TouchableOpacity onPress={() => navigation.navigate('SearchItems')}>
+        <Title style={styles.drawerItem}>Search Items</Title>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('UserHistoryLogScreen')}>
+        <Title style={styles.drawerItem}>History Log</Title>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('UserActivityLogScreen')}>
+        <Title style={styles.drawerItem}>Activity Log</Title>
+      </TouchableOpacity>
+
       <TouchableOpacity onPress={() => navigation.navigate('CalendarScreen')}>
         <Title style={styles.drawerItem}>Calendar Screen</Title>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate('PolicyScreen')}>
-        <Title style={styles.drawerItem}>Policy Screen</Title>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate('RequestScreen')}>
-        <Title style={styles.drawerItem}>Request Screen</Title>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('RequestListScreen')}>
         <Title style={styles.drawerItem}>Request List Screen</Title>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('UserHistoryLogScreen')}>
-        <Title style={styles.drawerItem}>User History Log</Title>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate('SearchItems')}>
-        <Title style={styles.drawerItem}>Search Items</Title>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate('UserActivityLogScreen')}>
-        <Title style={styles.drawerItem}>User Activity Log</Title>
+      <TouchableOpacity onPress={() => navigation.navigate('PolicyScreen')}>
+        <Title style={styles.drawerItem}>Policy Screen</Title>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -95,7 +95,7 @@ const CustomDrawerContent = ({ navigation }) => {
                         userName: user.name || "User",
                         timestamp: serverTimestamp(),
                       });
-                      
+
                     } else {
                       console.warn("No user data available for logout log.");
                     }
@@ -207,6 +207,7 @@ function UserDrawer() {
       <Drawer.Screen name="UserHistoryLogScreen" component={RequestLogScreen} />
       <Drawer.Screen name="SearchItems" component={SearchItems} />
       <Drawer.Screen name="UserActivityLogScreen" component={UserActivityLogScreen} />
+      <Drawer.Screen name="InventoryScreen" component={InventoryScreen} />
     </Drawer.Navigator>
   );
 }
