@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Image } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Image, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from '../styles/admin2Style/Admin2DashboardStyle';
@@ -29,8 +29,8 @@ export default function Admin2Dashboard({ navigation }) {
   );
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={styles.container}>
+      <View style={styles.container3}>
+          <StatusBar style="light" backgroundColor="#1A4572" />
         <Header/>
 
         <FlatList
@@ -50,9 +50,8 @@ export default function Admin2Dashboard({ navigation }) {
             <Icon name="chevron-up" size={20} color="white" />
           </TouchableOpacity>
         </View>
-      </View>
 
-      <DataAnalysisModal isVisible={isModalVisible} onClose={() => setModalVisible(false)} />
-    </GestureHandlerRootView>
+        <DataAnalysisModal isVisible={isModalVisible} onClose={() => setModalVisible(false)} />
+      </View>
   );
 }

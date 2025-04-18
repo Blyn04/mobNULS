@@ -12,6 +12,7 @@ import { db } from './backend/firebase/FirebaseConfig';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import Icon from 'react-native-vector-icons/Ionicons'; 
 
+import ActivityLogScreen from './components/admin2/ActivityLogScreen';
 import LoginScreen from './components/LoginScreen';
 import UserDashboard from './components/user/UserDashboard';
 import CalendarScreen from './components/user/CalendarScreen';
@@ -45,7 +46,7 @@ const CustomDrawerContent = ({ navigation }) => {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('UserDashboard')}>
-        <Title style={styles.drawerItem}>User Dashboard</Title>
+        <Title style={styles.drawerItem}>Dashboard</Title>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('InventoryScreen')}>
@@ -133,23 +134,27 @@ const CustomAdminDrawerContent = ({ navigation }) => {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('Admin2Dashboard')}>
-        <Title style={styles.drawerItem}>Admin Dashboard</Title>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate('PendingRequestScreen')}>
-        <Title style={styles.drawerItem}>Pending Requests</Title>
+        <Title style={styles.drawerItem}>Dashboard</Title>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('InventoryScreen')}>
         <Title style={styles.drawerItem}>Inventory</Title>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('LogScreen')}>
-        <Title style={styles.drawerItem}>Log</Title>
+      <TouchableOpacity onPress={() => navigation.navigate('PendingRequestScreen')}>
+        <Title style={styles.drawerItem}>Pending Requests</Title>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('ActivityLogScreen')}>
+        <Title style={styles.drawerItem}>Activity Log</Title>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('RequestLogScreen')}>
+        <Title style={styles.drawerItem}>Request Log</Title>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('InventoryStocks')}>
-        <Title style={styles.drawerItem}>Inventory Stocks</Title>
+        <Title style={styles.drawerItem}>QR Scanner</Title>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -222,9 +227,10 @@ const AdminDrawer = () => {
       <Drawer.Screen name="Admin2Dashboard" component={Admin2Dashboard} />
       <Drawer.Screen name="PendingRequestScreen" component={PendingRequestScreen} />
       <Drawer.Screen name="InventoryScreen" component={InventoryScreen} />
-      <Drawer.Screen name="Camera" component={CameraScreen} />
-      <Drawer.Screen name="LogScreen" component={LogScreen} />
+      <Drawer.Screen name="CameraScreen" component={CameraScreen} />
+      <Drawer.Screen name="RequestLogScreen" component={LogScreen} />
       <Drawer.Screen name="InventoryStocks" component={InventoryStocks} />
+      <Drawer.Screen name="ActivityLogScreen" component={ActivityLogScreen} />
     </Drawer.Navigator>
   );
 };
