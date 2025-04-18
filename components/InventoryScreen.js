@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, TextInput, Image, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, TextInput, Image, Modal, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import { getDocs, collection } from 'firebase/firestore';
 import { db } from '../backend/firebase/FirebaseConfig';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,6 +7,7 @@ import { Picker } from '@react-native-picker/picker';
 import styles from './styles/InventoryStyle';
 import { useAuth } from '../components/contexts/AuthContext';
 import { useRequestList } from '../components/contexts/RequestListContext';
+import { Calendar } from 'react-native-calendars';
 import Header from './Header';
 
 export default function InventoryScreen({ navigation }) {
@@ -23,25 +24,19 @@ export default function InventoryScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState('');
-
-  const [newQuantity, setNewQuantity] = useState('');
-  const [editModalVisible, setEditModalVisible] = useState(false);
   const [activeInputItemId, setActiveInputItemId] = useState(null);
   const [itemQuantities, setItemQuantities] = useState({});
+  const [reason, setReason] = useState('');
+  const [calendarVisible, setCalendarVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [timeModalVisible, setTimeModalVisible] = useState(false);
+  const [timePickerType, setTimePickerType] = useState('start');
+  const [selectedStartTime, setSelectedStartTime] = useState({ hour: '10', minute: '00', period: 'AM' });
+  const [selectedEndTime, setSelectedEndTime] = useState({ hour: '3', minute: '00', period: 'PM' });
+  const [program, setProgram] = useState('');
+  const [room, setRoom] = useState('');
 
-    const { moveToPendingRequests } = useRequestList();
-    const [selectedRequest, setSelectedRequest] = useState(null);
-    const [reason, setReason] = useState('');
-    const [updatedQuantities, setUpdatedQuantities] = useState({});
-    const [calendarVisible, setCalendarVisible] = useState(false);
-    const [selectedDate, setSelectedDate] = useState('');
-    const [updatedQuantity, setUpdatedQuantity] = useState('');
-    const [timeModalVisible, setTimeModalVisible] = useState(false);
-    const [timePickerType, setTimePickerType] = useState('start');
-    const [selectedStartTime, setSelectedStartTime] = useState({ hour: '10', minute: '00', period: 'AM' });
-    const [selectedEndTime, setSelectedEndTime] = useState({ hour: '3', minute: '00', period: 'PM' });
-    const [program, setProgram] = useState('');
-    const [room, setRoom] = useState('');
+  const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     const fetchInventory = async () => {
@@ -91,6 +86,7 @@ export default function InventoryScreen({ navigation }) {
   const handleInputToggle = (itemId) => {
     if (activeInputItemId === itemId) {
       setActiveInputItemId(null);
+      
     } else {
       setActiveInputItemId(itemId);
     }
@@ -242,16 +238,16 @@ export default function InventoryScreen({ navigation }) {
       
               <View style={styles.timeButtonContainer}>
                 <TouchableOpacity style={styles.timeButton} onPress={() => openTimePicker('start')}>
-                  <Text style={styles.timeButtonText}>
-                    Start Time: {formatTime(selectedStartTime)}
-                  </Text>
-                </TouchableOpacity>
-        
-                <TouchableOpacity style={styles.timeButton} onPress={() => openTimePicker('end')}>
-                  <Text style={styles.timeButtonText}>
-                    End Time: {formatTime(selectedEndTime)}
-                  </Text>
-                </TouchableOpacity>
+                    <Text style={styles.timeButtonText}>
+                      Start Time: {formatTime(selectedStartTime)}
+                    </Text>
+                  </TouchableOpacity>
+          
+                  <TouchableOpacity style={styles.timeButton} onPress={() => openTimePicker('end')}>
+                    <Text style={styles.timeButtonText}>
+                      End Time: {formatTime(selectedEndTime)}
+                    </Text>
+                  </TouchableOpacity>
               </View>
       
               <View style={styles.programRoomContainer}>
@@ -331,6 +327,85 @@ export default function InventoryScreen({ navigation }) {
           <Text style={styles.helpButtonText}>Help (?)</Text>
         </TouchableOpacity>
       </View>
+
+      <Modal
+        visible={timeModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setTimeModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setTimeModalVisible(false)}>
+          <View style={styles.timeModalContainer}>
+            <TouchableWithoutFeedback>
+              <View style={styles.timeModalContent}>
+                <Text style={styles.modalTitle}>
+                  Select {timePickerType === 'start' ? 'Start' : 'End'} Time
+                </Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <ScrollView style={styles.timeScroll}>
+                    {[...Array(12).keys()].map((h) => (
+                      <TouchableOpacity
+                        key={h + 1}
+                        onPress={() => {
+                          if (timePickerType === 'start') {
+                            setSelectedStartTime({ ...selectedStartTime, hour: (h + 1).toString() });
+                          } else {
+                            setSelectedEndTime({ ...selectedEndTime, hour: (h + 1).toString() });
+                          }
+                        }}
+                      >
+                        <Text style={styles.timeText}>{h + 1}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+
+                  <Text style={styles.colon}>:</Text>
+
+                  <ScrollView style={styles.timeScroll}>
+                    {['00', '15', '30', '45'].map((m) => (
+                      <TouchableOpacity
+                        key={m}
+                        onPress={() => {
+                          if (timePickerType === 'start') {
+                            setSelectedStartTime({ ...selectedStartTime, minute: m });
+                          } else {
+                            setSelectedEndTime({ ...selectedEndTime, minute: m });
+                          }
+                        }}
+                      >
+                        <Text style={styles.timeText}>{m}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+
+                  <Text style={styles.colon}> </Text>
+
+                  <ScrollView style={styles.timeScroll}>
+                    {['AM', 'PM'].map((p) => (
+                      <TouchableOpacity
+                        key={p}
+                        onPress={() => {
+                          if (timePickerType === 'start') {
+                            setSelectedStartTime({ ...selectedStartTime, period: p });
+                          } else {
+                            setSelectedEndTime({ ...selectedEndTime, period: p });
+                          }
+                        }}
+                      >
+                        <Text style={styles.timeText}>{p}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </ScrollView>
+
+                <TouchableOpacity style={styles.okButton} onPress={() => setTimeModalVisible(false)}>
+                  <Text style={styles.okButtonText}>OK</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 }
