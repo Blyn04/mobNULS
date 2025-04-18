@@ -434,4 +434,15 @@ export default StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+
+  reasonInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    marginVertical: 10,
+    fontSize: 14,
+    backgroundColor: '#f9f9f9',
+    textAlignVertical: 'top', 
+  },  
 });

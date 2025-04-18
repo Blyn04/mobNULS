@@ -1,7 +1,7 @@
 import React from 'react';
 import { Alert, SafeAreaView, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { PaperProvider, Avatar, Title } from 'react-native-paper'; 
+import { PaperProvider, Avatar, Title} from 'react-native-paper'; 
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -265,37 +265,58 @@ const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
     paddingTop: 50,
-    paddingLeft: 20,
-    backgroundColor: '#fff',
-  },
+    paddingHorizontal: 20,
+    backgroundColor: '#e8f0ff', // Light background color
+  },  
 
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 30,
+    padding: 10,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
   },
 
   profileName: {
-    marginLeft: 10,
+    marginLeft: 12,
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: '#2c3e50',
   },
 
   drawerItem: {
-    paddingVertical: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
     fontSize: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    marginBottom: 12,
+    elevation: 2,
+    color: '#333',
   },
 
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 'auto',
-    padding: 10,
+    padding: 15,
+    backgroundColor: '#ffefef',
+    borderRadius: 10,
+    marginBottom: 30,
+    elevation: 2,
   },
 
   logoutText: {
     marginLeft: 10,
     fontSize: 16,
-    color: 'black',
+    fontWeight: 'bold',
+    color: '#c0392b',
   },
 });
+
