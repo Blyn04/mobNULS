@@ -14,7 +14,6 @@ export default function InventoryScreen({ navigation }) {
   const isAdmin = user?.role === 'admin';
 
   const { transferToRequestList, requestList } = useRequestList();
-
   const [inventoryItems, setInventoryItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -24,7 +23,25 @@ export default function InventoryScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState('');
-  const [reason, setReason] = useState('');
+
+  const [newQuantity, setNewQuantity] = useState('');
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [activeInputItemId, setActiveInputItemId] = useState(null);
+  const [itemQuantities, setItemQuantities] = useState({});
+
+    const { moveToPendingRequests } = useRequestList();
+    const [selectedRequest, setSelectedRequest] = useState(null);
+    const [reason, setReason] = useState('');
+    const [updatedQuantities, setUpdatedQuantities] = useState({});
+    const [calendarVisible, setCalendarVisible] = useState(false);
+    const [selectedDate, setSelectedDate] = useState('');
+    const [updatedQuantity, setUpdatedQuantity] = useState('');
+    const [timeModalVisible, setTimeModalVisible] = useState(false);
+    const [timePickerType, setTimePickerType] = useState('start');
+    const [selectedStartTime, setSelectedStartTime] = useState({ hour: '10', minute: '00', period: 'AM' });
+    const [selectedEndTime, setSelectedEndTime] = useState({ hour: '3', minute: '00', period: 'PM' });
+    const [program, setProgram] = useState('');
+    const [room, setRoom] = useState('');
 
   useEffect(() => {
     const fetchInventory = async () => {
@@ -71,8 +88,27 @@ export default function InventoryScreen({ navigation }) {
     setReason('');
   };
 
+  const handleInputToggle = (itemId) => {
+    if (activeInputItemId === itemId) {
+      setActiveInputItemId(null);
+    } else {
+      setActiveInputItemId(itemId);
+    }
+  };
+
+  const handleQuantityChange = (text, itemId) => {
+    if (/^[1-9]\d*$/.test(text) || text === '') {
+      setItemQuantities(prev => ({ ...prev, [itemId]: text }));
+    }
+  };
+
   const addToList = (item) => {
-    if (!item) return;
+    const quantity = itemQuantities[item.id];
+
+    if (!quantity || isNaN(quantity) || parseInt(quantity) <= 0) {
+      alert('Please enter a valid quantity.');
+      return;
+    }
 
     const isAlreadyInList = requestList.some(reqItem => reqItem.originalId === item.id);
     if (isAlreadyInList) {
@@ -80,40 +116,75 @@ export default function InventoryScreen({ navigation }) {
       return;
     }
 
-    transferToRequestList(item, '1', 'General Use');
+    transferToRequestList(item, quantity, 'General Use');
     alert('Item added to request list!');
+    setActiveInputItemId(null); // hide the input field
   };
 
   const renderItem = ({ item }) => {
     const isAlreadyInList = requestList.some(reqItem => reqItem.id === item.id);
-
+    const isActive = activeInputItemId === item.id;
+  
     return (
-      <View style={styles.card}>
-        <View style={styles.cardContent}>
-          <View style={styles.imageContainer}>
-            <Image style={styles.itemImage} source={require('../assets/favicon.png')} />
+      <TouchableOpacity onPress={() => openModal(item)} activeOpacity={0.9}>
+        <View style={styles.card}>
+          <View style={styles.cardContent}>
+            <View style={styles.imageContainer}>
+              <Image style={styles.itemImage} source={require('../assets/favicon.png')} />
+            </View>
+  
+            <View style={styles.itemDetails}>
+              <Text style={styles.itemName}>{item.itemName}</Text>
+              <Text style={styles.itemType}>Quantity: {item.quantity}</Text>
+              <Text style={styles.itemType}>Status: {item.status}</Text>
+            </View>
+  
+            <TouchableOpacity
+              style={[styles.addButton, isAlreadyInList && styles.disabledButton]}
+              onPress={(e) => {
+                e.stopPropagation(); 
+                handleInputToggle(item.id);
+              }}
+              disabled={isAlreadyInList}
+            >
+              <Icon name="plus-circle" size={24} color={isAlreadyInList ? '#ccc' : 'green'} />
+            </TouchableOpacity>
           </View>
-
-          <View style={styles.itemDetails}>
-            <Text style={styles.itemName}>{item.itemName}</Text>
-            <Text style={styles.itemType}>Quantity: {item.quantity}</Text>
-            <Text style={[styles.department, { color: item.color }]}>Department: {item.department}</Text>
-            <Text style={styles.itemType}>Status: {item.status}</Text>
-            <Text style={styles.itemType}>Condition: {item.condition}</Text>
-            <Text style={styles.itemType}>Category: {item.category}</Text>
-            <Text style={styles.itemType}>Usage Type: {item.usageType}</Text>
-          </View>
-
-          <TouchableOpacity
-            style={[styles.addButton, isAlreadyInList && styles.disabledButton]}
-            onPress={() => addToList(item)}
-            disabled={isAlreadyInList}
-          >
-            <Icon name="plus-circle" size={24} color={isAlreadyInList ? '#ccc' : 'green'} />
-          </TouchableOpacity>
+  
+          {isActive && (
+            <View style={styles.inputRow}>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter quantity"
+                keyboardType="numeric"
+                value={itemQuantities[item.id] || ''}
+                onChangeText={(text) => handleQuantityChange(text, item.id)}
+              />
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={() => addToList(item)}
+              >
+                <Text style={styles.confirmButtonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
-      </View>
+      </TouchableOpacity>
     );
+  };  
+
+  const formatTime = ({ hour, minute, period }) => `${hour}:${minute} ${period}`;
+
+  const convertTo24Hour = ({ hour, minute, period }) => {
+    let hours = parseInt(hour);
+    if (period === 'PM' && hours !== 12) hours += 12;
+    if (period === 'AM' && hours === 12) hours = 0;
+    return hours * 60 + parseInt(minute);
+  };
+
+  const openTimePicker = (type) => {
+    setTimePickerType(type);
+    setTimeModalVisible(true);
   };
 
   return (
@@ -152,6 +223,67 @@ export default function InventoryScreen({ navigation }) {
         )}
       </View>
 
+       <TouchableOpacity style={styles.dateButton} onPress={() => setCalendarVisible(true)}>
+                <Text style={styles.dateButtonText}>
+                  {selectedDate ? `Borrow Date: ${selectedDate}` : 'Pick Borrow Date'}
+                </Text>
+              </TouchableOpacity>
+        
+              {calendarVisible && (
+                <Calendar
+                  onDayPress={(day) => {
+                    setSelectedDate(day.dateString);
+                    setCalendarVisible(false);
+                  }}
+                  markedDates={{ [selectedDate]: { selected: true, selectedColor: '#00796B' } }}
+                  minDate={today}
+                />
+              )}
+      
+              <View style={styles.timeButtonContainer}>
+                <TouchableOpacity style={styles.timeButton} onPress={() => openTimePicker('start')}>
+                  <Text style={styles.timeButtonText}>
+                    Start Time: {formatTime(selectedStartTime)}
+                  </Text>
+                </TouchableOpacity>
+        
+                <TouchableOpacity style={styles.timeButton} onPress={() => openTimePicker('end')}>
+                  <Text style={styles.timeButtonText}>
+                    End Time: {formatTime(selectedEndTime)}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+      
+              <View style={styles.programRoomContainer}>
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    selectedValue={program}
+                    onValueChange={(itemValue) => setProgram(itemValue)}
+                    style={{ height: 50, fontSize: 5 }} 
+                  >
+                    <Picker.Item label="Select Program" value="" />
+                    <Picker.Item label="SAM - BSMT" value="SAM - BSMT" />
+                    <Picker.Item label="SAH - BSN" value="SAH - BSN" />
+                    <Picker.Item label="SHS" value="SHS" />
+                  </Picker>
+                </View>
+      
+                <TextInput
+                  style={styles.roomInput}
+                  placeholder="Enter room"
+                  value={room}
+                  onChangeText={setRoom}
+                />
+              </View>
+      
+              <TextInput
+                style={styles.reasonInput}
+                placeholder="Enter reason for borrowing..."
+                value={reason}
+                onChangeText={setReason}
+                multiline
+              />
+
       <FlatList
         data={filteredItems.length > 0 ? filteredItems : inventoryItems}
         renderItem={renderItem}
@@ -161,7 +293,7 @@ export default function InventoryScreen({ navigation }) {
       <Modal visible={modalVisible} transparent animationType="fade">
         <TouchableWithoutFeedback onPress={closeModal}>
           <View style={styles.modalBackground}>
-            <TouchableWithoutFeedback onPress={() => { }}>
+            <TouchableWithoutFeedback>
               <View style={styles.modalContainer}>
                 <View style={styles.modalImageContainer}>
                   <Image style={styles.modalImage} source={require('../assets/favicon.png')} />
@@ -169,32 +301,14 @@ export default function InventoryScreen({ navigation }) {
 
                 <Text style={styles.modalItemName}>{selectedItem?.itemName}</Text>
                 <Text style={styles.itemType}>Type: {selectedItem?.type}</Text>
-
-                <View style={styles.inputRow}>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Quantity"
-                    value={quantity}
-                    onChangeText={(text) => {
-                      if (/^[1-9]\d*$/.test(text) || text === '') {
-                        setQuantity(text);
-                      }
-                    }}
-                    keyboardType="numeric"
-                  />
-                </View>
-
-                <Text style={styles.label}>Department:</Text>
-                <Text style={styles.departmentText}>{selectedItem?.department}</Text>
-
-                <Text style={styles.label}>Reason of Request:</Text>
-                <TextInput style={styles.textArea} placeholder="Class activity, Research" value={reason} onChangeText={setReason} multiline />
-
-                <TouchableOpacity style={styles.addButton} onPress={() => addToList(selectedItem)}>
-                  <Text style={styles.addButtonText}>Add to List</Text>
-                </TouchableOpacity>
+                <Text style={styles.itemType}>Department: {selectedItem?.department}</Text>
+                <Text style={styles.itemType}>Category: {selectedItem?.category}</Text>
+                <Text style={styles.itemType}>Condition: {selectedItem?.condition}</Text>
+                <Text style={styles.itemType}>Usage Type: {selectedItem?.usageType}</Text>
+                <Text style={styles.itemType}>Status: {selectedItem?.status}</Text>
+                <Text style={styles.itemType}>Available Quantity: {selectedItem?.quantity}</Text>
               </View>
-            </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback> 
           </View>
         </TouchableWithoutFeedback>
       </Modal>
@@ -204,7 +318,6 @@ export default function InventoryScreen({ navigation }) {
           {!isAdmin && (
             <TouchableOpacity style={styles.requestButton} onPress={() => navigation.navigate('RequestListScreen')}>
               <Text style={styles.requestButtonText}>Request List</Text>
-
               {requestList.length > 0 && (
                 <View style={styles.notificationBadge}>
                   <Text style={styles.notificationText}>{requestList.length}</Text>

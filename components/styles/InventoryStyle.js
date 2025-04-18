@@ -12,6 +12,7 @@ export default StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginVertical: 10,
+    marginTop: 50,
   },
 
   /* Search Bar */
@@ -90,20 +91,33 @@ export default StyleSheet.create({
 
   inputRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    alignItems: 'center',
+    marginHorizontal: 10,
     marginBottom: 10,
   },
-
+  
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#CCC',
-    padding: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
+    borderColor: '#ccc',
+    padding: 8,
+    borderRadius: 6,
+    marginRight: 8,
+    backgroundColor: '#fff',
   },
-
+  
+  confirmButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+  },
+  
+  confirmButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  
   dateButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -304,6 +318,87 @@ export default StyleSheet.create({
   
   disabledButton: {
     opacity: 0.5,
+  },
+
+  programRoomContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  
+  pickerWrapper: {
+    flex: 1,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    justifyContent: 'center',
+    height: 45,
+  },
+  
+  roomInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    height: 45,
+  },  
+
+  timeScroll: {
+    maxHeight: 150,
+    marginHorizontal: 5,
+  },
+
+  timeText: {
+    fontSize: 18,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    textAlign: 'center',
+  },
+
+  dateButton: {
+    backgroundColor: '#00796B',
+    padding: 12,
+    borderRadius: 8,
+    marginHorizontal: 20,
+    marginTop: 10,
+    alignItems: 'center',
+  },
+
+  dateButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+
+  timeButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+  },
+
+  timeButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+  },
+
+  timeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+
+  reasonInput: {
+    marginHorizontal: 20,
+    marginTop: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: 'white',
+    minHeight: 60,
+    textAlignVertical: 'top',
   },
   
 });
