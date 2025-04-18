@@ -100,31 +100,6 @@ export default function ProfileScreen({ navigation }) {
         <Text style={styles.label}>Department</Text>
         <TextInput style={styles.input} value={user?.department || ''} editable={false} />
       </View>
-
-      <TouchableOpacity 
-        style={styles.logoutButton} 
-        onPress={() => {
-          Alert.alert(
-            "Logout Confirmation", 
-            "Are you sure you want to log out?", 
-            [
-              { text: "Cancel", style: "cancel" },
-              { 
-                text: "Logout", 
-                style: "destructive", 
-                onPress: () => {
-                  logout();
-                  navigation.replace('Login');
-                }
-              }
-            ]
-          );
-        }}
-      >
-        <Icon name="logout" size={24} color="white" />
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
-
     </View>
   );
 }

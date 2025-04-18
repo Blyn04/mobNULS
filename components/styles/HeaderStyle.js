@@ -45,4 +45,10 @@ export default StyleSheet.create({
   profileButton: {
     padding: 5,
   },
+
+  menuButton: {
+    marginLeft: 10,
+    justifyContent: 'center',
+  },
+  
 });
