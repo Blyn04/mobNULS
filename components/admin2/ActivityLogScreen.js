@@ -1,121 +1,155 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TextInput, Modal, TouchableOpacity } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../backend/firebase/FirebaseConfig'; 
-import { useAuth } from '../contexts/AuthContext'; 
-import styles from '../styles/admin2Style/ActivityLogStyle'; 
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  Modal,
+  Pressable,
+  ActivityIndicator,
+} from 'react-native';
+import { collectionGroup, getDocs } from 'firebase/firestore';
+import { db } from '../../backend/firebase/FirebaseConfig';
+import styles from '../styles/admin2Style/ActivityLogStyle';
+import Header from '../Header';
 
 const ActivityLogScreen = () => {
-  const { user } = useAuth();
-  const [activityData, setActivityData] = useState([]);
+  const [logs, setLogs] = useState([]);
+  const [filteredLogs, setFilteredLogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLog, setSelectedLog] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchActivityLogs = async () => {
-      try {
-        if (!user?.uid) throw new Error("User ID not found");
+  const fetchAllUserLogs = async () => {
+    try {
+      const snapshot = await getDocs(collectionGroup(db, 'activitylog'));
+      const logsData = snapshot.docs.map((doc, index) => {
+        const data = doc.data();
+        const logDate =
+          data.cancelledAt?.toDate?.() ||
+          data.timestamp?.toDate?.() ||
+          new Date();
 
-        const activityRef = collection(db, `accounts/${user.uid}/activitylog`);
-        const querySnapshot = await getDocs(activityRef);
+        return {
+          key: doc.id || index.toString(),
+          date: logDate.toLocaleString(),
+          action:
+            data.status === 'CANCELLED'
+              ? 'Cancelled a request'
+              : data.action || 'Modified a request',
+          by: data.userName || 'Unknown User',
+          fullData: data,
+        };
+      });
 
-        const logs = querySnapshot.docs.map((doc, index) => {
-          const data = doc.data();
-          const logDate =
-            data.cancelledAt?.toDate?.() ||
-            data.timestamp?.toDate?.() ||
-            new Date();
+      logsData.sort((a, b) => {
+        const aDate =
+          a.fullData.timestamp?.toDate?.() || a.fullData.cancelledAt?.toDate?.() || 0;
+        const bDate =
+          b.fullData.timestamp?.toDate?.() || b.fullData.cancelledAt?.toDate?.() || 0;
+        return bDate - aDate;
+      });
 
-          return {
-            key: doc.id || index.toString(),
-            date: logDate.toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-              hour: 'numeric',
-              minute: '2-digit',
-              hour12: true,
-            }),
-            action: data.status === 'CANCELLED' ? 'Cancelled a request' : data.action || 'Modified a request',
-            by: data.userName || 'Unknown User',
-            fullData: data,
-          };
-        });
-
-        logs.sort((a, b) => {
-          const dateA = new Date(a.fullData.timestamp?.toDate?.() || a.fullData.cancelledAt?.toDate?.() || 0);
-          const dateB = new Date(b.fullData.timestamp?.toDate?.() || b.fullData.cancelledAt?.toDate?.() || 0);
-          return dateB - dateA;
-        });
-
-        setActivityData(logs);
-      } catch (error) {
-        console.error('Failed to fetch activity logs:', error);
-      }
-    };
-
-    fetchActivityLogs();
-  }, [user]);
-
-  const filteredData = activityData.filter(
-    (item) =>
-      item.date.includes(searchQuery) ||
-      item.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.by.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleLogPress = (log) => {
-    setSelectedLog(log.fullData);
-    setModalVisible(true);
+      setLogs(logsData);
+      setFilteredLogs(logsData);
+    } catch (err) {
+      console.error('Failed to fetch all activity logs:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => handleLogPress(item)} style={styles.itemContainer}>
-      <Text style={styles.date}>{item.date}</Text>
-      <Text style={styles.action}>{item.action}</Text>
-      <Text style={styles.by}>{item.by}</Text>
-    </TouchableOpacity>
+  useEffect(() => {
+    fetchAllUserLogs();
+  }, []);
+
+  useEffect(() => {
+    const filtered = logs.filter(
+      (item) =>
+        item.date.includes(searchQuery) ||
+        item.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.by.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredLogs(filtered);
+  }, [searchQuery]);
+
+  const renderItem = ({ item, index }) => (
+    <Pressable
+      style={index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}
+      onPress={() => {
+        setSelectedLog(item.fullData);
+        setModalVisible(true);
+      }}
+    >
+      <Text style={styles.tableCell}>{item.date}</Text>
+      <Text style={styles.tableCell}>{item.action}</Text>
+      <Text style={styles.tableCell}>{item.by}</Text>
+    </Pressable>
   );
 
   return (
     <View style={styles.container}>
+      <Header />
       <Text style={styles.title}>⏰ Activity Log</Text>
+
       <TextInput
-        style={styles.searchInput}
         placeholder="Search"
         value={searchQuery}
         onChangeText={setSearchQuery}
+        style={styles.searchInput}
       />
 
-      <FlatList
-        data={filteredData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.key}
-        ListEmptyComponent={<Text style={styles.emptyText}>No activity found.</Text>}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#1890ff" />
+      ) : (
+        <View style={styles.table}>
+          <View style={styles.tableHeader}>
+            <Text style={[styles.tableCell, styles.headerCell]}>Date</Text>
+            <Text style={[styles.tableCell, styles.headerCell]}>Action</Text>
+            <Text style={[styles.tableCell, styles.headerCell]}>By</Text>
+          </View>
+
+          <FlatList
+            data={filteredLogs}
+            keyExtractor={(item) => item.key}
+            renderItem={renderItem}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>No activity found.</Text>
+            }
+          />
+        </View>
+      )}
 
       <Modal
         visible={modalVisible}
-        transparent
         animationType="slide"
+        transparent
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Log Details</Text>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Activity Details</Text>
             {selectedLog && (
               <>
-                <Text style={styles.modalText}>Action: {selectedLog.action || 'N/A'}</Text>
-                <Text style={styles.modalText}>By: {selectedLog.userName || 'N/A'}</Text>
                 <Text style={styles.modalText}>
-                  Date: {(selectedLog.timestamp?.toDate?.() || selectedLog.cancelledAt?.toDate?.() || new Date()).toLocaleString()}
+                  <Text style={styles.modalLabel}>Action:</Text> {selectedLog.action || 'N/A'}
+                </Text>
+                <Text style={styles.modalText}>
+                  <Text style={styles.modalLabel}>By:</Text> {selectedLog.userName || 'Unknown'}
+                </Text>
+                <Text style={styles.modalText}>
+                  <Text style={styles.modalLabel}>Date:</Text>{' '}
+                  {(selectedLog.timestamp?.toDate?.() || selectedLog.cancelledAt?.toDate?.() || new Date()).toLocaleString()}
                 </Text>
               </>
             )}
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
+            <Pressable
+              style={styles.modalButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Close</Text>
+            </Pressable>
           </View>
         </View>
       </Modal>

@@ -137,7 +137,7 @@ const CustomAdminDrawerContent = ({ navigation }) => {
         <Title style={styles.drawerItem}>Dashboard</Title>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('InventoryScreen')}>
+      <TouchableOpacity onPress={() => navigation.navigate('InventoryStocks')}>
         <Title style={styles.drawerItem}>Inventory</Title>
       </TouchableOpacity>
 
