@@ -1,14 +1,15 @@
 import React from 'react';
-import { Alert } from 'react-native';
+import { Alert, SafeAreaView, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PaperProvider, Avatar, Title } from 'react-native-paper'; 
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SafeAreaView, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { AuthProvider } from './components/contexts/AuthContext';
 import { RequestListProvider } from './components/contexts/RequestListContext';
 import { useAuth } from './components/contexts/AuthContext';  
+import { db } from './backend/firebase/FirebaseConfig';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import Icon from 'react-native-vector-icons/Ionicons'; 
 
 import LoginScreen from './components/LoginScreen';
@@ -76,21 +77,38 @@ const CustomDrawerContent = ({ navigation }) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.logoutButton} 
+        style={styles.logoutButton}
         onPress={() => {
           Alert.alert(
-            "Logout Confirmation", 
-            "Are you sure you want to log out?", 
+            "Logout Confirmation",
+            "Are you sure you want to log out?",
             [
               { text: "Cancel", style: "cancel" },
-              { 
-                text: "Logout", 
-                style: "destructive", 
-                onPress: () => {
-                  logout();
-                  navigation.replace('Login');
-                }
-              }
+              {
+                text: "Logout",
+                style: "destructive",
+                onPress: async () => {
+                  try {
+                    if (user?.id) {
+                      await addDoc(collection(db, `accounts/${user.id}/activitylog`), {
+                        action: "User Logged Out",
+                        userName: user.name || "User",
+                        timestamp: serverTimestamp(),
+                      });
+                      
+                    } else {
+                      console.warn("No user data available for logout log.");
+                    }
+
+                  } catch (error) {
+                    console.error("Error logging logout:", error);
+
+                  } finally {
+                    logout();
+                    navigation.replace("Login");
+                  }
+                },
+              },
             ]
           );
         }}
@@ -145,9 +163,21 @@ const CustomAdminDrawerContent = ({ navigation }) => {
               { 
                 text: "Logout", 
                 style: "destructive", 
-                onPress: () => {
-                  logout();
-                  navigation.replace('Login'); 
+                onPress: async () => {
+                  try {
+                    if (user?.id) {
+                      await addDoc(collection(db, `accounts/${user.id}/activitylog`), {
+                        action: "User Logged Out",
+                        userName: user.name || "User",
+                        timestamp: serverTimestamp(),
+                      });
+                    }
+                  } catch (error) {
+                    console.error("Failed to log logout activity:", error);
+                  } finally {
+                    logout();
+                    navigation.replace('Login'); 
+                  }
                 }
               }
             ]
@@ -157,6 +187,7 @@ const CustomAdminDrawerContent = ({ navigation }) => {
         <Icon name="log-out-outline" size={24} color="black" />
         <Title style={styles.logoutText}>Logout</Title>
       </TouchableOpacity>
+
     </View>
   );
 };
