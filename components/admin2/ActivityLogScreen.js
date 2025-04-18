@@ -8,12 +8,14 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native';
-import { collectionGroup, getDocs } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig';
+import { useAuth } from '../contexts/AuthContext';
 import styles from '../styles/admin2Style/ActivityLogStyle';
 import Header from '../Header';
 
 const ActivityLogScreen = () => {
+  const { user } = useAuth();
   const [logs, setLogs] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,9 +23,11 @@ const ActivityLogScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const fetchAllUserLogs = async () => {
+  const fetchActivityLogs = async () => {
     try {
-      const snapshot = await getDocs(collectionGroup(db, 'activitylog'));
+      const activityRef = collection(db, `accounts/${user.id}/activitylog`);
+      const snapshot = await getDocs(activityRef);
+
       const logsData = snapshot.docs.map((doc, index) => {
         const data = doc.data();
         const logDate =
@@ -54,14 +58,14 @@ const ActivityLogScreen = () => {
       setLogs(logsData);
       setFilteredLogs(logsData);
     } catch (err) {
-      console.error('Failed to fetch all activity logs:', err);
+      console.error('Failed to fetch activity logs:', err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAllUserLogs();
+    fetchActivityLogs();
   }, []);
 
   useEffect(() => {
@@ -71,6 +75,7 @@ const ActivityLogScreen = () => {
         item.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.by.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
     setFilteredLogs(filtered);
   }, [searchQuery]);
 
@@ -91,6 +96,7 @@ const ActivityLogScreen = () => {
   return (
     <View style={styles.container}>
       <Header />
+
       <Text style={styles.title}>⏰ Activity Log</Text>
 
       <TextInput
@@ -135,9 +141,11 @@ const ActivityLogScreen = () => {
                 <Text style={styles.modalText}>
                   <Text style={styles.modalLabel}>Action:</Text> {selectedLog.action || 'N/A'}
                 </Text>
+
                 <Text style={styles.modalText}>
                   <Text style={styles.modalLabel}>By:</Text> {selectedLog.userName || 'Unknown'}
                 </Text>
+
                 <Text style={styles.modalText}>
                   <Text style={styles.modalLabel}>Date:</Text>{' '}
                   {(selectedLog.timestamp?.toDate?.() || selectedLog.cancelledAt?.toDate?.() || new Date()).toLocaleString()}
