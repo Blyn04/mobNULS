@@ -20,6 +20,7 @@ import {
   setDoc,
   query,
   where,
+  onSnapshot
 } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig';
 import { useAuth } from '../contexts/AuthContext';
@@ -34,63 +35,135 @@ export default function RequestScreen() {
 
   const { user } = useAuth();
 
-  const fetchRequests = async () => {
+  // const fetchRequests = async () => {
+  //   setLoading(true);
+  //   try {
+  //     if (!user?.uid) throw new Error('User is not logged in.');
+
+  //     const querySnapshot = await getDocs(collection(db, `accounts/${user.id}/userRequests`));
+  //     console.log('Fetched docs:', querySnapshot.docs.length);
+  //     const fetched = [];
+
+  //     for (const docSnap of querySnapshot.docs) {
+  //       const data = docSnap.data();
+  //       const enrichedItems = await Promise.all(
+  //         (data.filteredMergedData || data.requestList || []).map(async (item) => {
+  //           const inventoryId = item.selectedItemId || item.selectedItem?.value;
+  //           let itemId = 'N/A';
+  //           if (inventoryId) {
+  //             try {
+  //               const invDoc = await getDoc(doc(db, `inventory/${inventoryId}`));
+  //               if (invDoc.exists()) {
+  //                 itemId = invDoc.data().itemId || 'N/A';
+  //               }
+  //             } catch (err) {
+  //               console.error(`Error fetching inventory item ${inventoryId}:`, err);
+  //             }
+  //           }
+
+  //           return {
+  //             ...item,
+  //             itemIdFromInventory: itemId,
+  //           };
+  //         })
+  //       );
+
+  //       const dateObj = data.timestamp?.toDate?.();
+  //       const dateRequested = dateObj ? dateObj : new Date();
+
+  //       fetched.push({
+  //         id: docSnap.id,
+  //         dateRequested,
+  //         dateRequired: data.dateRequired || 'N/A',
+  //         requester: data.userName || 'Unknown',
+  //         room: data.room || 'N/A',
+  //         timeNeeded: `${data.timeFrom || 'N/A'} - ${data.timeTo || 'N/A'}`,
+  //         courseCode: data.program || 'N/A',
+  //         courseDescription: data.reason || 'N/A',
+  //         items: enrichedItems,
+  //         status: 'PENDING',
+  //         message: data.reason || '',
+  //       });
+  //     }
+
+  //     const sortedByDate = fetched.sort((a, b) => b.dateRequested - a.dateRequested);
+
+  //     setRequests(sortedByDate);
+  //   } catch (err) {
+  //     console.error('Error fetching requests:', err);
+  //     Alert.alert('Error', 'Failed to fetch user requests.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const fetchRequests = () => {
     setLoading(true);
     try {
       if (!user?.uid) throw new Error('User is not logged in.');
-
-      const querySnapshot = await getDocs(collection(db, `accounts/${user.id}/userRequests`));
-      console.log('Fetched docs:', querySnapshot.docs.length);
-      const fetched = [];
-
-      for (const docSnap of querySnapshot.docs) {
-        const data = docSnap.data();
-        const enrichedItems = await Promise.all(
-          (data.filteredMergedData || data.requestList || []).map(async (item) => {
-            const inventoryId = item.selectedItemId || item.selectedItem?.value;
-            let itemId = 'N/A';
-            if (inventoryId) {
-              try {
-                const invDoc = await getDoc(doc(db, `inventory/${inventoryId}`));
-                if (invDoc.exists()) {
-                  itemId = invDoc.data().itemId || 'N/A';
+  
+      // Set up the real-time listener using onSnapshot
+      const requestsRef = collection(db, `accounts/${user.id}/userRequests`);
+      const unsubscribe = onSnapshot(requestsRef, async (querySnapshot) => {
+        console.log('Fetched docs:', querySnapshot.docs.length);
+        const fetched = [];
+  
+        // Loop through each document and enrich the request items
+        for (const docSnap of querySnapshot.docs) {
+          const data = docSnap.data();
+          const enrichedItems = await Promise.all(
+            (data.filteredMergedData || data.requestList || []).map(async (item) => {
+              const inventoryId = item.selectedItemId || item.selectedItem?.value;
+              let itemId = 'N/A';
+              if (inventoryId) {
+                try {
+                  const invDoc = await getDoc(doc(db, `inventory/${inventoryId}`));
+                  if (invDoc.exists()) {
+                    itemId = invDoc.data().itemId || 'N/A';
+                  }
+                  
+                } catch (err) {
+                  console.error(`Error fetching inventory item ${inventoryId}:`, err);
                 }
-              } catch (err) {
-                console.error(`Error fetching inventory item ${inventoryId}:`, err);
               }
-            }
-
-            return {
-              ...item,
-              itemIdFromInventory: itemId,
-            };
-          })
-        );
-
-        const dateObj = data.timestamp?.toDate?.();
-        const dateRequested = dateObj ? dateObj : new Date();
-
-        fetched.push({
-          id: docSnap.id,
-          dateRequested,
-          dateRequired: data.dateRequired || 'N/A',
-          requester: data.userName || 'Unknown',
-          room: data.room || 'N/A',
-          timeNeeded: `${data.timeFrom || 'N/A'} - ${data.timeTo || 'N/A'}`,
-          courseCode: data.program || 'N/A',
-          courseDescription: data.reason || 'N/A',
-          items: enrichedItems,
-          status: 'PENDING',
-          message: data.reason || '',
-        });
-      }
-
-      const sortedByDate = fetched.sort((a, b) => b.dateRequested - a.dateRequested);
-
-      setRequests(sortedByDate);
+  
+              return {
+                ...item,
+                itemIdFromInventory: itemId,
+              };
+            })
+          );
+  
+          const dateObj = data.timestamp?.toDate?.();
+          const dateRequested = dateObj ? dateObj : new Date();
+  
+          fetched.push({
+            id: docSnap.id,
+            dateRequested,
+            dateRequired: data.dateRequired || 'N/A',
+            requester: data.userName || 'Unknown',
+            room: data.room || 'N/A',
+            timeNeeded: `${data.timeFrom || 'N/A'} - ${data.timeTo || 'N/A'}`,
+            courseCode: data.program || 'N/A',
+            courseDescription: data.reason || 'N/A',
+            items: enrichedItems,
+            status: 'PENDING',
+            message: data.reason || '',
+          });
+        }
+  
+        const sortedByDate = fetched.sort((a, b) => b.dateRequested - a.dateRequested);
+  
+        setRequests(sortedByDate); // Update state with new requests
+      });
+  
+      // Clean up the listener when the component unmounts
+      return () => unsubscribe();
+  
     } catch (err) {
       console.error('Error fetching requests:', err);
       Alert.alert('Error', 'Failed to fetch user requests.');
+
     } finally {
       setLoading(false);
     }

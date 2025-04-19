@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig';
 import { useAuth } from '../contexts/AuthContext';
 import styles from '../styles/userStyle/RequestLogStyle';
@@ -21,55 +21,122 @@ const RequestLogScreen = () => {
   const [selectedLog, setSelectedLog] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
+  // useEffect(() => {
+  //   const fetchActivityLogs = async () => {
+  //     try {
+  //       if (!user) return;
+  //       const activityRef = collection(db, `accounts/${user.id}/historylog`);
+  //       const querySnapshot = await getDocs(activityRef);
+
+  //       const logs = querySnapshot.docs.map((doc, index) => {
+  //         const data = doc.data();
+  //         const logDate =
+  //           data.cancelledAt?.toDate?.() ||
+  //           data.timestamp?.toDate?.() ||
+  //           new Date();
+
+  //         const isCancelled = data.status === 'CANCELLED';
+  //         const action = isCancelled
+  //           ? 'Cancelled a request'
+  //           : data.action || 'Modified a request';
+
+  //         const by =
+  //           action === 'Request Approved'
+  //             ? data.approvedBy
+  //             : data.userName || 'Unknown User';
+
+  //         return {
+  //           key: doc.id || index.toString(),
+  //           date: logDate.toLocaleString('en-US', {
+  //             year: 'numeric',
+  //             month: 'short',
+  //             day: 'numeric',
+  //             hour: 'numeric',
+  //             minute: '2-digit',
+  //             hour12: true,
+  //           }),
+  //           rawDate: logDate,
+  //           action,
+  //           by,
+  //           fullData: data,
+  //         };
+  //       });
+
+  //       const sortedLogs = logs.sort((a, b) => b.rawDate - a.rawDate);
+  //       setActivityData(sortedLogs);
+  //       setFilteredData(sortedLogs);
+  //     } catch (error) {
+  //       console.error('Failed to fetch activity logs:', error);
+  //     }
+  //   };
+
+  //   fetchActivityLogs();
+  // }, [user]);
+
   useEffect(() => {
-    const fetchActivityLogs = async () => {
+    const fetchActivityLogs = () => {
       try {
         if (!user) return;
+  
         const activityRef = collection(db, `accounts/${user.id}/historylog`);
-        const querySnapshot = await getDocs(activityRef);
-
-        const logs = querySnapshot.docs.map((doc, index) => {
-          const data = doc.data();
-          const logDate =
-            data.cancelledAt?.toDate?.() ||
-            data.timestamp?.toDate?.() ||
-            new Date();
-
-          const isCancelled = data.status === 'CANCELLED';
-          const action = isCancelled
-            ? 'Cancelled a request'
-            : data.action || 'Modified a request';
-
-          const by =
-            action === 'Request Approved'
-              ? data.approvedBy
-              : data.userName || 'Unknown User';
-
-          return {
-            key: doc.id || index.toString(),
-            date: logDate.toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-              hour: 'numeric',
-              minute: '2-digit',
-              hour12: true,
-            }),
-            rawDate: logDate,
-            action,
-            by,
-            fullData: data,
-          };
-        });
-
-        const sortedLogs = logs.sort((a, b) => b.rawDate - a.rawDate);
-        setActivityData(sortedLogs);
-        setFilteredData(sortedLogs);
+  
+        // Use onSnapshot for real-time updates
+        const unsubscribe = onSnapshot(
+          activityRef,
+          (snapshot) => {
+            const logs = snapshot.docs.map((doc, index) => {
+              const data = doc.data();
+              const logDate =
+                data.cancelledAt?.toDate?.() ||
+                data.timestamp?.toDate?.() ||
+                new Date();
+  
+              const isCancelled = data.status === 'CANCELLED';
+              const action = isCancelled
+                ? 'Cancelled a request'
+                : data.action || 'Modified a request';
+  
+              const by =
+                action === 'Request Approved'
+                  ? data.approvedBy
+                  : data.userName || 'Unknown User';
+  
+              return {
+                key: doc.id || index.toString(),
+                date: logDate.toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                }),
+                rawDate: logDate,
+                action,
+                by,
+                fullData: data,
+              };
+            });
+  
+            // Sort logs by date
+            const sortedLogs = logs.sort((a, b) => b.rawDate - a.rawDate);
+  
+            setActivityData(sortedLogs);
+            setFilteredData(sortedLogs);
+          },
+          (err) => {
+            console.error('Real-time activity log listener failed:', err);
+          }
+        );
+  
+        // Cleanup the listener when the component unmounts
+        return () => unsubscribe();
+        
       } catch (error) {
         console.error('Failed to fetch activity logs:', error);
       }
     };
-
+  
     fetchActivityLogs();
   }, [user]);
 
