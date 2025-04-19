@@ -93,7 +93,7 @@ const CustomDrawerContent = ({ navigation }) => {
                   try {
                     if (user?.id) {
                       await addDoc(collection(db, `accounts/${user.id}/activitylog`), {
-                        action: "User Logged Out",
+                        action: "User Logged Out (Mobile)",
                         userName: user.name || "User",
                         timestamp: serverTimestamp(),
                       });
@@ -177,7 +177,7 @@ const CustomAdminDrawerContent = ({ navigation }) => {
                   try {
                     if (user?.id) {
                       await addDoc(collection(db, `accounts/${user.id}/activitylog`), {
-                        action: "User Logged Out",
+                        action: "User Logged Out (Mobile)",
                         userName: user.name || "User",
                         timestamp: serverTimestamp(),
                       });

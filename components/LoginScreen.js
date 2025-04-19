@@ -135,7 +135,7 @@ export default function LoginScreen({ navigation }) {
           login({ ...userData, id: userDoc.id });
   
           await addDoc(collection(db, `accounts/${userDoc.id}/activitylog`), {
-            action: "User Logged In",
+            action: "User Logged In (Mobile)",
             userName: userData.name || "User",
             timestamp: serverTimestamp(),
           });
