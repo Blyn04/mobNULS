@@ -9,7 +9,7 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig';
 import { useAuth } from '../contexts/AuthContext';
 import styles from '../styles/userStyle/RequestListStyle';
@@ -24,36 +24,31 @@ const RequestListScreen = () => {
   const [quantity, setQuantity] = useState('');
 
   useEffect(() => {
-    const fetchRequestList = async () => {
-      if (!user || !user.id) return;
-
-      try {
-        const tempRequestRef = collection(db, 'accounts', user.id, 'temporaryRequests');
-        const querySnapshot = await getDocs(tempRequestRef);
-
-        const tempRequestList = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            ...data,
-            selectedItem: {
-              value: data.selectedItemId,
-              label: data.selectedItemLabel,
-            },
-          };
-        });
-
-        setRequestList(tempRequestList);
-
-      } catch (error) {
-        console.error('Error fetching request list:', error);
-
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRequestList();
+    if (!user || !user.id) return;
+  
+    const tempRequestRef = collection(db, 'accounts', user.id, 'temporaryRequests');
+  
+    const unsubscribe = onSnapshot(tempRequestRef, (querySnapshot) => {
+      const tempRequestList = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          selectedItem: {
+            value: data.selectedItemId,
+            label: data.selectedItemLabel,
+          },
+        };
+      });
+  
+      setRequestList(tempRequestList);
+      setLoading(false);
+    }, (error) => {
+      console.error('Error fetching request list in real-time:', error);
+      setLoading(false);
+    });
+  
+    return () => unsubscribe(); // cleanup listener on unmount
   }, [user]);
 
   const handleRequestNow = () => {
@@ -98,9 +93,11 @@ const RequestListScreen = () => {
         // Remove from local list
         const updatedList = requestList.filter((item) => item.selectedItemId !== idToDelete);
         setRequestList(updatedList);
+
       } else {
         console.warn('Item not found in Firestore.');
       }
+
     } catch (error) {
       console.error('Error removing item from Firestore:', error);
     }

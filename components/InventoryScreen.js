@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, TextInput, Image, Modal, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
-import { getDocs, collection } from 'firebase/firestore';
+import { getDocs, collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../backend/firebase/FirebaseConfig';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Picker } from '@react-native-picker/picker';
@@ -63,20 +63,18 @@ export default function InventoryScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
-    const fetchTempRequestCount = async () => {
-      if (!user || !user.id) return;
+    if (!user || !user.id) return;
   
-      try {
-        const tempRequestRef = collection(db, 'accounts', user.id, 'temporaryRequests');
-        const querySnapshot = await getDocs(tempRequestRef);
-        setTempRequestCount(querySnapshot.size); // Set the number of documents
-      } catch (error) {
-        console.error('Error fetching temporary request count:', error);
-      }
-    };
+    const tempRequestRef = collection(db, 'accounts', user.id, 'temporaryRequests');
   
-    fetchTempRequestCount();
-  }, [user]); 
+    const unsubscribe = onSnapshot(tempRequestRef, (snapshot) => {
+      setTempRequestCount(snapshot.size); // Real-time count
+    }, (error) => {
+      console.error('Real-time update error:', error);
+    });
+  
+    return () => unsubscribe(); // cleanup listener on unmount
+  }, [user]);  
 
   const filteredItems = inventoryItems.filter(item => {
     const isCategoryMatch = selectedCategory === 'All' || item.type === selectedCategory;
