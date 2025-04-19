@@ -379,11 +379,11 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Background overlay
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   },
 
   timeModalContent: {
-    width: '80%', // Width of the modal
+    width: '80%',
     backgroundColor: '#FFF',
     borderRadius: 10,
     padding: 20,

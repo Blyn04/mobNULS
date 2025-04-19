@@ -128,4 +128,13 @@ export default StyleSheet.create({
   bold: {
     fontWeight: 'bold',
   },
+
+  inputQuantity: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    height: '10%',
+    width: '30%',
+  }
 });

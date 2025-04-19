@@ -133,7 +133,7 @@ const RequestListScreen = () => {
                 </Text>
 
                 <TextInput
-                  style={styles.input}
+                  style={styles.inputQuantity}
                   value={quantity}
                   onChangeText={handleQuantityChange}
                   keyboardType="numeric"
@@ -141,11 +141,7 @@ const RequestListScreen = () => {
                 />
 
                 <Text style={styles.modalDetail}>
-                  <Text style={styles.bold}>Date:</Text> {selectedItem.selectedDate}
-                </Text>
-
-                <Text style={styles.modalDetail}>
-                  <Text style={styles.bold}>Time:</Text> {selectedItem.selectedTime}
+                  <Text style={styles.bold}>Category:</Text> {selectedItem.category}
                 </Text>
 
                 {selectedItem.usageType && (
@@ -153,6 +149,23 @@ const RequestListScreen = () => {
                     <Text style={styles.bold}>Usage Type:</Text> {selectedItem.usageType}
                   </Text>
                 )}
+
+                <Text style={styles.modalDetail}>
+                  <Text style={styles.bold}>Item Type:</Text> {selectedItem.type}
+                </Text>
+
+                <Text style={styles.modalDetail}>
+                  <Text style={styles.bold}>Lab Room:</Text> {selectedItem.labRoom}
+                </Text>
+
+                <Text style={styles.modalDetail}>
+                  <Text style={styles.bold}>Condition:</Text> {selectedItem.condition}
+                </Text>
+
+                <Text style={styles.modalDetail}>
+                  <Text style={styles.bold}>Department:</Text> {selectedItem.department}
+                </Text>
+
               </>
             )}
 
