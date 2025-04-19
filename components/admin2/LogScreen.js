@@ -42,8 +42,10 @@ const LogScreen = () => {
 
         const sortedLogs = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         setHistoryData(sortedLogs);
+
       } catch (error) {
         console.error("Error fetching request logs:", error);
+        
       } finally {
         setLoading(false);
       }
@@ -63,6 +65,7 @@ const LogScreen = () => {
         minute: "2-digit",
         hour12: true,
       });
+
     } catch (e) {
       return "N/A";
     }

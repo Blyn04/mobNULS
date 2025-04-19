@@ -17,7 +17,7 @@ import Header from "../Header";
 const BorrowCatalogScreen = () => {
   const [catalog, setCatalog] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
 
   useEffect(() => {
@@ -28,7 +28,6 @@ const BorrowCatalogScreen = () => {
 
         const data = snapshot.docs.map((doc) => {
           const d = doc.data();
-
           const requestedItems = Array.isArray(d.requestList)
             ? d.requestList.map((item) => ({
                 itemId: item.itemIdFromInventory,
@@ -58,6 +57,7 @@ const BorrowCatalogScreen = () => {
             requestList: d.requestList || [],
             requestedItems,
             status: d.status || "Pending",
+            raw: d 
           };
         });
 
@@ -67,10 +67,12 @@ const BorrowCatalogScreen = () => {
             const timeB = b.timestamp.seconds * 1000 + b.timestamp.nanoseconds / 1000000;
             return timeB - timeA;
           }
+          
           return 0;
         });
 
         setCatalog(sortedData);
+
       } catch (err) {
         console.error("Error fetching borrow catalog:", err);
       }
@@ -84,42 +86,13 @@ const BorrowCatalogScreen = () => {
   };
 
   const handleViewDetails = (item) => {
-    setSelectedRequest(item);
-    setIsModalVisible(true);
+    setSelectedRequest(item); // set the selected request
+    setModalVisible(true);    // open modal
   };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    setSelectedRequest(null);
-  };
-
-  const formatDate = (timestamp) => {
-    if (!timestamp) return "N/A";
-    try {
-      if (timestamp.seconds) {
-        const date = new Date(timestamp.seconds * 1000);
-        return date.toLocaleString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        });
-      }
-      const date = new Date(timestamp);
-      if (isNaN(date)) return "N/A";
-      return date.toLocaleString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      });
-    } catch {
-      return "N/A";
-    }
+  const closeModal = () => {
+    setModalVisible(false);   // close modal
+    setSelectedRequest(null); // clear request
   };
 
   const filteredCatalog = catalog.filter((item) =>
@@ -134,10 +107,7 @@ const BorrowCatalogScreen = () => {
       <Text style={styles.description}>{item.courseDescription}</Text>
       <Text style={styles.dateRequired}>Date: {item.dateRequired}</Text>
       <Text
-        style={[
-          styles.status,
-          item.status === "Approved" ? styles.approved : styles.pending,
-        ]}
+        style={[styles.status, item.status === "Approved" ? styles.approved : styles.pending]}
       >
         {item.status}
       </Text>
@@ -149,7 +119,7 @@ const BorrowCatalogScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Header/>
+      <Header />
 
       <TextInput
         placeholder="Search"
@@ -166,14 +136,15 @@ const BorrowCatalogScreen = () => {
         style={styles.list}
       />
 
-      <Modal visible={isModalVisible} animationType="slide">
-        <ApprovedRequestModal
-          isVisible={isModalVisible}
-          onClose={handleCancel}
-          request={selectedRequest}
-          formatDate={formatDate}
-        />
-      </Modal>
+      {modalVisible && (
+        <Modal transparent={true} visible={modalVisible} animationType="slide">
+          <ApprovedRequestModal
+            request={selectedRequest}
+            isVisible={modalVisible}
+            onClose={closeModal}
+          />
+        </Modal>
+      )}
     </View>
   );
 };
