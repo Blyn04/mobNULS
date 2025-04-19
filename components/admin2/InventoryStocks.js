@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { getDocs, collection } from 'firebase/firestore';
+import { getDocs, collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig'; 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from '../styles/admin2Style/InventoryStocksStyle';
@@ -14,22 +14,48 @@ export default function InventoryStocks({ navigation }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        const inventoryCollection = collection(db, 'inventory');
-        const inventorySnapshot = await getDocs(inventoryCollection);
-        const inventoryList = inventorySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+  // useEffect(() => {
+  //   const fetchInventory = async () => {
+  //     try {
+  //       const inventoryCollection = collection(db, 'inventory');
+  //       const inventorySnapshot = await getDocs(inventoryCollection);
+  //       const inventoryList = inventorySnapshot.docs.map(doc => ({
+  //         id: doc.id,
+  //         ...doc.data()
+  //       }));
 
-        setInventoryItems(inventoryList);
+  //       setInventoryItems(inventoryList);
+  //     } catch (error) {
+  //       console.error("Error fetching inventory: ", error);
+  //     }
+  //   };
+
+  //   fetchInventory();
+  // }, []);
+
+  useEffect(() => {
+    const fetchInventory = () => {
+      try {
+        // Set up the real-time listener using onSnapshot
+        const inventoryCollection = collection(db, 'inventory');
+  
+        const unsubscribe = onSnapshot(inventoryCollection, (snapshot) => {
+          const inventoryList = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+  
+          // Update the state with the latest inventory data
+          setInventoryItems(inventoryList);
+        });
+  
+        // Cleanup listener when the component unmounts
+        return () => unsubscribe();
       } catch (error) {
         console.error("Error fetching inventory: ", error);
       }
     };
-
+  
     fetchInventory();
   }, []);
 

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { db } from '../../backend/firebase/FirebaseConfig'; 
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import styles from '../styles/userStyle/SearchItemsStyle';
 import Header from '../Header';
 
@@ -19,22 +19,47 @@ export default function SearchItemsScreen({ navigation }) {
   const [filteredItems, setFilteredItems] = useState([]);
   const [hoveredItem, setHoveredItem] = useState(null);
 
+  // useEffect(() => {
+  //   const fetchItems = async () => {
+  //     try {
+  //       const querySnapshot = await getDocs(collection(db, 'inventory')); 
+  //       const items = querySnapshot.docs.map(doc => ({
+  //         id: doc.id,
+  //         ...doc.data(),
+  //       }));
+  //       setFilteredItems(items);
+  //     } catch (error) {
+  //       console.error("Error fetching items: ", error);
+  //     }
+  //   };
+
+  //   fetchItems();
+  // }, []);
+
   useEffect(() => {
-    const fetchItems = async () => {
+    const fetchItems = () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'inventory')); 
-        const items = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setFilteredItems(items);
+        // Set up the real-time listener using onSnapshot
+        const inventoryRef = collection(db, 'inventory');
+        const unsubscribe = onSnapshot(inventoryRef, (querySnapshot) => {
+          const items = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+  
+          setFilteredItems(items); // Update state with the fetched items
+        });
+  
+        // Clean up the listener when the component unmounts
+        return () => unsubscribe();
+  
       } catch (error) {
         console.error("Error fetching items: ", error);
       }
     };
-
+  
     fetchItems();
-  }, []);
+  }, []); 
 
   const handleSearch = (query) => {
     setSearchQuery(query);

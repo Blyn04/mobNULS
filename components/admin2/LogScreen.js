@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Button, Modal, FlatList, ScrollView, ActivityIndicator } from "react-native";
 import { db } from "../../backend/firebase/FirebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, onSnapshot} from "firebase/firestore";
 import { useAuth } from "../contexts/AuthContext";
 import styles from "../styles/admin2Style/LogStyle";
 import ApprovedRequestModal from "../customs/ApprovedRequestModal";
@@ -15,42 +15,90 @@ const LogScreen = () => {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth(); 
 
+  // useEffect(() => {
+  //   const fetchRequestLogs = async () => {
+  //     try {
+  //       const querySnapshot = await getDocs(collection(db, "requestlog"));
+  //       const logs = querySnapshot.docs.map((doc) => {
+  //         const data = doc.data();
+  //         const timestamp = data.timestamp ? formatTimestamp(data.timestamp) : "N/A";
+
+  //         return {
+  //           id: doc.id,
+  //           date: data.dateRequired ?? "N/A",
+  //           status: data.status ?? "Pending",
+  //           requestor: data.userName ?? "Unknown",
+  //           requestedItems: data.requestList ?? [],
+  //           requisitionId: doc.id,
+  //           reason: data.reason ?? "No reason provided",
+  //           department: data.requestList?.[0]?.department ?? "N/A",
+  //           approvedBy: data.approvedBy,
+  //           rejectedBy: data.rejectedBy,
+  //           timestamp: timestamp,
+  //           raw: data,
+  //           itemId: data.itemId,
+  //         };
+  //       });
+
+  //       const sortedLogs = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  //       setHistoryData(sortedLogs);
+
+  //     } catch (error) {
+  //       console.error("Error fetching request logs:", error);
+        
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchRequestLogs();
+  // }, []);
+
   useEffect(() => {
-    const fetchRequestLogs = async () => {
+    const fetchRequestLogs = () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "requestlog"));
-        const logs = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          const timestamp = data.timestamp ? formatTimestamp(data.timestamp) : "N/A";
-
-          return {
-            id: doc.id,
-            date: data.dateRequired ?? "N/A",
-            status: data.status ?? "Pending",
-            requestor: data.userName ?? "Unknown",
-            requestedItems: data.requestList ?? [],
-            requisitionId: doc.id,
-            reason: data.reason ?? "No reason provided",
-            department: data.requestList?.[0]?.department ?? "N/A",
-            approvedBy: data.approvedBy,
-            rejectedBy: data.rejectedBy,
-            timestamp: timestamp,
-            raw: data,
-            itemId: data.itemId,
-          };
+        // Set up the real-time listener using onSnapshot
+        const requestLogRef = collection(db, "requestlog");
+        const unsubscribe = onSnapshot(requestLogRef, (querySnapshot) => {
+          const logs = querySnapshot.docs.map((doc) => {
+            const data = doc.data();
+            const timestamp = data.timestamp ? formatTimestamp(data.timestamp) : "N/A";
+  
+            return {
+              id: doc.id,
+              date: data.dateRequired ?? "N/A",
+              status: data.status ?? "Pending",
+              requestor: data.userName ?? "Unknown",
+              requestedItems: data.requestList ?? [],
+              requisitionId: doc.id,
+              reason: data.reason ?? "No reason provided",
+              department: data.requestList?.[0]?.department ?? "N/A",
+              approvedBy: data.approvedBy,
+              rejectedBy: data.rejectedBy,
+              timestamp: timestamp,
+              raw: data,
+              itemId: data.itemId,
+            };
+          });
+  
+          // Sort logs by timestamp in descending order
+          const sortedLogs = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  
+          // Update state
+          setHistoryData(sortedLogs);
         });
-
-        const sortedLogs = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        setHistoryData(sortedLogs);
-
+  
+        // Cleanup listener when the component unmounts
+        return () => unsubscribe();
+        
       } catch (error) {
         console.error("Error fetching request logs:", error);
-        
+
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchRequestLogs();
   }, []);
 

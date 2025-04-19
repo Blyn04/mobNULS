@@ -8,7 +8,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig';
 import { useAuth } from '../contexts/AuthContext';
 import styles from '../styles/admin2Style/ActivityLogStyle';
@@ -23,47 +23,98 @@ const ActivityLogScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const fetchActivityLogs = async () => {
+  // const fetchActivityLogs = async () => {
+  //   try {
+  //     const activityRef = collection(db, `accounts/${user.id}/activitylog`);
+  //     const snapshot = await getDocs(activityRef);
+
+  //     const logsData = snapshot.docs.map((doc, index) => {
+  //       const data = doc.data();
+  //       const logDate =
+  //         data.cancelledAt?.toDate?.() ||
+  //         data.timestamp?.toDate?.() ||
+  //         new Date();
+
+  //       return {
+  //         key: doc.id || index.toString(),
+  //         date: logDate.toLocaleString(),
+  //         action:
+  //           data.status === 'CANCELLED'
+  //             ? 'Cancelled a request'
+  //             : data.action || 'Modified a request',
+  //         by: data.userName || 'Unknown User',
+  //         fullData: data,
+  //       };
+  //     });
+
+  //     logsData.sort((a, b) => {
+  //       const aDate =
+  //         a.fullData.timestamp?.toDate?.() || a.fullData.cancelledAt?.toDate?.() || 0;
+  //       const bDate =
+  //         b.fullData.timestamp?.toDate?.() || b.fullData.cancelledAt?.toDate?.() || 0;
+  //       return bDate - aDate;
+  //     });
+
+  //     setLogs(logsData);
+  //     setFilteredLogs(logsData);
+  //   } catch (err) {
+  //     console.error('Failed to fetch activity logs:', err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchActivityLogs();
+  // }, []);
+
+  const fetchActivityLogs = () => {
     try {
+      // Set up the real-time listener using onSnapshot
       const activityRef = collection(db, `accounts/${user.id}/activitylog`);
-      const snapshot = await getDocs(activityRef);
-
-      const logsData = snapshot.docs.map((doc, index) => {
-        const data = doc.data();
-        const logDate =
-          data.cancelledAt?.toDate?.() ||
-          data.timestamp?.toDate?.() ||
-          new Date();
-
-        return {
-          key: doc.id || index.toString(),
-          date: logDate.toLocaleString(),
-          action:
-            data.status === 'CANCELLED'
-              ? 'Cancelled a request'
-              : data.action || 'Modified a request',
-          by: data.userName || 'Unknown User',
-          fullData: data,
-        };
+      const unsubscribe = onSnapshot(activityRef, (querySnapshot) => {
+        const logsData = querySnapshot.docs.map((doc, index) => {
+          const data = doc.data();
+          const logDate =
+            data.cancelledAt?.toDate?.() ||
+            data.timestamp?.toDate?.() ||
+            new Date();
+  
+          return {
+            key: doc.id || index.toString(),
+            date: logDate.toLocaleString(),
+            action:
+              data.status === 'CANCELLED'
+                ? 'Cancelled a request'
+                : data.action || 'Modified a request',
+            by: data.userName || 'Unknown User',
+            fullData: data,
+          };
+        });
+  
+        logsData.sort((a, b) => {
+          const aDate =
+            a.fullData.timestamp?.toDate?.() || a.fullData.cancelledAt?.toDate?.() || 0;
+          const bDate =
+            b.fullData.timestamp?.toDate?.() || b.fullData.cancelledAt?.toDate?.() || 0;
+          return bDate - aDate;
+        });
+  
+        setLogs(logsData);
+        setFilteredLogs(logsData);
       });
-
-      logsData.sort((a, b) => {
-        const aDate =
-          a.fullData.timestamp?.toDate?.() || a.fullData.cancelledAt?.toDate?.() || 0;
-        const bDate =
-          b.fullData.timestamp?.toDate?.() || b.fullData.cancelledAt?.toDate?.() || 0;
-        return bDate - aDate;
-      });
-
-      setLogs(logsData);
-      setFilteredLogs(logsData);
+  
+      // Cleanup listener when the component unmounts
+      return () => unsubscribe();
+      
     } catch (err) {
       console.error('Failed to fetch activity logs:', err);
+
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchActivityLogs();
   }, []);

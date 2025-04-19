@@ -8,7 +8,7 @@ import {
   Modal,
   Button,
 } from "react-native";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
 import { db } from "../../backend/firebase/FirebaseConfig";
 import styles from "../styles/admin2Style/BorrowCatalogStyle";
 import ApprovedRequestModal from "../customs/ApprovedRequestModal";
@@ -20,64 +20,131 @@ const BorrowCatalogScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
 
-  useEffect(() => {
-    const fetchCatalogData = async () => {
-      try {
-        const borrowCatalogCollection = collection(db, "borrowcatalog");
-        const snapshot = await getDocs(borrowCatalogCollection);
+  // useEffect(() => {
+  //   const fetchCatalogData = async () => {
+  //     try {
+  //       const borrowCatalogCollection = collection(db, "borrowcatalog");
+  //       const snapshot = await getDocs(borrowCatalogCollection);
 
-        const data = snapshot.docs.map((doc) => {
-          const d = doc.data();
-          const requestedItems = Array.isArray(d.requestList)
-            ? d.requestList.map((item) => ({
-                itemId: item.itemIdFromInventory,
-                itemName: item.itemName,
-                quantity: item.quantity,
-                category: item.category,
-                condition: item.condition,
-                department: item.department,
-                labRoom: item.labRoom,
-              }))
-            : [];
+  //       const data = snapshot.docs.map((doc) => {
+  //         const d = doc.data();
+  //         const requestedItems = Array.isArray(d.requestList)
+  //           ? d.requestList.map((item) => ({
+  //               itemId: item.itemIdFromInventory,
+  //               itemName: item.itemName,
+  //               quantity: item.quantity,
+  //               category: item.category,
+  //               condition: item.condition,
+  //               department: item.department,
+  //               labRoom: item.labRoom,
+  //             }))
+  //           : [];
 
-          return {
-            id: doc.id,
-            timestamp: d.timestamp || null,
-            requestor: d.userName || "N/A",
-            userName: d.userName || "N/A",
-            approvedBy: d.approvedBy || "N/A",
-            reason: d.reason || "N/A",
-            dateRequired: d.dateRequired || "N/A",
-            timeFrom: d.timeFrom || "N/A",
-            timeTo: d.timeTo || "N/A",
-            courseDescription: d.courseDescription || "N/A",
-            courseCode: d.courseCode || "N/A",
-            program: d.program || "N/A",
-            room: d.room || "N/A",
-            requestList: d.requestList || [],
-            requestedItems,
-            status: d.status || "Pending",
-            raw: d 
-          };
-        });
+  //         return {
+  //           id: doc.id,
+  //           timestamp: d.timestamp || null,
+  //           requestor: d.userName || "N/A",
+  //           userName: d.userName || "N/A",
+  //           approvedBy: d.approvedBy || "N/A",
+  //           reason: d.reason || "N/A",
+  //           dateRequired: d.dateRequired || "N/A",
+  //           timeFrom: d.timeFrom || "N/A",
+  //           timeTo: d.timeTo || "N/A",
+  //           courseDescription: d.courseDescription || "N/A",
+  //           courseCode: d.courseCode || "N/A",
+  //           program: d.program || "N/A",
+  //           room: d.room || "N/A",
+  //           requestList: d.requestList || [],
+  //           requestedItems,
+  //           status: d.status || "Pending",
+  //           raw: d 
+  //         };
+  //       });
 
-        const sortedData = data.sort((a, b) => {
-          if (a.timestamp && b.timestamp) {
-            const timeA = a.timestamp.seconds * 1000 + a.timestamp.nanoseconds / 1000000;
-            const timeB = b.timestamp.seconds * 1000 + b.timestamp.nanoseconds / 1000000;
-            return timeB - timeA;
-          }
+  //       const sortedData = data.sort((a, b) => {
+  //         if (a.timestamp && b.timestamp) {
+  //           const timeA = a.timestamp.seconds * 1000 + a.timestamp.nanoseconds / 1000000;
+  //           const timeB = b.timestamp.seconds * 1000 + b.timestamp.nanoseconds / 1000000;
+  //           return timeB - timeA;
+  //         }
           
-          return 0;
+  //         return 0;
+  //       });
+
+  //       setCatalog(sortedData);
+
+  //     } catch (err) {
+  //       console.error("Error fetching borrow catalog:", err);
+  //     }
+  //   };
+
+  //   fetchCatalogData();
+  // }, []);
+
+  useEffect(() => {
+    const fetchCatalogData = () => {
+      try {
+        // Set up the real-time listener using onSnapshot
+        const borrowCatalogCollection = collection(db, "borrowcatalog");
+  
+        const unsubscribe = onSnapshot(borrowCatalogCollection, (snapshot) => {
+          const data = snapshot.docs.map((doc) => {
+            const d = doc.data();
+            const requestedItems = Array.isArray(d.requestList)
+              ? d.requestList.map((item) => ({
+                  itemId: item.itemIdFromInventory,
+                  itemName: item.itemName,
+                  quantity: item.quantity,
+                  category: item.category,
+                  condition: item.condition,
+                  department: item.department,
+                  labRoom: item.labRoom,
+                }))
+              : [];
+  
+            return {
+              id: doc.id,
+              timestamp: d.timestamp || null,
+              requestor: d.userName || "N/A",
+              userName: d.userName || "N/A",
+              approvedBy: d.approvedBy || "N/A",
+              reason: d.reason || "N/A",
+              dateRequired: d.dateRequired || "N/A",
+              timeFrom: d.timeFrom || "N/A",
+              timeTo: d.timeTo || "N/A",
+              courseDescription: d.courseDescription || "N/A",
+              courseCode: d.courseCode || "N/A",
+              program: d.program || "N/A",
+              room: d.room || "N/A",
+              requestList: d.requestList || [],
+              requestedItems,
+              status: d.status || "Pending",
+              raw: d
+            };
+          });
+  
+          // Sort the data by timestamp in descending order
+          const sortedData = data.sort((a, b) => {
+            if (a.timestamp && b.timestamp) {
+              const timeA = a.timestamp.seconds * 1000 + a.timestamp.nanoseconds / 1000000;
+              const timeB = b.timestamp.seconds * 1000 + b.timestamp.nanoseconds / 1000000;
+              return timeB - timeA;
+            }
+            return 0;
+          });
+  
+          // Update state
+          setCatalog(sortedData);
         });
-
-        setCatalog(sortedData);
-
+  
+        // Cleanup listener when the component unmounts
+        return () => unsubscribe();
+        
       } catch (err) {
         console.error("Error fetching borrow catalog:", err);
       }
     };
-
+  
     fetchCatalogData();
   }, []);
 
