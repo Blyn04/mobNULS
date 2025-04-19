@@ -7,8 +7,9 @@ import {
   ActivityIndicator,
   Modal,
   TextInput,
+  Alert,
 } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig';
 import { useAuth } from '../contexts/AuthContext';
 import styles from '../styles/userStyle/RequestListStyle';
@@ -76,12 +77,62 @@ const RequestListScreen = () => {
     setQuantity(numericValue);
   };
 
+  const removeFromList = async (idToDelete) => {
+    try {
+      const tempRequestRef = collection(db, 'accounts', user.id, 'temporaryRequests');
+      const querySnapshot = await getDocs(tempRequestRef);
+  
+      let foundDocId = null;
+  
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        if (data.selectedItemId === idToDelete) {
+          foundDocId = docSnap.id;
+        }
+      });
+  
+      if (foundDocId) {
+        await deleteDoc(doc(db, 'accounts', user.id, 'temporaryRequests', foundDocId));
+        console.log(`Item with Firestore doc ID ${foundDocId} removed from Firestore.`);
+  
+        // Remove from local list
+        const updatedList = requestList.filter((item) => item.selectedItemId !== idToDelete);
+        setRequestList(updatedList);
+      } else {
+        console.warn('Item not found in Firestore.');
+      }
+    } catch (error) {
+      console.error('Error removing item from Firestore:', error);
+    }
+  };
+  
+  const confirmRemoveItem = (item) => {
+    Alert.alert(
+      'Remove Item',
+      'Are you sure you want to remove this item from the list?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Remove',
+          onPress: () => removeFromList(item.selectedItemId),
+          style: 'destructive',
+        },
+      ],
+      { cancelable: true }
+    );
+  };  
+
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => openModal(item)} style={styles.cardTouchable}>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.title}>{item.selectedItem?.label}</Text>
-          <Text style={styles.xIcon}>✕</Text>
+          <TouchableOpacity onPress={() => confirmRemoveItem(item)} >
+            <Text style={styles.xIcon}>✕</Text>
+          </TouchableOpacity>
         </View>
 
         <Text>Quantity: {item.quantity}</Text>
@@ -165,7 +216,6 @@ const RequestListScreen = () => {
                 <Text style={styles.modalDetail}>
                   <Text style={styles.bold}>Department:</Text> {selectedItem.department}
                 </Text>
-
               </>
             )}
 
