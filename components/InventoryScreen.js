@@ -12,8 +12,7 @@ import Header from './Header';
 
 export default function InventoryScreen({ navigation }) {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
-
+  const [tempRequestCount, setTempRequestCount] = useState(0);
   const { transferToRequestList, requestList } = useRequestList();
   const [inventoryItems, setInventoryItems] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -62,6 +61,22 @@ export default function InventoryScreen({ navigation }) {
 
     fetchInventory();
   }, []);
+
+  useEffect(() => {
+    const fetchTempRequestCount = async () => {
+      if (!user || !user.id) return;
+  
+      try {
+        const tempRequestRef = collection(db, 'accounts', user.id, 'temporaryRequests');
+        const querySnapshot = await getDocs(tempRequestRef);
+        setTempRequestCount(querySnapshot.size); // Set the number of documents
+      } catch (error) {
+        console.error('Error fetching temporary request count:', error);
+      }
+    };
+  
+    fetchTempRequestCount();
+  }, [user]); 
 
   const filteredItems = inventoryItems.filter(item => {
     const isCategoryMatch = selectedCategory === 'All' || item.type === selectedCategory;
@@ -206,7 +221,6 @@ export default function InventoryScreen({ navigation }) {
           ))}
         </Picker>
 
-        {!isAdmin && (
           <Picker
             selectedValue={selectedDepartment}
             onValueChange={(itemValue) => setSelectedDepartment(itemValue)}
@@ -216,7 +230,6 @@ export default function InventoryScreen({ navigation }) {
               <Picker.Item key={department} label={department} value={department} />
             ))}
           </Picker>
-        )}
       </View>
 
        <TouchableOpacity style={styles.dateButton} onPress={() => setCalendarVisible(true)}>
@@ -311,16 +324,14 @@ export default function InventoryScreen({ navigation }) {
 
       <View style={styles.bottomContainer}>
         <View style={styles.requestAddContainer}>
-          {!isAdmin && (
-            <TouchableOpacity style={styles.requestButton} onPress={() => navigation.navigate('RequestListScreen')}>
-              <Text style={styles.requestButtonText}>Request List</Text>
-              {requestList.length > 0 && (
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationText}>{requestList.length}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
+        <TouchableOpacity style={styles.requestButton} onPress={() => navigation.navigate('RequestListScreen')}>
+          <Text style={styles.requestButtonText}>Request List</Text>
+          {tempRequestCount > 0 && (
+            <View style={styles.notificationBadge}>
+              <Text style={styles.notificationText}>{tempRequestCount}</Text>
+            </View>
           )}
+        </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.helpButton} onPress={() => navigation.navigate('HelpScreen')}>
