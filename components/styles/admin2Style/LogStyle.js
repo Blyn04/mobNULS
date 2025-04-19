@@ -9,64 +9,73 @@ export default StyleSheet.create({
   },
 
   filterContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginVertical: 10,
+    flexDirection: 'row',  // Keeps the buttons side by side
+    justifyContent: 'space-between', // Ensures space between buttons
+    marginVertical: 5,
+    marginBottom: 10, 
+    marginTop: 80,
   },
 
   table: {
     width: '100%',
-    paddingVertical: 10,
     backgroundColor: 'white',
     borderRadius: 10,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginTop: 10,
   },
 
   tableRow: {
     flexDirection: 'row',
-    paddingVertical: 10,
+    alignItems: 'center',
+    paddingVertical: 8,
     paddingHorizontal: 5,
   },
 
   tableHeader: {
-    fontSize: 14,
+    flex: 1,
+    fontSize: 13,
     fontWeight: 'bold',
     textAlign: 'center',
-    flex: 1,
     backgroundColor: '#00796B',
     color: 'white',
-    paddingVertical: 5,
+    paddingVertical: 8,
+    borderRightWidth: 1,
+    borderColor: '#005a4f',
   },
 
   tableCell: {
+    flex: 1,
     fontSize: 12,
     textAlign: 'center',
-    flex: 1,
     paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingHorizontal: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderColor: '#e0e0e0',
   },
 
   tableRowEven: {
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
   },
 
   tableRowOdd: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#f9f9f9',
   },
 
-  viewButton: {
+  button: {
     backgroundColor: '#00796B',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 5,
+    marginVertical: 5,
   },
 
-  viewButtonText: {
-    fontSize: 12,
+  buttonText: {
+    fontSize: 14,
     fontWeight: 'bold',
     color: 'white',
+    textAlign: 'center',
   },
 
   modalOverlay: {
@@ -93,6 +102,7 @@ export default StyleSheet.create({
   modalText: {
     fontSize: 14,
     marginBottom: 5,
+    textAlign: 'center',
   },
 
   closeButton: {
@@ -110,8 +120,8 @@ export default StyleSheet.create({
 
   helpButton: {
     alignSelf: 'flex-end',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 5,
     position: 'absolute',
     bottom: 20,
@@ -122,4 +132,5 @@ export default StyleSheet.create({
     color: 'blue',
     fontSize: 16,
   },
+
 });
