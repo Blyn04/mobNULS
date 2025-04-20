@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, TextInput, Image, Modal, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
-import { getDocs, collection, onSnapshot } from 'firebase/firestore';
+import { getDocs, collection, onSnapshot, doc, setDoc, addDoc, query, where } from 'firebase/firestore';
 import { db } from '../backend/firebase/FirebaseConfig';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Picker } from '@react-native-picker/picker';
@@ -143,27 +143,57 @@ export default function InventoryScreen({ navigation }) {
     }
   };
 
-  const addToList = (item) => {
+  const addToList = async (item) => {
     const quantity = itemQuantities[item.id];
-
+  
     if (!quantity || isNaN(quantity) || parseInt(quantity) <= 0) {
       alert('Please enter a valid quantity.');
       return;
     }
-
-    if (!selectedCategory || !selectedUsageType) {
-      alert("Please select both category and usage type.");
-    }    
-
-    const isAlreadyInList = requestList.some(reqItem => reqItem.originalId === item.id);
-    if (isAlreadyInList) {
-      alert('This item is already in the request list.');
-      return;
+  
+    // if (!selectedCategory || !selectedUsageType || !selectedDate || !reason || !program || !room) {
+    //   alert('Please complete all required fields.');
+    //   return;
+    // }
+  
+    try {
+      const collectionRef = collection(db, 'accounts', user.id, 'temporaryRequests');
+  
+      // 🔍 Check if an item with the same "id" already exists
+      const q = query(collectionRef, where('id', '==', item.id));
+      const querySnapshot = await getDocs(q);
+  
+      if (!querySnapshot.empty) {
+        alert('This item is already in your request list.');
+        return;
+      }
+  
+      // Proceed to add the item
+      const requestData = {
+        id: item.id, // this is the unique item ID you're checking
+        itemId: item.itemId,
+        itemName: item.itemName,
+        quantity: parseInt(quantity),
+        category: selectedCategory,
+        usageType: selectedUsageType,
+        borrowDate: selectedDate,
+        startTime: formatTime(selectedStartTime),
+        endTime: formatTime(selectedEndTime),
+        reason,
+        program,
+        room,
+        timestamp: new Date(),
+      };
+  
+      await addDoc(collectionRef, requestData);
+  
+      alert('Item added to temporary requests!');
+      setActiveInputItemId(null);
+      setItemQuantities((prev) => ({ ...prev, [item.id]: '' }));
+    } catch (error) {
+      console.error('Error adding item:', error);
+      alert('Something went wrong while adding the item.');
     }
-
-    transferToRequestList(item, quantity, 'General Use');
-    alert('Item added to request list!');
-    setActiveInputItemId(null); // hide the input field
   };
 
   const renderItem = ({ item }) => {
