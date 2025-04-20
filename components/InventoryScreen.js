@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, TextInput, Image, Modal, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
-import { getDocs, collection, onSnapshot, doc, setDoc, addDoc, query, where } from 'firebase/firestore';
+import { getDocs, collection, onSnapshot, doc, setDoc, addDoc, query, where, Timestamp } from 'firebase/firestore';
 import { db } from '../backend/firebase/FirebaseConfig';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Picker } from '@react-native-picker/picker';
@@ -151,15 +151,10 @@ export default function InventoryScreen({ navigation }) {
       return;
     }
   
-    // if (!selectedCategory || !selectedUsageType || !selectedDate || !reason || !program || !room) {
-    //   alert('Please complete all required fields.');
-    //   return;
-    // }
-  
     try {
       const collectionRef = collection(db, 'accounts', user.id, 'temporaryRequests');
   
-      // 🔍 Check if an item with the same "id" already exists
+      // 🔍 Check for duplicates by "id"
       const q = query(collectionRef, where('id', '==', item.id));
       const querySnapshot = await getDocs(q);
   
@@ -168,31 +163,34 @@ export default function InventoryScreen({ navigation }) {
         return;
       }
   
-      // Proceed to add the item
-      const requestData = {
-        id: item.id, // this is the unique item ID you're checking
-        itemId: item.itemId,
-        itemName: item.itemName,
-        quantity: parseInt(quantity),
-        category: selectedCategory,
-        usageType: selectedUsageType,
-        borrowDate: selectedDate,
-        startTime: formatTime(selectedStartTime),
-        endTime: formatTime(selectedEndTime),
-        reason,
-        program,
-        room,
-        timestamp: new Date(),
-      };
+      // ✅ Add with full structure matching web version
+      await addDoc(collectionRef, {
+        category: item.category || '',
+        condition: item.condition || '',
+        department: item.department || '',
+        entryDate: item.entryDate || '',
+        expiryDate: item.expiryDate || '',
+        id: item.id, // important for checking duplicates
+        itemId: item.itemId || '',
+        itemName: item.itemName || '',
+        labRoom: item.labRoom || '',
+        qrCode: item.qrCode || '',
+        quantity: quantity.toString(), // match Firestore format (string)
+        selectedItemId: item.id,
+        selectedItemLabel: item.itemName,
+        status: item.status || 'Available',
+        timestamp: Timestamp.fromDate(new Date()),
+        type: item.type || '',
+        usageType: item.usageType || '',
+      });
   
-      await addDoc(collectionRef, requestData);
-  
-      alert('Item added to temporary requests!');
+      alert('Item successfully added to temporaryRequests.');
       setActiveInputItemId(null);
       setItemQuantities((prev) => ({ ...prev, [item.id]: '' }));
+
     } catch (error) {
-      console.error('Error adding item:', error);
-      alert('Something went wrong while adding the item.');
+      console.error('Error adding item to temporaryRequests:', error);
+      alert('Failed to add item. Try again.');
     }
   };
 
