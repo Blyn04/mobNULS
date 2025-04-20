@@ -17,8 +17,8 @@ export default function InventoryScreen({ navigation }) {
   const [inventoryItems, setInventoryItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedDepartment, setSelectedDepartment] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -30,6 +30,8 @@ export default function InventoryScreen({ navigation }) {
   const [selectedDate, setSelectedDate] = useState('');
   const [timeModalVisible, setTimeModalVisible] = useState(false);
   const [timePickerType, setTimePickerType] = useState('start');
+  const [selectedUsageType, setSelectedUsageType] = useState('');
+  const [usageTypes, setUsageTypes] = useState([]);
   const [selectedStartTime, setSelectedStartTime] = useState({ hour: '10', minute: '00', period: 'AM' });
   const [selectedEndTime, setSelectedEndTime] = useState({ hour: '3', minute: '00', period: 'PM' });
   const [program, setProgram] = useState('');
@@ -37,29 +39,59 @@ export default function InventoryScreen({ navigation }) {
 
   const today = new Date().toISOString().split('T')[0];
 
+  // useEffect(() => {
+  //   const fetchInventory = async () => {
+  //     try {
+  //       const inventoryCollection = collection(db, 'inventory');
+  //       const inventorySnapshot = await getDocs(inventoryCollection);
+  //       const inventoryList = inventorySnapshot.docs.map(doc => ({
+  //         id: doc.id,
+  //         ...doc.data()
+  //       }));
+
+  //       setInventoryItems(inventoryList);
+
+  //       const categoriesList = ['All', ...new Set(inventoryList.map(item => item.type))]; 
+  //       const departmentsList = ['All', ...new Set(inventoryList.map(item => item.department))]; 
+  //       setCategories(categoriesList);
+  //       setDepartments(departmentsList);
+
+  //     } catch (error) {
+  //       console.error("Error fetching inventory: ", error);
+  //     }
+  //   };
+
+  //   fetchInventory();
+  // }, []);
+
   useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        const inventoryCollection = collection(db, 'inventory');
-        const inventorySnapshot = await getDocs(inventoryCollection);
-        const inventoryList = inventorySnapshot.docs.map(doc => ({
+    const inventoryCollection = collection(db, 'inventory');
+  
+    const unsubscribe = onSnapshot(
+      inventoryCollection,
+      (inventorySnapshot) => {
+        const inventoryList = inventorySnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }));
-
+  
         setInventoryItems(inventoryList);
-
-        const categoriesList = ['All', ...new Set(inventoryList.map(item => item.type))]; 
-        const departmentsList = ['All', ...new Set(inventoryList.map(item => item.department))]; 
+  
+        const categoriesList = ['All', ...new Set(inventoryList.map((item) => item.type))];
+        const departmentsList = ['All', ...new Set(inventoryList.map((item) => item.department))];
+        const usageTypesList = ['All', ...new Set(inventoryList.map((item) => item.usageType))];
+  
         setCategories(categoriesList);
         setDepartments(departmentsList);
-
-      } catch (error) {
-        console.error("Error fetching inventory: ", error);
+        setUsageTypes(usageTypesList);
+      },
+      
+      (error) => {
+        console.error('Error fetching inventory in real-time: ', error);
       }
-    };
-
-    fetchInventory();
+    );
+  
+    return () => unsubscribe(); // Clean up the listener on unmount
   }, []);
 
   useEffect(() => {
@@ -76,13 +108,18 @@ export default function InventoryScreen({ navigation }) {
     return () => unsubscribe(); // cleanup listener on unmount
   }, [user]);  
 
-  const filteredItems = inventoryItems.filter(item => {
+  const filteredItems = inventoryItems.filter((item) => {
     const isCategoryMatch = selectedCategory === 'All' || item.type === selectedCategory;
     const isDepartmentMatch = selectedDepartment === 'All' || item.department === selectedDepartment;
-    
-    return isCategoryMatch && isDepartmentMatch && 
-      (item.itemName?.toLowerCase().includes(searchQuery.toLowerCase()) || '');
-  });
+    const isUsageTypeMatch = selectedUsageType === 'All' || item.usageType === selectedUsageType;
+  
+    return (
+      isCategoryMatch &&
+      isDepartmentMatch &&
+      isUsageTypeMatch &&
+      (item.itemName?.toLowerCase().includes(searchQuery.toLowerCase()) || '')
+    );
+  });  
 
   const openModal = (item) => {
     setSelectedItem(item);
@@ -118,6 +155,10 @@ export default function InventoryScreen({ navigation }) {
       alert('Please enter a valid quantity.');
       return;
     }
+
+    if (!selectedCategory || !selectedUsageType) {
+      alert("Please select both category and usage type.");
+    }    
 
     const isAlreadyInList = requestList.some(reqItem => reqItem.originalId === item.id);
     if (isAlreadyInList) {
@@ -208,26 +249,32 @@ export default function InventoryScreen({ navigation }) {
         onChangeText={setSearchQuery}
       />
 
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={selectedCategory}
-          onValueChange={(itemValue) => setSelectedCategory(itemValue)}
-          style={styles.picker}
-        >
-          {categories.map((category) => (
-            <Picker.Item key={category} label={category} value={category} />
-          ))}
-        </Picker>
-
+      <View style={{ flexDirection: 'row', marginHorizontal: 10 }}>
+        <View style={{ flex: 1, marginRight: 5 }}>
           <Picker
-            selectedValue={selectedDepartment}
-            onValueChange={(itemValue) => setSelectedDepartment(itemValue)}
+            selectedValue={selectedCategory}
+            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
             style={styles.picker}
           >
-            {departments.map((department) => (
-              <Picker.Item key={department} label={department} value={department} />
+            <Picker.Item label="Select Category" value="" />
+            {categories.map((category) => (
+              <Picker.Item key={category} label={category} value={category} />
             ))}
           </Picker>
+        </View>
+
+        <View style={{ flex: 1, marginLeft: 5 }}>
+          <Picker
+            selectedValue={selectedUsageType}
+            onValueChange={(itemValue) => setSelectedUsageType(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Select Usage Type" value="" />
+            {usageTypes.map((usage) => (
+              <Picker.Item key={usage} label={usage} value={usage} />
+            ))}
+          </Picker>
+        </View>
       </View>
 
        <TouchableOpacity style={styles.dateButton} onPress={() => setCalendarVisible(true)}>
