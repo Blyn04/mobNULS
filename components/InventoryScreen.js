@@ -109,16 +109,11 @@ export default function InventoryScreen({ navigation }) {
   }, [user]);  
 
   const filteredItems = inventoryItems.filter((item) => {
-    const isCategoryMatch = selectedCategory === 'All' || item.type === selectedCategory;
-    const isDepartmentMatch = selectedDepartment === 'All' || item.department === selectedDepartment;
-    const isUsageTypeMatch = selectedUsageType === 'All' || item.usageType === selectedUsageType;
+    const isCategoryMatch = selectedCategory === 'All' || selectedCategory === '' || item.type === selectedCategory;
+    const isUsageTypeMatch = selectedUsageType === 'All' || selectedUsageType === '' || item.usageType === selectedUsageType;
+    const isSearchMatch = !searchQuery || item.itemName?.toLowerCase().includes(searchQuery.toLowerCase());
   
-    return (
-      isCategoryMatch &&
-      isDepartmentMatch &&
-      isUsageTypeMatch &&
-      (item.itemName?.toLowerCase().includes(searchQuery.toLowerCase()) || '')
-    );
+    return isCategoryMatch && isUsageTypeMatch && isSearchMatch;
   });  
 
   const openModal = (item) => {
@@ -338,10 +333,17 @@ export default function InventoryScreen({ navigation }) {
                 multiline
               />
 
-      <FlatList
+      {/* <FlatList
         data={filteredItems.length > 0 ? filteredItems : inventoryItems}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
+      /> */}
+
+      <FlatList
+        data={filteredItems}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20 }}>No items found</Text>}
       />
 
       <Modal visible={modalVisible} transparent animationType="fade">
