@@ -8,10 +8,12 @@ import {
   Modal,
   TextInput,
   Alert,
+  TouchableWithoutFeedback,
 } from 'react-native';
-import { collection, getDocs, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, onSnapshot, Timestamp, setDoc, addDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig';
 import { useAuth } from '../contexts/AuthContext';
+import { useRequestMetadata } from '../contexts/RequestMetadataContext';
 import styles from '../styles/userStyle/RequestListStyle';
 import Header from '../Header';
 
@@ -22,6 +24,9 @@ const RequestListScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState('');
+  const { metadata } = useRequestMetadata();
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false); 
+  const [confirmationData, setConfirmationData] = useState(null);
 
   useEffect(() => {
     if (!user || !user.id) return;
@@ -51,9 +56,87 @@ const RequestListScreen = () => {
     return () => unsubscribe(); // cleanup listener on unmount
   }, [user]);
 
-  const handleRequestNow = () => {
-    console.log('Request Now clicked!');
+  const handleRequestNow = async () => {
+    console.log('Current metadata:', metadata);
+  
+    // Check if all required fields are filled
+    if (
+      !metadata?.dateRequired ||
+      !metadata?.timeFrom ||
+      !metadata?.timeTo ||
+      !metadata?.program ||
+      !metadata?.room ||
+      !metadata?.reason
+    ) {
+      Alert.alert('Missing Info', 'Please go back and fill the required borrowing details.');
+      return;
+    }
+  
+    // Show the confirmation modal with the metadata details
+    setConfirmationData(metadata);
+    setShowConfirmationModal(true);
   };
+
+  const submitRequest = async () => {
+    const { user } = useAuth(); // access the user from AuthContext
+  
+    if (!user || !user.id) {
+      Alert.alert('Error', 'User is not logged in.');
+      return;
+    }
+  
+    try {
+      // Get user's name from accounts collection
+      const userDocRef = doc(db, 'accounts', user.id);
+      const userDocSnapshot = await getDoc(userDocRef);
+  
+      if (!userDocSnapshot.exists()) {
+        Alert.alert('Error', 'User not found.');
+        return;
+      }
+  
+      const userName = userDocSnapshot.data().name;
+  
+      // Prepare request data
+      const requestData = {
+        dateRequired: metadata.dateRequired,
+        timeFrom: metadata.timeFrom,
+        timeTo: metadata.timeTo,
+        program: metadata.program,
+        room: metadata.room,
+        reason: metadata.reason,
+        requestList: requestList.map((item) => ({
+          ...item,
+          program: metadata.program,
+          reason: metadata.reason,
+          room: metadata.room,
+          timeFrom: metadata.timeFrom,
+          timeTo: metadata.timeTo,
+          usageType: item.usageType,
+        })),
+        userName,
+        timestamp: Timestamp.now(),
+      };
+  
+      // Add to user's personal requests
+      const userRequestRef = collection(db, 'accounts', user.id, 'userRequests');
+      await addDoc(userRequestRef, requestData);
+  
+      // Add to global userrequests collection
+      const userRequestsRootRef = collection(db, 'userrequests');
+      const newUserRequestRef = doc(userRequestsRootRef);
+      await setDoc(newUserRequestRef, {
+        ...requestData,
+        accountId: user.uid,
+      });
+  
+      Alert.alert('Success', 'Request submitted successfully.');
+      
+    } catch (error) {
+      console.error('Error submitting request:', error);
+      Alert.alert('Error', 'Failed to submit request. Please try again.');
+    }
+  };  
 
   const openModal = (item) => {
     setSelectedItem(item);
@@ -222,6 +305,58 @@ const RequestListScreen = () => {
           </View>
         </View>
       </Modal>
+
+      {showConfirmationModal && (
+        <Modal
+          visible={showConfirmationModal}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setShowConfirmationModal(false)}
+        >
+          <TouchableWithoutFeedback onPress={() => setShowConfirmationModal(false)}>
+            <View style={styles.modalBackground}>
+              <TouchableWithoutFeedback>
+                <View style={styles.modalContainer}>
+                  <Text style={styles.modalTitle}>Confirm Request</Text>
+                  <Text style={styles.modalText}>Date Required: {confirmationData?.dateRequired}</Text>
+                  <Text style={styles.modalText}>Start Time: {confirmationData?.timeFrom}</Text>
+                  <Text style={styles.modalText}>End Time: {confirmationData?.timeTo}</Text>
+                  <Text style={styles.modalText}>Program: {confirmationData?.program}</Text>
+                  <Text style={styles.modalText}>Room: {confirmationData?.room}</Text>
+                  <Text style={styles.modalText}>Reason: {confirmationData?.reason}</Text>
+
+                  <FlatList
+                    data={requestList}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                    contentContainerStyle={styles.listContent}
+                    ListEmptyComponent={<Text style={styles.emptyText}>No items to display.</Text>}
+                  />
+
+                  <View style={styles.modalActions}>
+                    <TouchableOpacity
+                      style={styles.cancelButton}
+                      onPress={() => setShowConfirmationModal(false)}
+                    >
+                      <Text style={styles.cancelButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.confirmButton}
+                      onPress={async () => {
+                        await submitRequest(); 
+                        setShowConfirmationModal(false); 
+                      }}
+                    >
+                      <Text style={styles.confirmButtonText}>Confirm</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      )}
     </View>
   );
 };

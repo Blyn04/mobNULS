@@ -8,6 +8,7 @@ import styles from './styles/InventoryStyle';
 import { useAuth } from '../components/contexts/AuthContext';
 import { useRequestList } from '../components/contexts/RequestListContext';
 import { Calendar } from 'react-native-calendars';
+import { useRequestMetadata } from './contexts/RequestMetadataContext';
 import Header from './Header';
 
 export default function InventoryScreen({ navigation }) {
@@ -38,6 +39,7 @@ export default function InventoryScreen({ navigation }) {
   const [room, setRoom] = useState('');
 
   const today = new Date().toISOString().split('T')[0];
+  const { metadata, setMetadata } = useRequestMetadata(); 
 
   // useEffect(() => {
   //   const fetchInventory = async () => {
@@ -143,11 +145,74 @@ export default function InventoryScreen({ navigation }) {
     }
   };
 
+  // const addToList = async (item) => {
+  //   const quantity = itemQuantities[item.id];
+  
+  //   if (!quantity || isNaN(quantity) || parseInt(quantity) <= 0) {
+  //     alert('Please enter a valid quantity.');
+  //     return;
+  //   }
+  
+  //   try {
+  //     const collectionRef = collection(db, 'accounts', user.id, 'temporaryRequests');
+  
+  //     // 🔍 Check for duplicates by "id"
+  //     const q = query(collectionRef, where('id', '==', item.id));
+  //     const querySnapshot = await getDocs(q);
+  
+  //     if (!querySnapshot.empty) {
+  //       alert('This item is already in your request list.');
+  //       return;
+  //     }
+  
+  
+  //     await addDoc(collectionRef, {
+  //       category: item.category || '',
+  //       condition: item.condition || '',
+  //       department: item.department || '',
+  //       entryDate: item.entryDate || '',
+  //       expiryDate: item.expiryDate || '',
+  //       id: item.id, 
+  //       itemId: item.itemId || '',
+  //       itemName: item.itemName || '',
+  //       labRoom: item.labRoom || '',
+  //       qrCode: item.qrCode || '',
+  //       quantity: quantity.toString(),
+  //       selectedItemId: item.id,
+  //       selectedItemLabel: item.itemName,
+  //       status: item.status || 'Available',
+  //       timestamp: Timestamp.fromDate(new Date()),
+  //       type: item.type || '',
+  //       usageType: item.usageType || '',
+  //     });
+  
+  //     alert('Item successfully added to temporaryRequests.');
+  //     setActiveInputItemId(null);
+  //     setItemQuantities((prev) => ({ ...prev, [item.id]: '' }));
+
+  //   } catch (error) {
+  //     console.error('Error adding item to temporaryRequests:', error);
+  //     alert('Failed to add item. Try again.');
+  //   }
+  // };
+
   const addToList = async (item) => {
     const quantity = itemQuantities[item.id];
   
     if (!quantity || isNaN(quantity) || parseInt(quantity) <= 0) {
       alert('Please enter a valid quantity.');
+      return;
+    }
+  
+    if (
+      !metadata?.dateRequired || 
+      !metadata?.timeFrom || 
+      !metadata?.timeTo || 
+      !metadata?.program || 
+      !metadata?.room || 
+      !metadata?.reason
+    ) {
+      alert('Please fill out all the borrowing details before adding an item.');
       return;
     }
   
@@ -163,19 +228,18 @@ export default function InventoryScreen({ navigation }) {
         return;
       }
   
-      // ✅ Add with full structure matching web version
       await addDoc(collectionRef, {
         category: item.category || '',
         condition: item.condition || '',
         department: item.department || '',
         entryDate: item.entryDate || '',
         expiryDate: item.expiryDate || '',
-        id: item.id, // important for checking duplicates
+        id: item.id, 
         itemId: item.itemId || '',
         itemName: item.itemName || '',
         labRoom: item.labRoom || '',
         qrCode: item.qrCode || '',
-        quantity: quantity.toString(), // match Firestore format (string)
+        quantity: quantity.toString(),
         selectedItemId: item.id,
         selectedItemLabel: item.itemName,
         status: item.status || 'Available',
@@ -187,7 +251,7 @@ export default function InventoryScreen({ navigation }) {
       alert('Item successfully added to temporaryRequests.');
       setActiveInputItemId(null);
       setItemQuantities((prev) => ({ ...prev, [item.id]: '' }));
-
+      
     } catch (error) {
       console.error('Error adding item to temporaryRequests:', error);
       alert('Failed to add item. Try again.');
@@ -252,13 +316,39 @@ export default function InventoryScreen({ navigation }) {
     let hours = parseInt(hour);
     if (period === 'PM' && hours !== 12) hours += 12;
     if (period === 'AM' && hours === 12) hours = 0;
-    return hours * 60 + parseInt(minute);
-  };
+  
+    // Format to HH:mm (24-hour format)
+    const formattedHour = hours.toString().padStart(2, '0'); // Add leading zero if necessary
+    const formattedMinute = minute.toString().padStart(2, '0'); // Add leading zero if necessary
+    return `${formattedHour}:${formattedMinute}`;
+  };  
 
   const openTimePicker = (type) => {
     setTimePickerType(type);
-    setTimeModalVisible(true);
+    setTimeModalVisible(true); // this just opens your modal
   };
+  
+  const handleStartTimeSelect = (startTime) => {
+    // Save the selected start time
+    setSelectedStartTime(startTime);
+  
+    // Convert to 24-hour format and save to metadata
+    setMetadata((prevMetadata) => ({
+      ...prevMetadata,
+      timeFrom: convertTo24Hour(startTime), // Convert to 24-hour format and save
+    }));
+  };
+  
+  const handleEndTimeSelect = (endTime) => {
+    // Save the selected end time
+    setSelectedEndTime(endTime);
+  
+    // Convert to 24-hour format and save to metadata
+    setMetadata((prevMetadata) => ({
+      ...prevMetadata,
+      timeTo: convertTo24Hour(endTime), // Convert to 24-hour format and save
+    }));
+  };  
 
   return (
     <View style={styles.container}>
@@ -300,7 +390,7 @@ export default function InventoryScreen({ navigation }) {
         </View>
       </View>
 
-       <TouchableOpacity style={styles.dateButton} onPress={() => setCalendarVisible(true)}>
+       {/* <TouchableOpacity style={styles.dateButton} onPress={() => setCalendarVisible(true)}>
                 <Text style={styles.dateButtonText}>
                   {selectedDate ? `Borrow Date: ${selectedDate}` : 'Pick Borrow Date'}
                 </Text>
@@ -358,6 +448,78 @@ export default function InventoryScreen({ navigation }) {
                 placeholder="Enter reason for borrowing..."
                 value={reason}
                 onChangeText={setReason}
+                multiline
+              /> */}
+
+              <TouchableOpacity style={styles.dateButton} onPress={() => setCalendarVisible(true)}>
+                <Text style={styles.dateButtonText}>
+                  {selectedDate ? `Borrow Date: ${selectedDate}` : 'Pick Borrow Date'}
+                </Text>
+              </TouchableOpacity>
+        
+              {calendarVisible && (
+                <Calendar
+                  onDayPress={(day) => {
+                    setSelectedDate(day.dateString);
+                    setCalendarVisible(false);
+                    setMetadata((prevMetadata) => ({ ...prevMetadata, dateRequired: day.dateString }));
+                  }}
+                  markedDates={{ [selectedDate]: { selected: true, selectedColor: '#00796B' } }}
+                  minDate={today}
+                />
+              )}
+      
+              <View style={styles.timeButtonContainer}>
+                <TouchableOpacity style={styles.timeButton} onPress={() => openTimePicker('start')}>
+                  <Text style={styles.timeButtonText}>
+                    Start Time: {formatTime(selectedStartTime)}
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.timeButton} onPress={() => openTimePicker('end')}>
+                  <Text style={styles.timeButtonText}>
+                    End Time: {formatTime(selectedEndTime)}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+      
+              <View style={styles.programRoomContainer}>
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    selectedValue={program}
+                    onValueChange={(itemValue) => {
+                      setProgram(itemValue);
+                      setMetadata((prevMetadata) => ({ ...prevMetadata, program: itemValue }));
+                    }}
+                    style={{ height: 50, fontSize: 5 }} 
+                  >
+                    <Picker.Item label="Select Program" value="" />
+                    <Picker.Item label="SAM - BSMT" value="SAM - BSMT" />
+                    <Picker.Item label="SAH - BSN" value="SAH - BSN" />
+                    <Picker.Item label="SHS" value="SHS" />
+                  </Picker>
+                </View>
+      
+                <TextInput
+                  style={styles.roomInput}
+                  placeholder="Enter room"
+                  value={room}
+                  onChangeText={(text) => {
+                    setRoom(text);
+                    setMetadata((prevMetadata) => ({ ...prevMetadata, room: text }));
+                  }}
+                />
+              </View>
+      
+              <TextInput
+                style={styles.reasonInput}
+                placeholder="Enter reason for borrowing..."
+                value={reason}
+                onChangeText={(text) => {
+                  setReason(text);
+                  setMetadata((prevMetadata) => ({ ...prevMetadata, reason: text }));
+                }}
                 multiline
               />
 
@@ -484,9 +646,38 @@ export default function InventoryScreen({ navigation }) {
                   </ScrollView>
                 </ScrollView>
 
-                <TouchableOpacity style={styles.okButton} onPress={() => setTimeModalVisible(false)}>
+                <TouchableOpacity
+                  style={styles.okButton}
+                  onPress={() => {
+                    let selectedTime;
+                    if (timePickerType === 'start') {
+                      selectedTime = selectedStartTime;
+                    } else {
+                      selectedTime = selectedEndTime;
+                    }
+
+                    const { hour, minute, period } = selectedTime;
+
+                    if (!hour || !minute || !period) {
+                      alert('Please select hour, minute, and AM/PM.');
+                      return;
+                    }
+
+                    const timeString = `${hour}:${minute} ${period}`;
+
+                    // Pass the selected time to the appropriate handler
+                    if (timePickerType === 'start') {
+                      handleStartTimeSelect(selectedTime); // Correctly pass selected time
+                    } else {
+                      handleEndTimeSelect(selectedTime); // Correctly pass selected time
+                    }
+
+                    setTimeModalVisible(false); // Close the modal
+                  }}
+                >
                   <Text style={styles.okButtonText}>OK</Text>
                 </TouchableOpacity>
+
               </View>
             </TouchableWithoutFeedback>
           </View>

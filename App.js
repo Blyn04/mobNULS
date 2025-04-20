@@ -30,6 +30,7 @@ import InventoryStocks from './components/admin2/InventoryStocks';
 import SearchItems from './components/user/SearchItems';
 import UserActivityLogScreen from './components/user/UserActivityLogScreen';
 import BorrowCatalogScreen from './components/admin2/BorrowCatalogScreen';
+import { RequestMetadataProvider } from './components/contexts/RequestMetadataContext';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -244,24 +245,26 @@ const AdminDrawer = () => {
 
 export default function App() {
   return (
-    <RequestListProvider>
-      <AuthProvider>
-        <SafeAreaView style={styles.safeArea}>
-          <GestureHandlerRootView style={styles.container}>
-            <PaperProvider>
-              <NavigationContainer>
-                <Stack.Navigator>
-                  <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-                  <Stack.Screen name="User" component={UserDrawer} options={{ headerShown: false }} />
-                  <Stack.Screen name="Admin" component={AdminDrawer} options={{ headerShown: false }} />
-                  <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }}/>
-                </Stack.Navigator>
-              </NavigationContainer>
-            </PaperProvider>
-          </GestureHandlerRootView>
-        </SafeAreaView>
-      </AuthProvider>
-    </RequestListProvider>
+    <RequestMetadataProvider>
+      <RequestListProvider>
+        <AuthProvider>
+          <SafeAreaView style={styles.safeArea}>
+            <GestureHandlerRootView style={styles.container}>
+              <PaperProvider>
+                <NavigationContainer>
+                  <Stack.Navigator>
+                    <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name="User" component={UserDrawer} options={{ headerShown: false }} />
+                    <Stack.Screen name="Admin" component={AdminDrawer} options={{ headerShown: false }} />
+                    <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }}/>
+                  </Stack.Navigator>
+                </NavigationContainer>
+              </PaperProvider>
+            </GestureHandlerRootView>
+          </SafeAreaView>
+        </AuthProvider>
+      </RequestListProvider>
+    </RequestMetadataProvider>
   );
 }
 

@@ -70,7 +70,7 @@ export default StyleSheet.create({
     bottom: 20,
     left: 16,
     right: 16,
-    marginTop: 50
+    marginTop: 50,
   },
 
   requestButtonText: {
@@ -90,31 +90,24 @@ export default StyleSheet.create({
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 12,
-    width: '80%',
-    alignItems: 'center',
-    height: '50%'
+    width: '85%',
+    alignItems: 'flex-start',
+    height: '60%',
   },
 
-  cardTouchable: {
-    marginBottom: 12,
-  },
-
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-
-  xIcon: {
+  modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: 'red',
-    borderRadius: 50,
-    height: 30,
-    width: 30,
-    textAlign: 'center'
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+
+  modalText: {
+    fontSize: 16,
+    color: '#444',
+    marginBottom: 8,
+    textAlign: 'left',
+    width: '100%',
   },
 
   modalDetail: {
@@ -129,6 +122,45 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
 
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
+  },
+
+  cancelButton: {
+    backgroundColor: '#d32f2f',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: '45%',
+  },
+
+  cancelButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+
+  confirmButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: '45%',
+  },
+
+  confirmButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+
   inputQuantity: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -136,5 +168,35 @@ export default StyleSheet.create({
     paddingHorizontal: 10,
     height: '10%',
     width: '30%',
-  }
+  },
+
+  xIcon: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    backgroundColor: 'red',
+    borderRadius: 50,
+    height: 30,
+    width: 30,
+    textAlign: 'center'
+  },
+
+  card: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
 });
