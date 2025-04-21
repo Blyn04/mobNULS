@@ -78,72 +78,9 @@ const RequestListScreen = () => {
     setShowConfirmationModal(true);
   };
 
-  // const submitRequest = async () => {
-  //   const { user } = useAuth(); // access the user from AuthContext
-  //   console.log('Checking if user is available:', user);
-  
-  //   if (!user || !user.id) {
-  //     Alert.alert('Error', 'User is not logged in.');
-  //     return;
-  //   }
-  
-  //   try {
-  //     // Get user's name from accounts collection
-  //     const userDocRef = doc(db, 'accounts', user.id);
-  //     const userDocSnapshot = await getDoc(userDocRef);
-  
-  //     if (!userDocSnapshot.exists()) {
-  //       Alert.alert('Error', 'User not found.');
-  //       return;
-  //     }
-  
-  //     const userName = userDocSnapshot.data().name;
-  
-  //     // Prepare request data
-  //     const requestData = {
-  //       dateRequired: metadata.dateRequired,
-  //       timeFrom: metadata.timeFrom,
-  //       timeTo: metadata.timeTo,
-  //       program: metadata.program,
-  //       room: metadata.room,
-  //       reason: metadata.reason,
-  //       requestList: requestList.map((item) => ({
-  //         ...item,
-  //         program: metadata.program,
-  //         reason: metadata.reason,
-  //         room: metadata.room,
-  //         timeFrom: metadata.timeFrom,
-  //         timeTo: metadata.timeTo,
-  //         usageType: item.usageType,
-  //       })),
-  //       userName,
-  //       timestamp: Timestamp.now(),
-  //     };
-  
-  //     console.log('Request data to be saved:', requestData);
-  //     // Add to user's personal requests
-  //     const userRequestRef = collection(db, 'accounts', user.id, 'userRequests');
-  //     await addDoc(userRequestRef, requestData);
-  
-  //     // Add to global userrequests collection
-  //     const userRequestsRootRef = collection(db, 'userrequests');
-  //     const newUserRequestRef = doc(userRequestsRootRef);
-  //     await setDoc(newUserRequestRef, {
-  //       ...requestData,
-  //       accountId: user.uid,
-  //     });
-  
-  //     Alert.alert('Success', 'Request submitted successfully.');
-
-  //   } catch (error) {
-  //     console.error('Error submitting request:', error);
-  //     Alert.alert('Error', 'Failed to submit request. Please try again.');
-  //   }
-  // };  
-
   const submitRequest = async () => {
     console.log('submitRequest initiated');
-    const { user } = useAuth(); // access the user from AuthContext
+    console.log('Submitting for user:', user?.id);
   
     if (!user || !user.id) {
       console.log('No user logged in');
@@ -151,8 +88,13 @@ const RequestListScreen = () => {
       return false;
     }
   
+    if (!requestList || requestList.length === 0) {
+      console.log('Request list is empty');
+      Alert.alert('Error', 'No items in the request list.');
+      return false;
+    }
+  
     try {
-      // Fetch user info from the database
       const userDocRef = doc(db, 'accounts', user.id);
       const userDocSnapshot = await getDoc(userDocRef);
   
@@ -172,7 +114,7 @@ const RequestListScreen = () => {
         program: metadata.program,
         room: metadata.room,
         reason: metadata.reason,
-        requestList: requestList.map((item) => ({
+        filteredMergedData: requestList.map((item) => ({
           ...item,
           program: metadata.program,
           reason: metadata.reason,
