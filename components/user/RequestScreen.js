@@ -100,7 +100,7 @@ export default function RequestScreen() {
   const fetchRequests = () => {
     setLoading(true);
     try {
-      if (!user?.uid) throw new Error('User is not logged in.');
+      if (!user?.id) throw new Error('User is not logged in.');
   
       // Set up the real-time listener using onSnapshot
       const requestsRef = collection(db, `accounts/${user.id}/userRequests`);
@@ -171,7 +171,7 @@ export default function RequestScreen() {
 
   const cancelRequest = async () => {
     try {
-      if (!user?.uid || !selectedRequest?.id) {
+      if (!user?.id || !selectedRequest?.id) {
         throw new Error('Missing user ID or selected request ID.');
       }
 
@@ -208,6 +208,7 @@ export default function RequestScreen() {
       Alert.alert('Success', 'Request successfully cancelled.');
       setModalVisible(false);
       fetchRequests();
+      
     } catch (err) {
       console.error('Cancel error:', err);
       Alert.alert('Error', 'Failed to cancel the request.');
