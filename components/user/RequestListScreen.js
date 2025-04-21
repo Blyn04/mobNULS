@@ -28,6 +28,35 @@ const RequestListScreen = () => {
   const { metadata } = useRequestMetadata();
   const [showConfirmationModal, setShowConfirmationModal] = useState(false); 
   const [confirmationData, setConfirmationData] = useState(null);
+  const [tempDocIdsToDelete, setTempDocIdsToDelete] = useState([]);
+
+  // useEffect(() => {
+  //   if (!user || !user.id) return;
+  
+  //   const tempRequestRef = collection(db, 'accounts', user.id, 'temporaryRequests');
+  
+  //   const unsubscribe = onSnapshot(tempRequestRef, (querySnapshot) => {
+  //     const tempRequestList = querySnapshot.docs.map((doc) => {
+  //       const data = doc.data();
+  //       return {
+  //         id: doc.id,
+  //         ...data,
+  //         selectedItem: {
+  //           value: data.selectedItemId,
+  //           label: data.selectedItemLabel,
+  //         },
+  //       };
+  //     });
+  
+  //     setRequestList(tempRequestList);
+  //     setLoading(false);
+  //   }, (error) => {
+  //     console.error('Error fetching request list in real-time:', error);
+  //     setLoading(false);
+  //   });
+  
+  //   return () => unsubscribe(); // cleanup listener on unmount
+  // }, [user]);
 
   useEffect(() => {
     if (!user || !user.id) return;
@@ -46,16 +75,21 @@ const RequestListScreen = () => {
           },
         };
       });
-  
-      setRequestList(tempRequestList);
+      
+      // ✅ Collect all temp doc IDs to delete later
+      const ids = querySnapshot.docs.map(doc => doc.id);
+      setTempDocIdsToDelete(ids);
+      
+      setRequestList(tempRequestList);      
       setLoading(false);
+      
     }, (error) => {
       console.error('Error fetching request list in real-time:', error);
       setLoading(false);
     });
   
     return () => unsubscribe(); // cleanup listener on unmount
-  }, [user]);
+  }, [user]);  
 
   const handleRequestNow = async () => {
     console.log('Current metadata:', metadata);
@@ -138,18 +172,29 @@ const RequestListScreen = () => {
       const newUserRequestRef = doc(userRequestsRootRef);
       await setDoc(newUserRequestRef, {
         ...requestData,
-        accountId: user.uid,
+        accountId: user.id,
       });
+
+      // ✅ Delete the original temporary request
+      if (tempDocIdsToDelete.length > 0) {
+        for (const id of tempDocIdsToDelete) {
+          await deleteDoc(doc(db, 'accounts', user.id, 'temporaryRequests', id));
+          console.log('Deleted temp request with ID:', id);
+        }
+        
+      } else {
+        console.log('No temp requests to delete');
+      }      
   
       console.log('Request submitted successfully');
-      return true; // Successful submission
+      return true; 
+
     } catch (error) {
       console.error('Error submitting request:', error);
       Alert.alert('Error', 'Failed to submit request. Please try again.');
-      return false; // Error in submission
+      return false; 
     }
   };
-  
   
   const handleConfirmRequest = async () => {
     console.log('Metadata:', metadata);
