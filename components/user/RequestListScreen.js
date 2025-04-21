@@ -11,7 +11,7 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
 } from 'react-native';
-import { collection, getDocs, deleteDoc, doc, onSnapshot, Timestamp, setDoc, addDoc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, onSnapshot, Timestamp, setDoc, addDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig';
 import { useAuth } from '../contexts/AuthContext';
 import { useRequestMetadata } from '../contexts/RequestMetadataContext';
@@ -30,7 +30,7 @@ const RequestListScreen = () => {
   const [confirmationData, setConfirmationData] = useState(null);
   const [tempDocIdsToDelete, setTempDocIdsToDelete] = useState([]);
 
-  // useEffect(() => {
+   // useEffect(() => {
   //   if (!user || !user.id) return;
   
   //   const tempRequestRef = collection(db, 'accounts', user.id, 'temporaryRequests');
@@ -57,7 +57,7 @@ const RequestListScreen = () => {
   
   //   return () => unsubscribe(); // cleanup listener on unmount
   // }, [user]);
-
+  
   useEffect(() => {
     if (!user || !user.id) return;
   
@@ -110,6 +110,15 @@ const RequestListScreen = () => {
     // Show the confirmation modal with the metadata details
     setConfirmationData(metadata);
     setShowConfirmationModal(true);
+  };
+
+  const logRequestOrReturn = async (userId, userName, action, requestDetails) => {
+    await addDoc(collection(db, `accounts/${userId}/activitylog`), {
+      action, // e.g. "Requested Items" or "Returned Items"
+      userName,
+      timestamp: serverTimestamp(),
+      requestList: requestDetails, 
+    });
   };
 
   const submitRequest = async () => {
@@ -181,11 +190,14 @@ const RequestListScreen = () => {
           await deleteDoc(doc(db, 'accounts', user.id, 'temporaryRequests', id));
           console.log('Deleted temp request with ID:', id);
         }
-        
+
       } else {
         console.log('No temp requests to delete');
       }      
   
+      // Log the "Requested Items" action
+      await logRequestOrReturn(user.id, userName, "Requested Items", requestData.filteredMergedData);
+
       console.log('Request submitted successfully');
       return true; 
 

@@ -175,8 +175,8 @@ export default function RequestScreen() {
         throw new Error('Missing user ID or selected request ID.');
       }
 
-      const userRequestRef = doc(db, `accounts/${user.uid}/userRequests`, selectedRequest.id);
-      const activityLogRef = doc(db, `accounts/${user.uid}/historylog`, selectedRequest.id);
+      const userRequestRef = doc(db, `accounts/${user.id}/userRequests`, selectedRequest.id);
+      const activityLogRef = doc(db, `accounts/${user.id}/historylog`, selectedRequest.id);
       const requestSnap = await getDoc(userRequestRef);
       if (!requestSnap.exists()) throw new Error('Request not found.');
 
@@ -192,7 +192,7 @@ export default function RequestScreen() {
 
       const rootQuery = query(
         collection(db, 'userrequests'),
-        where('accountId', '==', user.uid),
+        where('accountId', '==', user.id),
         where('timestamp', '==', requestData.timestamp)
       );
 
@@ -208,7 +208,7 @@ export default function RequestScreen() {
       Alert.alert('Success', 'Request successfully cancelled.');
       setModalVisible(false);
       fetchRequests();
-      
+
     } catch (err) {
       console.error('Cancel error:', err);
       Alert.alert('Error', 'Failed to cancel the request.');
