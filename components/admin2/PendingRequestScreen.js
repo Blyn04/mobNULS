@@ -74,17 +74,207 @@ export default function PendingRequestScreen() {
     }
   };
 
-  const handleApprove = async (request) => {
-    try {
-      const requestRef = doc(db, 'userrequests', request.id);
-      await updateDoc(requestRef, { status: 'Approved' });
-      Alert.alert('Success', 'Request approved.');
-      fetchPendingRequests();
-
-    } catch (error) {
-      console.error('Error approving request:', error);
+  const handleApprove = async () => {
+    const isChecked = selectedRequest.filteredMergedData.some((item) => item.selected);
+  
+    if (!isChecked) {
+      Alert.alert('Error', 'No Items selected');
+      return;
     }
-  };
+  
+    const filteredItems = selectedRequest.filteredMergedData.filter((item) => item.selected);
+  
+    if (filteredItems.length === 0) {
+      Alert.alert('Error', 'No Items selected');
+      return;
+    }
+  
+    const enrichedItems = await Promise.all(
+      filteredItems.map(async (item) => {
+        const selectedItemId = item.selectedItemId || item.selectedItem?.value;
+        let itemType = "Unknown";
+  
+        if (selectedItemId) {
+          try {
+            const inventoryDoc = await getDoc(doc(db, "inventory", selectedItemId));
+            if (inventoryDoc.exists()) {
+              itemType = inventoryDoc.data().type || "Unknown";
+            }
+          } catch (err) {
+            console.error(`Failed to fetch type for inventory item ${selectedItemId}:`, err);
+          }
+        }
+  
+        return {
+          ...item,
+          selectedItemId,
+          itemType,
+        };
+      })
+    );
+  
+    const uncheckedItems = selectedRequest.filteredMergedData.filter((item) => !item.selected);
+  
+    const rejectedItems = await Promise.all(
+      uncheckedItems.map(async (item) => {
+        const selectedItemId = item.selectedItemId || item.selectedItem?.value;
+        let itemType = "Unknown";
+  
+        if (selectedItemId) {
+          try {
+            const inventoryDoc = await getDoc(doc(db, "inventory", selectedItemId));
+            if (inventoryDoc.exists()) {
+              itemType = inventoryDoc.data().type || "Unknown";
+            }
+          } catch (err) {
+            console.error(`Failed to fetch type for inventory item ${selectedItemId}:`, err);
+          }
+        }
+  
+        return {
+          ...item,
+          selectedItemId,
+          itemType,
+        };
+      })
+    );
+  
+    const userEmail = user.email;
+  
+    let userName = "Unknown";
+    try {
+      const userQuery = query(collection(db, "accounts"), where("email", "==", userEmail));
+      const userSnapshot = await getDocs(userQuery);
+  
+      if (!userSnapshot.empty) {
+        const userDoc = userSnapshot.docs[0];
+        const userData = userDoc.data();
+        userName = userData.name || "Unknown";
+      }
+    } catch (error) {
+      console.error("Error fetching user name:", error);
+    }
+  
+    const requestLogEntry = {
+      accountId: selectedRequest.accountId || "N/A",
+      userName: selectedRequest.userName || "N/A",
+      room: selectedRequest.room || "N/A",
+      courseCode: selectedRequest.courseCode || "N/A",
+      courseDescription: selectedRequest.courseDescription || "N/A",
+      dateRequired: selectedRequest.dateRequired || "N/A",
+      timeFrom: selectedRequest.timeFrom || "N/A",
+      timeTo: selectedRequest.timeTo || "N/A",
+      timestamp: selectedRequest.timestamp || new Date(),
+      requestList: enrichedItems,
+      status: "Approved",
+      approvedBy: userName,
+      reason: selectedRequest.reason || "No reason provided",
+      program: selectedRequest.program,
+    };
+  
+    const rejectLogEntry = {
+      accountId: selectedRequest.accountId || "N/A",
+      userName: selectedRequest.userName || "N/A",
+      room: selectedRequest.room || "N/A",
+      courseCode: selectedRequest.courseCode || "N/A",
+      courseDescription: selectedRequest.courseDescription || "N/A",
+      dateRequired: selectedRequest.dateRequired || "N/A",
+      timeFrom: selectedRequest.timeFrom || "N/A",
+      timeTo: selectedRequest.timeTo || "N/A",
+      timestamp: selectedRequest.timestamp || new Date(),
+      requestList: rejectedItems,
+      status: "Rejected",
+      rejectedBy: userName,
+      reason: "Item not selected for approval",
+      program: selectedRequest.program,
+    };
+  
+    try {
+      // Log approved items in historylog subcollection
+      await addDoc(collection(db, `accounts/${selectedRequest.accountId}/historylog`), {
+        action: "Request Approved",
+        userName,
+        timestamp: serverTimestamp(),
+        requestList: enrichedItems,
+        approvedBy: userName,
+        courseCode: selectedRequest.courseCode || "N/A",
+        courseDescription: selectedRequest.courseDescription || "N/A",
+        dateRequired: selectedRequest.dateRequired,
+        reason: selectedRequest.reason,
+        room: selectedRequest.room,
+        program: selectedRequest.program,
+        timeFrom: selectedRequest.timeFrom || "N/A",
+        timeTo: selectedRequest.timeTo || "N/A",
+      });
+  
+      // Log rejected items in historylog subcollection
+      if (rejectedItems.length > 0) {
+        await addDoc(collection(db, `accounts/${selectedRequest.accountId}/historylog`), {
+          action: "Request Rejected",
+          userName,
+          timestamp: serverTimestamp(),
+          requestList: rejectedItems,
+          rejectedBy: userName,
+          reason: "Item not selected for approval",
+          courseCode: selectedRequest.courseCode || "N/A",
+          courseDescription: selectedRequest.courseDescription || "N/A",
+          dateRequired: selectedRequest.dateRequired,
+          room: selectedRequest.room,
+          program: selectedRequest.program,
+          timeFrom: selectedRequest.timeFrom || "N/A",
+          timeTo: selectedRequest.timeTo || "N/A",
+        });
+      }
+  
+      // Add to requestlog for approval
+      await addDoc(collection(db, "requestlog"), requestLogEntry);
+  
+      // Add to requestlog for rejection
+      if (rejectedItems.length > 0) {
+        await addDoc(collection(db, "requestlog"), rejectLogEntry);
+      }
+  
+      // Handle fixed items and borrowing catalog logic
+      const fixedItems = enrichedItems.filter(item => item.itemType === "Fixed");
+      if (fixedItems.length > 0) {
+        await Promise.all(
+          fixedItems.map(async (item) => {
+            const borrowCatalogEntry = {
+              accountId: selectedRequest.accountId || "N/A",
+              userName: selectedRequest.userName || "N/A",
+              room: selectedRequest.room || "N/A",
+              courseCode: selectedRequest.courseCode || "N/A",
+              courseDescription: selectedRequest.courseDescription || "N/A",
+              dateRequired: selectedRequest.dateRequired || "N/A",
+              timeFrom: selectedRequest.timeFrom || "N/A",
+              timeTo: selectedRequest.timeTo || "N/A",
+              timestamp: selectedRequest.timestamp || new Date(),
+              requestList: [item],
+              status: "Borrowed",
+              approvedBy: userName,
+              reason: selectedRequest.reason || "No reason provided",
+              program: selectedRequest.program,
+            };
+  
+            // Add to borrowcatalog collection
+            await addDoc(collection(db, "borrowcatalog"), borrowCatalogEntry);
+          })
+        );
+      }
+  
+      // Cleanup request and subcollections
+      await deleteDoc(doc(db, "userrequests", selectedRequest.id));
+  
+      // Update state and show success notification
+      setPendingRequests(pendingRequests.filter((req) => req.id !== selectedRequest.id));
+      setSelectedRequest(null);
+      Alert.alert("Success", "Request approved and logged.");
+  
+    } catch (error) {
+      console.error("Error in approval:", error);
+      Alert.alert("Error", "There was an error with the approval process.");
+    }
+  };  
 
   const handleReject = (request) => {
     setSelectedRequest(request);
@@ -122,10 +312,10 @@ export default function PendingRequestScreen() {
           <Text style={styles.request}>Room: {item.room}</Text>
           <Text style={styles.reason}>Course Code: {item.courseCode}</Text>
           <Text style={styles.reason}>Course Description: {item.courseDescription}</Text>
-          <Text style={styles.date}>
+          {/* <Text style={styles.date}>
             Requisition Date: {item.timestamp ? item.timestamp.toDate().toLocaleString() : 'N/A'}
           </Text>
-          <Text style={styles.date}>Required Date: {item.dateRequired}</Text>
+          <Text style={styles.date}>Required Date: {item.dateRequired}</Text> */}
           <Text style={[styles[item.status?.toLowerCase() || 'pending']]}>{item.status || 'Pending'}</Text>
         </Card.Content>
       </TouchableOpacity>
