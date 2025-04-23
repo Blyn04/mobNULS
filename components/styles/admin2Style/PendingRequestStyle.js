@@ -153,10 +153,34 @@ export default StyleSheet.create({
     textAlignVertical: 'top',
     marginBottom: 10,
   },
-  
+
   modalButtonGroup: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+
+  cardButtonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+    marginTop: 10,
+  },  
+
+  tableRow: {
+    flexDirection: 'row',
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+  },
+
+  tableHeader: {
+    backgroundColor: '#f0f0f0',
+  },
   
+  tableCell: {
+    paddingHorizontal: 8,
+    minWidth: 90,
+    fontSize: 12,
+    color: '#333',
+  },
 });
