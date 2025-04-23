@@ -69,7 +69,7 @@ export default function LoginScreen({ navigation }) {
   
       // If password not set yet (new user)
       if (!isSuperAdmin && !userData.uid) {
-        setError("Password not set. Please contact admin.");
+        setError("Password not set. Please login through website first.");
         setLoading(false);
         return;
       }
@@ -114,7 +114,7 @@ export default function LoginScreen({ navigation }) {
               blockedUntil: Timestamp.fromMillis(unblockTime),
             });
   
-            setError("Super Admin account blocked for 30 minutes.");
+            setError("Account blocked for 30 minutes.");
 
           } else {
             await updateDoc(userDoc.ref, { loginAttempts: newAttempts });

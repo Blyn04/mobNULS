@@ -124,5 +124,39 @@ export default StyleSheet.create({
     color: '#777',
     marginTop: 5,
   },
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '90%',
+  },
+
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+
+  textArea: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    textAlignVertical: 'top',
+    marginBottom: 10,
+  },
+  
+  modalButtonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   
 });
