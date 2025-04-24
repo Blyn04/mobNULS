@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, Animated, Dimensions, Alert } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import CryptoJS from "crypto-js"; // 🔒 Import crypto-js for decryption
-import styles from "../styles/admin2Style/CameraStyle";
+import styles from "../styles/adminStyle/CameraStyle";
 import CONFIG from "../config";
 
 const { width, height } = Dimensions.get("window");

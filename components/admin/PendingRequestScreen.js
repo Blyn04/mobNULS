@@ -4,7 +4,7 @@ import { Card } from 'react-native-paper';
 import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig';
 import { useAuth } from '../contexts/AuthContext';
-import styles from '../styles/admin2Style/PendingRequestStyle';
+import styles from '../styles/adminStyle/PendingRequestStyle';
 import Header from '../Header';
 
 export default function PendingRequestScreen() {

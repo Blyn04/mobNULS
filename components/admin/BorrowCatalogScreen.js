@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { collection, getDocs, onSnapshot } from "firebase/firestore";
 import { db } from "../../backend/firebase/FirebaseConfig";
-import styles from "../styles/admin2Style/BorrowCatalogStyle";
+import styles from "../styles/adminStyle/BorrowCatalogStyle";
 import ApprovedRequestModal from "../customs/ApprovedRequestModal";
 import Header from "../Header";
 

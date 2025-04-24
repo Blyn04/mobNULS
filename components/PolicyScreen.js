@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import styles from '../styles/userStyle/PolicyStyle';
+import styles from './styles/PolicyStyle';
 
 export default function PolicyScreen({ navigation }) {
   const policies = [

@@ -11,7 +11,7 @@ import {
 import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig';
 import { useAuth } from '../contexts/AuthContext';
-import styles from '../styles/admin2Style/ActivityLogStyle';
+import styles from '../styles/adminStyle/ActivityLogStyle';
 import Header from '../Header';
 
 const ActivityLogScreen = () => {

@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Modal, Image } from 'react-nat
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
-import styles from '../styles/admin2Style/AddItemStyle';
+import styles from '../styles/adminStyle/AddItemStyle';
 
 export default function AddItemScreen({ navigation }) {
   const [name, setName] = useState('');

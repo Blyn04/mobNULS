@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, ScrollView, Dimensions } from "react-native";
 import Modal from "react-native-modal";
 import { BarChart, PieChart } from "react-native-chart-kit";
-import styles from "../styles/admin2Style/DataAnalysisModalStyle";
+import styles from "../styles/adminStyle/DataAnalysisModalStyle";
 
 const screenWidth = Dimensions.get("window").width;
 
