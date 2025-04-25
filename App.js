@@ -26,7 +26,7 @@ import RequestScreen from './components/user/RequestScreen';
 import RequestListScreen from './components/user/RequestListScreen';
 import RequestLogScreen from './components/user/RequestLogScreen';
 import LogScreen from './components/admin/LogScreen';
-import InventoryStocks from './components/admin2/InventoryStocks';
+import InventoryStocks from './components/admin/InventoryStocks';
 import SearchItems from './components/user/SearchItems';
 import UserActivityLogScreen from './components/user/UserActivityLogScreen';
 import BorrowCatalogScreen from './components/admin/BorrowCatalogScreen';
