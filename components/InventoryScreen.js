@@ -37,34 +37,9 @@ export default function InventoryScreen({ navigation }) {
   const [selectedEndTime, setSelectedEndTime] = useState({ hour: '3', minute: '00', period: 'PM' });
   const [program, setProgram] = useState('');
   const [room, setRoom] = useState('');
-
+  const [selectedUsageTypeInput, setSelectedUsageTypeInput] = useState(''); 
   const today = new Date().toISOString().split('T')[0];
   const { metadata, setMetadata } = useRequestMetadata(); 
-
-  // useEffect(() => {
-  //   const fetchInventory = async () => {
-  //     try {
-  //       const inventoryCollection = collection(db, 'inventory');
-  //       const inventorySnapshot = await getDocs(inventoryCollection);
-  //       const inventoryList = inventorySnapshot.docs.map(doc => ({
-  //         id: doc.id,
-  //         ...doc.data()
-  //       }));
-
-  //       setInventoryItems(inventoryList);
-
-  //       const categoriesList = ['All', ...new Set(inventoryList.map(item => item.type))]; 
-  //       const departmentsList = ['All', ...new Set(inventoryList.map(item => item.department))]; 
-  //       setCategories(categoriesList);
-  //       setDepartments(departmentsList);
-
-  //     } catch (error) {
-  //       console.error("Error fetching inventory: ", error);
-  //     }
-  //   };
-
-  //   fetchInventory();
-  // }, []);
 
   useEffect(() => {
     const inventoryCollection = collection(db, 'inventory');
@@ -128,6 +103,7 @@ export default function InventoryScreen({ navigation }) {
     setSelectedItem(null);
     setQuantity('');
     setReason('');
+    setSelectedUsageTypeInput(''); 
   };
 
   const handleInputToggle = (itemId) => {
@@ -153,6 +129,11 @@ export default function InventoryScreen({ navigation }) {
       return;
     }
 
+    if (!selectedUsageTypeInput) {
+      alert('Please select a usage type.');
+      return;
+    }
+
     const requestedQty = parseInt(quantity);
     const availableQty = parseInt(item.quantity);
   
@@ -167,7 +148,8 @@ export default function InventoryScreen({ navigation }) {
       !metadata?.timeTo || 
       !metadata?.program || 
       !metadata?.room || 
-      !metadata?.reason
+      !metadata?.reason ||
+      !selectedUsageTypeInput
     ) {
       alert('Please fill out all the borrowing details before adding an item.');
       return;
@@ -202,7 +184,7 @@ export default function InventoryScreen({ navigation }) {
         status: item.status || 'Available',
         timestamp: Timestamp.fromDate(new Date()),
         type: item.type || '',
-        usageType: item.usageType || '',
+        usageType: selectedUsageTypeInput || '',
       });
   
       alert('Item successfully added to temporaryRequests.');
@@ -326,23 +308,30 @@ export default function InventoryScreen({ navigation }) {
             onValueChange={(itemValue) => setSelectedCategory(itemValue)}
             style={styles.picker}
           >
-            <Picker.Item label="Select Category" value="" />
-            {categories.map((category) => (
-              <Picker.Item key={category} label={category} value={category} />
+          <Picker.Item key="default-category" label="Select Category" value="" />
+            {categories.map((category, index) => (
+              <Picker.Item key={category + index} label={category} value={category} />
             ))}
           </Picker>
         </View>
 
         <View style={{ flex: 1, marginLeft: 5 }}>
           <Picker
-            selectedValue={selectedUsageType}
-            onValueChange={(itemValue) => setSelectedUsageType(itemValue)}
+            selectedValue={selectedUsageTypeInput}
+            onValueChange={(itemValue) => {
+              setSelectedUsageTypeInput(itemValue);
+              setMetadata((prevMetadata) => ({
+                ...prevMetadata,
+                selectedUsageType: itemValue,
+              }));
+            }}
             style={styles.picker}
           >
             <Picker.Item label="Select Usage Type" value="" />
-            {usageTypes.map((usage) => (
-              <Picker.Item key={usage} label={usage} value={usage} />
-            ))}
+            <Picker.Item label="Laboratory Experiment" value="Laboratory Experiment" />
+            <Picker.Item label="Research" value="Research" />
+            <Picker.Item label="Community Extension" value="Community Extension" />
+            <Picker.Item label="Others" value="Others" />
           </Picker>
         </View>
       </View>
@@ -440,7 +429,6 @@ export default function InventoryScreen({ navigation }) {
                 <Text style={styles.itemType}>Department: {selectedItem?.department}</Text>
                 <Text style={styles.itemType}>Category: {selectedItem?.category}</Text>
                 <Text style={styles.itemType}>Condition: {selectedItem?.condition}</Text>
-                <Text style={styles.itemType}>Usage Type: {selectedItem?.usageType}</Text>
                 <Text style={styles.itemType}>Status: {selectedItem?.status}</Text>
                 <Text style={styles.itemType}>Available Quantity: {selectedItem?.quantity}</Text>
               </View>
@@ -558,6 +546,7 @@ export default function InventoryScreen({ navigation }) {
                     // Pass the selected time to the appropriate handler
                     if (timePickerType === 'start') {
                       handleStartTimeSelect(selectedTime); // Correctly pass selected time
+
                     } else {
                       handleEndTimeSelect(selectedTime); // Correctly pass selected time
                     }

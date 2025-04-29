@@ -101,7 +101,8 @@ const RequestListScreen = () => {
       !metadata?.timeTo ||
       !metadata?.program ||
       !metadata?.room ||
-      !metadata?.reason
+      !metadata?.reason ||
+      !metadata?.usageType
     ) {
       Alert.alert('Missing Info', 'Please go back and fill the required borrowing details.');
       return;
@@ -355,11 +356,9 @@ const RequestListScreen = () => {
                   <Text style={styles.bold}>Category:</Text> {selectedItem.category}
                 </Text>
 
-                {selectedItem.usageType && (
-                  <Text style={styles.modalDetail}>
-                    <Text style={styles.bold}>Usage Type:</Text> {selectedItem.usageType}
-                  </Text>
-                )}
+                <Text style={styles.modalDetail}>
+                  <Text style={styles.bold}>Usage Type:</Text> {selectedItem.usageType}
+                </Text>
 
                 <Text style={styles.modalDetail}>
                   <Text style={styles.bold}>Item Type:</Text> {selectedItem.type}

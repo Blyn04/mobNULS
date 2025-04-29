@@ -26,6 +26,7 @@ const ApprovedRequestModal = ({ isVisible, onClose, request, formatDate }) => {
     rejectedBy,
     status,
     itemId,
+    usageType
   } = request;
 
   const renderTableHeader = () => (
@@ -37,6 +38,7 @@ const ApprovedRequestModal = ({ isVisible, onClose, request, formatDate }) => {
       <Text style={styles.tableCellHeader}>Category</Text>
       <Text style={styles.tableCellHeader}>Condition</Text>
       <Text style={styles.tableCellHeader}>Lab Room</Text>
+      <Text style={styles.tableCellHeader}>Usage Type</Text>
     </View>
   );
 
@@ -54,6 +56,7 @@ const ApprovedRequestModal = ({ isVisible, onClose, request, formatDate }) => {
       <Text style={styles.tableCell}>{item.category}</Text>
       <Text style={styles.tableCell}>{item.condition}</Text>
       <Text style={styles.tableCell}>{item.labRoom}</Text>
+      <Text style={styles.tableCell}>{item.usageType}</Text>
     </View>
   );
 

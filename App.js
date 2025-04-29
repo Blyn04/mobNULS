@@ -31,6 +31,7 @@ import SearchItems from './components/user/SearchItems';
 import UserActivityLogScreen from './components/user/UserActivityLogScreen';
 import BorrowCatalogScreen from './components/admin/BorrowCatalogScreen';
 import { RequestMetadataProvider } from './components/contexts/RequestMetadataContext';
+import CapexRequestScreen from './components/user/CapexRequestScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -60,7 +61,7 @@ const CustomDrawerContent = ({ navigation }) => {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('UserHistoryLogScreen')}>
-        <Title style={styles.drawerItem}>History Log</Title>
+        <Title style={styles.drawerItem}>Status Board</Title>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('UserActivityLogScreen')}>
@@ -77,6 +78,10 @@ const CustomDrawerContent = ({ navigation }) => {
 
       <TouchableOpacity onPress={() => navigation.navigate('PolicyScreen')}>
         <Title style={styles.drawerItem}>Policy Screen</Title>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('CapexRequestScreen')}>
+        <Title style={styles.drawerItem}>Capex Request</Title>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -219,6 +224,7 @@ function UserDrawer() {
       <Drawer.Screen name="SearchItems" component={SearchItems} />
       <Drawer.Screen name="UserActivityLogScreen" component={UserActivityLogScreen} />
       <Drawer.Screen name="InventoryScreen" component={InventoryScreen} />
+      <Drawer.Screen name="CapexRequestScreen" component={CapexRequestScreen} />
     </Drawer.Navigator>
   );
 }
