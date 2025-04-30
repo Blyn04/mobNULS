@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   modalContainer: {
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -44,15 +45,18 @@ const styles = StyleSheet.create({
     width: '90%',
     maxHeight: '80%',
   },
+
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
   },
+
   modalText: {
     fontSize: 14,
     color: '#333',
   },
+  
   closeButton: {
     marginTop: 20,
   },
