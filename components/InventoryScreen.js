@@ -149,7 +149,7 @@ export default function InventoryScreen({ navigation }) {
       !metadata?.program || 
       !metadata?.room || 
       !metadata?.reason ||
-      !selectedUsageTypeInput
+      !metadata?.usageType
     ) {
       alert('Please fill out all the borrowing details before adding an item.');
       return;
@@ -184,7 +184,7 @@ export default function InventoryScreen({ navigation }) {
         status: item.status || 'Available',
         timestamp: Timestamp.fromDate(new Date()),
         type: item.type || '',
-        usageType: selectedUsageTypeInput || '',
+        usageType: item.usageType || '',
       });
   
       alert('Item successfully added to temporaryRequests.');
@@ -322,7 +322,7 @@ export default function InventoryScreen({ navigation }) {
               setSelectedUsageTypeInput(itemValue);
               setMetadata((prevMetadata) => ({
                 ...prevMetadata,
-                selectedUsageType: itemValue,
+                usageType: itemValue,
               }));
             }}
             style={styles.picker}
