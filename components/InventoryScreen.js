@@ -41,6 +41,31 @@ export default function InventoryScreen({ navigation }) {
   const today = new Date().toISOString().split('T')[0];
   const { metadata, setMetadata } = useRequestMetadata(); 
 
+    // useEffect(() => {
+  //   const fetchInventory = async () => {
+  //     try {
+  //       const inventoryCollection = collection(db, 'inventory');
+  //       const inventorySnapshot = await getDocs(inventoryCollection);
+  //       const inventoryList = inventorySnapshot.docs.map(doc => ({
+  //         id: doc.id,
+  //         ...doc.data()
+  //       }));
+
+  //       setInventoryItems(inventoryList);
+
+  //       const categoriesList = ['All', ...new Set(inventoryList.map(item => item.type))]; 
+  //       const departmentsList = ['All', ...new Set(inventoryList.map(item => item.department))]; 
+  //       setCategories(categoriesList);
+  //       setDepartments(departmentsList);
+
+  //     } catch (error) {
+  //       console.error("Error fetching inventory: ", error);
+  //     }
+  //   };
+
+  //   fetchInventory();
+  // }, []);
+
   useEffect(() => {
     const inventoryCollection = collection(db, 'inventory');
   
