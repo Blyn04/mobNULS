@@ -43,8 +43,6 @@ export default function LoginScreen({navigation}) {
   const jobOptions = ['Dean', 'Laboratory Custodian', 'Faculty'];
   const deptOptions = ['Medical Technology', 'Nursing', 'Dentistry', 'Optometry'];
 
-
-
   const handleLogin = async () => {
     
       if (!email || !password) {
