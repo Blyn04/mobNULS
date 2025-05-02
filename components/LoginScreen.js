@@ -15,7 +15,6 @@ import TermsModal from './customs/TermsModal';
 import {Animated} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
-
 export default function LoginScreen({navigation}) {
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();

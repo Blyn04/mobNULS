@@ -11,6 +11,7 @@ import { useAuth } from './components/contexts/AuthContext';
 import { db } from './backend/firebase/FirebaseConfig';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import Icon from 'react-native-vector-icons/Ionicons'; 
+import { LogBox } from 'react-native';
 
 import ActivityLogScreen from './components/admin/ActivityLogScreen';
 import LoginScreen from './components/LoginScreen';
@@ -36,6 +37,10 @@ import CapexRequestList from './components/admin/CapexListScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+
+LogBox.ignoreLogs([
+  'Support for defaultProps will be removed from function components'
+]);
 
 const CustomDrawerContent = ({ navigation }) => {
   const { user, logout } = useAuth();  
