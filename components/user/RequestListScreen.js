@@ -165,10 +165,10 @@ const RequestListScreen = () => {
           room: metadata.room,
           timeFrom: metadata.timeFrom,
           timeTo: metadata.timeTo,
-          usageType: item.usageType,
         })),
         userName,
         timestamp: Timestamp.now(),
+        usageType: metadata.usageType,
       };
   
       console.log('Request data to be saved:', requestData);
