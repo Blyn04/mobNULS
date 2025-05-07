@@ -599,7 +599,7 @@
 // }
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, TextInput, Image, Modal, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, TextInput, Image, Modal, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView , Platform, Keyboard} from 'react-native';
 import { getDocs, collection, onSnapshot, doc, setDoc, addDoc, query, where, Timestamp } from 'firebase/firestore';
 import { db } from '../backend/firebase/FirebaseConfig';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -926,8 +926,19 @@ export default function InventoryScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Header onLayout={handleHeaderLayout} />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{flex: 1 }}>
+  <KeyboardAvoidingView
+      style={{ flex: 1,}}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0} 
+    >
+  
+  <ScrollView 
+          contentContainerStyle={styles.scrollContainer}
+          enableOnAndroid={true}
+          keyboardShouldPersistTaps="always"
+          extraScrollHeight={0} 
+          enableAutomaticScroll={true} >
 
-  <ScrollView>
     <View style={[styles.wholeSection,{ marginTop: headerHeight }]}>
       <View style={{flexDirection:'row', alignItems: 'center', marginBottom: 10}}>
         <Icon2 name='clipboard-outline' size={30}/>
@@ -973,8 +984,6 @@ export default function InventoryScreen({ navigation }) {
         </View>
       </Modal>
     </View>
-
-
 
           <View style={styles.timeSection}>
               <Text style={{fontSize: 16, fontWeight: 500, color: '#395a7f', width:100}}>Time Needed:</Text>
@@ -1099,6 +1108,8 @@ export default function InventoryScreen({ navigation }) {
         
     </View>
     </ScrollView>
+    </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
       
 
 

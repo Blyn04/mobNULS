@@ -346,6 +346,7 @@ export default function LoginScreen({navigation}) {
       
         } catch (error) {
           console.error("Sign up error:", error.message);
+          
           if (error.code === "auth/email-already-in-use") {
             setError("Email already in use.");
     

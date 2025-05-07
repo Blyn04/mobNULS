@@ -413,62 +413,61 @@ const CustomDrawerContent = ({ navigation }) => {
       />
       <View style={styles.upperSection}>
         <View style={styles.headProfile}>
-        <TouchableOpacity style={styles.profileSection} onPress={() => navigation.navigate('ProfileScreen')}>
-          <Avatar.Image style={{backgroundColor: '#5e8fb0'}} size={70} source={{ uri: 'https://your-profile-image-url.com' }} />
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.profileSection} onPress={() => navigation.navigate('ProfileScreen')}>
+            <Avatar.Image style={{backgroundColor: '#5e8fb0'}} size={70} source={{ uri: 'https://your-profile-image-url.com' }} />
+          </TouchableOpacity>
         </View>
       
         <View>
-      <Text style={styles.profileName}>{user ? user.name : 'Guest'}</Text>
-      <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>Position goes here</Text>   
-      </View>
-      
+          <Text style={styles.profileName}>{user ? user.name : 'Guest'}</Text>
+          <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>Position goes here</Text>   
+        </View>
       </View>
 
       <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('ProfileScreen')} activeOpacity={0.5}>
-  <Icon2 name="account-circle-outline" size={25} style={styles.icon} />
-  <Title style={styles.titleStyle}>Profile</Title>
-  </TouchableOpacity>
+        <Icon2 name="account-circle-outline" size={25} style={styles.icon} />
+        <Title style={styles.titleStyle}>Profile</Title>
+      </TouchableOpacity>
 
-<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('InventoryScreen')}>
-  <Icon2 name="clipboard-list-outline" size={25} style={styles.icon} />
-  <Title style={styles.titleStyle}>Requisition</Title>
-</TouchableOpacity>
+      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('InventoryScreen')}>
+        <Icon2 name="clipboard-list-outline" size={25} style={styles.icon} />
+        <Title style={styles.titleStyle}>Requisition</Title>
+      </TouchableOpacity>
 
-<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('SearchItems')}>
-  <Icon2 name="magnify" size={25} style={styles.icon} />
-  <Title style={styles.titleStyle}>Search Items</Title>
-</TouchableOpacity>
+      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('SearchItems')}>
+        <Icon2 name="magnify" size={25} style={styles.icon} />
+        <Title style={styles.titleStyle}>Search Items</Title>
+      </TouchableOpacity>
 
-<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('UserHistoryLogScreen')}>
-  <Icon2 name="history" size={25} style={styles.icon} />
-  <Title style={styles.titleStyle}>Status Board</Title>
-</TouchableOpacity>
+      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('UserHistoryLogScreen')}>
+        <Icon2 name="history" size={25} style={styles.icon} />
+        <Title style={styles.titleStyle}>Status Board</Title>
+      </TouchableOpacity>
 
-<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('UserActivityLogScreen')}>
-  <Icon2 name="chart-timeline-variant" size={25} style={styles.icon} />
-  <Title style={styles.titleStyle}>Activity Log</Title>
-</TouchableOpacity>
+      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('UserActivityLogScreen')}>
+        <Icon2 name="chart-timeline-variant" size={25} style={styles.icon} />
+        <Title style={styles.titleStyle}>Activity Log</Title>
+      </TouchableOpacity>
 
-<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('CalendarScreen')}>
-  <Icon2 name="calendar-month" size={25} style={styles.icon} />
-  <Title style={styles.titleStyle}>Calendar</Title>
-</TouchableOpacity>
+      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('CalendarScreen')}>
+        <Icon2 name="calendar-month" size={25} style={styles.icon} />
+        <Title style={styles.titleStyle}>Calendar</Title>
+      </TouchableOpacity>
 
-<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('RequestListScreen')}>
-  <Icon2 name="file-document-outline" size={25} style={styles.icon} />
-  <Title style={styles.titleStyle}>Request List</Title>
-</TouchableOpacity>
+      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('RequestListScreen')}>
+        <Icon2 name="file-document-outline" size={25} style={styles.icon} />
+        <Title style={styles.titleStyle}>Request List</Title>
+      </TouchableOpacity>
 
-<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('PolicyScreen')}>
-  <Icon2 name="shield-outline" size={25} style={styles.icon} />
-  <Title style={styles.titleStyle}>Policy</Title>
-</TouchableOpacity>
+      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('PolicyScreen')}>
+        <Icon2 name="shield-outline" size={25} style={styles.icon} />
+        <Title style={styles.titleStyle}>Policy</Title>
+      </TouchableOpacity>
 
-<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('CapexRequestScreen')}>
-  <Icon2 name="cash-multiple" size={25} style={styles.icon} />
-  <Title style={styles.titleStyle}>Capex Request</Title>
-</TouchableOpacity>
+      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('CapexRequestScreen')}>
+        <Icon2 name="cash-multiple" size={25} style={styles.icon} />
+        <Title style={styles.titleStyle}>Capex Request</Title>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.logoutButton}
