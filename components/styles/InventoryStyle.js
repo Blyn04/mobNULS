@@ -453,7 +453,7 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    padding: 16,
+    padding: 40,
   },
 
   /* Section Title */

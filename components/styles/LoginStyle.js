@@ -107,10 +107,12 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+
   inner: {
     flex: 1,
     justifyContent: 'center',
   },
+
   header: {
     backgroundColor: '#002075',
     height: '35%',
@@ -118,16 +120,19 @@ export default StyleSheet.create({
     justifyContent: 'center',
     paddingTop: 50,
   },
+
   headerTitle: {
     fontSize: 36,
     color: '#ffffff',
     fontWeight: 'bold',
   },
+
   subHeader: {
     fontSize: 16,
     color: '#c8e6c9',
     marginTop: 8,
   },
+
   loginCard: {
     flex: 1,
     backgroundColor: '#ffffff',
@@ -138,6 +143,7 @@ export default StyleSheet.create({
     paddingTop: 30,
     height: 'auto'
   },
+
   loginTitle: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -195,7 +201,8 @@ export default StyleSheet.create({
   footerText: {
     marginTop: 20,
     textAlign: 'center',
-    color: '#6b7280',
+    color: '#6e9fc1',
+    textDecorationLine: 'underline'
   },
   
   input: {
@@ -209,7 +216,6 @@ export default StyleSheet.create({
   },
 
   scrollContainer: {
-
     flexGrow: 1,
     paddingBottom: 80,
     backgroundColor: 'white',
