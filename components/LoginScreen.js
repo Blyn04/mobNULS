@@ -615,7 +615,11 @@ export default function LoginScreen({navigation}) {
             onPress={isSignup ? handleSignup : handleLogin}
             icon={isSignup ? "account-plus" : "login"}
             loading={loading}
-            style={styles.loginButton}
+            disabled={!agreedToTerms} // Disable when not agreed
+            style={[
+              styles.loginButton,
+              !agreedToTerms && { backgroundColor: '#ccc' }, // Grey out when disabled
+            ]}
             labelStyle={styles.loginButtonText}
           />
 
