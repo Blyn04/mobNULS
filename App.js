@@ -373,12 +373,12 @@ import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons'; // or Font
 import { LogBox } from 'react-native';
 
 import ActivityLogScreen from './components/admin/ActivityLogScreen';
-import LoginScreen from './components/LoginScreen2';
+import LoginScreen from './components/LoginScreen';
 import UserDashboard from './components/user/UserDashboard';
 import CalendarScreen from './components/user/CalendarScreen';
 import PolicyScreen from './components/PolicyScreen';
 import ProfileScreen from './components/user/ProfileScreen';
-import Admin2Dashboard from './components/admin/AdminDashboard';
+import Admin2Dashboard from './components/admin/Admin2Dashboard';
 import PendingRequestScreen from './components/admin/PendingRequestScreen';
 import InventoryScreen from './components/InventoryScreen';
 import CameraScreen from './components/admin/CameraScreen';
@@ -394,7 +394,6 @@ import { RequestMetadataProvider } from './components/contexts/RequestMetadataCo
 import CapexRequestScreen from './components/user/CapexRequestScreen';
 import CapexRequestList from './components/admin/CapexListScreen';
 import ReturnItems from './components/user/ReturnItems';
-import LoginScreen2 from './components/LoginScreen2';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -658,7 +657,7 @@ export default function App() {
               <PaperProvider>
                 <NavigationContainer>
                   <Stack.Navigator>
-                    <Stack.Screen name="Login" component={LoginScreen2} options={{ headerShown: false }} />
+                    <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
                     <Stack.Screen name="User" component={UserDrawer} options={{ headerShown: false }} />
                     <Stack.Screen name="Admin" component={AdminDrawer} options={{ headerShown: false }} />
                     <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }}/>
