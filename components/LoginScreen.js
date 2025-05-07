@@ -244,6 +244,7 @@ export default function LoginScreen({navigation}) {
         } else {
           console.log('❌ Email failed:', result.error);
         }
+
       } catch (error) {
         console.error('❌ Error sending email:', error);
       }
@@ -343,6 +344,7 @@ export default function LoginScreen({navigation}) {
           setConfirmPassword("");
           setJobTitle("");
           setDepartment("");
+          setError("")
       
         } catch (error) {
           console.error("Sign up error:", error.message);
