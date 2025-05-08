@@ -533,7 +533,10 @@ const CustomAdminDrawerContent = ({ navigation }) => {
       <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
         <View style={styles.profileSection}>
           <Avatar.Image size={50} source={{ uri: 'https://your-profile-image-url.com' }} />
-          <Title style={styles.profileName}>{user ? user.name : 'Guest'}</Title>
+          <Text style={styles.profileName}>
+              {user ? capitalizeName(user.name) : 'Guest'}
+          </Text>
+          <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>{user ? user.jobTitle : 'Job Title'}</Text>    
         </View>
       </TouchableOpacity>
 
