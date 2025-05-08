@@ -401,6 +401,10 @@ LogBox.ignoreLogs([
   'Support for defaultProps will be removed from function components'
 ]);
 
+const capitalizeName = (name) => {
+  return name.replace(/\b\w/g, char => char.toUpperCase());
+};
+
 const CustomDrawerContent = ({ navigation }) => {
   const { user, logout } = useAuth();  
 
@@ -419,8 +423,10 @@ const CustomDrawerContent = ({ navigation }) => {
         </View>
       
         <View>
-          <Text style={styles.profileName}>{user ? user.name : 'Guest'}</Text>
-          <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>Position goes here</Text>   
+          <Text style={styles.profileName}>
+            {user ? capitalizeName(user.name) : 'Guest'}
+          </Text>
+          <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>{user ? user.jobTitle : 'Job Title'}</Text>   
         </View>
       </View>
 
