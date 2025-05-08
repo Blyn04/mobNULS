@@ -394,6 +394,7 @@ import { RequestMetadataProvider } from './components/contexts/RequestMetadataCo
 import CapexRequestScreen from './components/user/CapexRequestScreen';
 import CapexRequestList from './components/admin/CapexListScreen';
 import ReturnItems from './components/user/ReturnItems';
+import { useNavigation } from '@react-navigation/native';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -645,6 +646,7 @@ function UserDrawer() {
       <Drawer.Screen name="InventoryScreen" component={InventoryScreen} />
       <Drawer.Screen name="CapexRequestScreen" component={CapexRequestScreen} />
       <Drawer.Screen name="ReturnItemsScreen" component={ReturnItems} />
+      <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
     </Drawer.Navigator>
   );
 }
@@ -666,6 +668,7 @@ const AdminDrawer = () => {
       <Drawer.Screen name="CalendarScreen" component={CalendarScreen} />
       <Drawer.Screen name="BorrowCatalogScreen" component={BorrowCatalogScreen} />
       <Drawer.Screen name="CapexRequestListScreen" component={CapexRequestList} />
+      <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
     </Drawer.Navigator>
   );
 };

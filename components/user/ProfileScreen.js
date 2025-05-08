@@ -88,9 +88,9 @@ export default function ProfileScreen({ navigation }) {
       <View style={styles.header}>
         <Header/>
         
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Icon name="arrow-left" size={30} color="white" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <Text style={styles.headerTitle}>Profile</Text>
       </View>
 
