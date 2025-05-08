@@ -405,6 +405,14 @@ const capitalizeName = (name) => {
   return name.replace(/\b\w/g, char => char.toUpperCase());
 };
 
+const getInitials = (name) => {
+  if (!name) return '';
+  const words = name.trim().split(' ');
+  return words.length === 1
+    ? words[0][0].toUpperCase()
+    : (words[0][0] + words[1][0]).toUpperCase();
+};
+
 const CustomDrawerContent = ({ navigation }) => {
   const { user, logout } = useAuth();  
 
@@ -418,7 +426,11 @@ const CustomDrawerContent = ({ navigation }) => {
       <View style={styles.upperSection}>
         <View style={styles.headProfile}>
           <TouchableOpacity style={styles.profileSection} onPress={() => navigation.navigate('ProfileScreen')}>
-            <Avatar.Image style={{backgroundColor: '#5e8fb0'}} size={70} source={{ uri: 'https://your-profile-image-url.com' }} />
+          {user?.photoURL ? (
+            <Avatar.Image size={50} source={{ uri: user.photoURL }} />
+          ) : (
+            <Avatar.Text size={50} label={getInitials(user?.name)} />
+          )}
           </TouchableOpacity>
         </View>
       
@@ -523,7 +535,6 @@ const CustomAdminDrawerContent = ({ navigation }) => {
   const { user, logout } = useAuth();  
 
   return (
-    
     <View style={styles.drawerContent}>
       <StatusBar
         translucent
@@ -532,7 +543,11 @@ const CustomAdminDrawerContent = ({ navigation }) => {
       />
       <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
         <View style={styles.profileSection}>
-          <Avatar.Image size={50} source={{ uri: 'https://your-profile-image-url.com' }} />
+          {user?.photoURL ? (
+            <Avatar.Image size={50} source={{ uri: user.photoURL }} />
+          ) : (
+            <Avatar.Text size={50} label={getInitials(user?.name)} />
+          )}
           <Text style={styles.profileName}>
               {user ? capitalizeName(user.name) : 'Guest'}
           </Text>
