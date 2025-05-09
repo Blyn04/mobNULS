@@ -1347,9 +1347,9 @@ export default function InventoryScreen({ navigation }) {
       setSelectedUsageTypeInput(null)
     }, [])
   );
-
+   
   useEffect(() => {
-    const inventoryCollection = collection(db, 'inventory');
+    const inventoryCollection = collection(db, 'inventory');  
   
     const unsubscribe = onSnapshot(
       inventoryCollection,
@@ -1648,11 +1648,12 @@ export default function InventoryScreen({ navigation }) {
     <View style={styles.container}>
       <Header onLayout={handleHeaderLayout} />
 
-      {!isComplete && (
       <KeyboardAvoidingView
       style={{ flex: 1,}}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0} 
     >
+      {isComplete && (
+     
   
         <ScrollView 
           showsVerticalScrollIndicator={false}
@@ -1861,28 +1862,49 @@ export default function InventoryScreen({ navigation }) {
         </View>
         </TouchableWithoutFeedback>
         </ScrollView>
-        </KeyboardAvoidingView>
+        
     )}
     
-  {isComplete && (
-    <View>
-        <TextInput 
+  {!isComplete && (
+    <View style={{flex: 1, backgroundColor: '#cde4f4'}}>
+    <View style={[styles.wholeSection2,{ marginTop: headerHeight }]}>
+
+      <View style={styles.searchFilter}>
+      <TextInput 
                 style={[styles.searchBar]}
                 placeholder="Search by item name"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
               />
-      
-              
-
-              <FlatList
+      </View>
+        
+            
+            <ScrollView
+            showsVerticalScrollIndicator={false}
+            enableOnAndroid={true}
+            keyboardShouldPersistTaps="always"
+            extraScrollHeight={30} 
+            enableAutomaticScroll={true}
+            >
+            <FlatList
+                 style={{flexGrow: 1, paddingBottom: 80, paddingHorizontal: 5, paddingTop:60}}
                 data={filteredItems}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
-                ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20 }}>No items found</Text>}
+                extraScrollHeight={30}
+                ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20}}>No items found</Text>}
               /> 
+            </ScrollView>
+      
+              
+              
 
- <View style={styles.bottomContainer}>
+        <View style={styles.bottomContainer}>
+
+        <TouchableOpacity onPress={()=> setIsComplete(false)}>
+          <Text>Back</Text>
+        </TouchableOpacity>
+
         <View style={styles.requestAddContainer}>
         <TouchableOpacity style={styles.requestButton} onPress={() => navigation.navigate('RequestListScreen')}>
           <Text style={styles.requestButtonText}>Request List</Text>
@@ -1893,17 +1915,17 @@ export default function InventoryScreen({ navigation }) {
           )}
         </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={styles.helpButton} onPress={() => navigation.navigate('HelpScreen')}>
-          <Text style={styles.helpButtonText}>Help (?)</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={()=> setIsComplete(false)}>
-          <Text>Back</Text>
-        </TouchableOpacity>
       </View> 
       </View>
+      </View>
   )}
+
+</KeyboardAvoidingView>
+      
+
+    
+    
+    
       
       <Modal visible={modalVisible} transparent animationType="fade">
         <TouchableWithoutFeedback onPress={closeModal}>
@@ -2042,4 +2064,3 @@ export default function InventoryScreen({ navigation }) {
     </View>
   );
 }
-
