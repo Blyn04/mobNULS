@@ -373,7 +373,6 @@ import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons'; // or Font
 import { LogBox } from 'react-native';
 
 import ActivityLogScreen from './components/admin/ActivityLogScreen';
-import LoginScreen from './components/LoginScreen';
 import UserDashboard from './components/user/UserDashboard';
 import CalendarScreen from './components/user/CalendarScreen';
 import PolicyScreen from './components/PolicyScreen';
@@ -394,7 +393,7 @@ import { RequestMetadataProvider } from './components/contexts/RequestMetadataCo
 import CapexRequestScreen from './components/user/CapexRequestScreen';
 import CapexRequestList from './components/admin/CapexListScreen';
 import ReturnItems from './components/user/ReturnItems';
-import { useNavigation } from '@react-navigation/native';
+import LoginScreen2 from './components/LoginScreen';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -419,74 +418,75 @@ const CustomDrawerContent = ({ navigation }) => {
 
   return (
     <View style={styles.drawerContent}>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="light-content" // or 'light-content' depending on your design
-      />
-      <View style={styles.upperSection}>
-        <View style={styles.headProfile}>
+        <StatusBar
+          translucent
+          backgroundColor="transparent"
+          barStyle="light-content" // or 'light-content' depending on your design
+        />
+
+        <View style={styles.upperSection}>
+          <View style={styles.headProfile}>
           <TouchableOpacity style={styles.profileSection} onPress={() => navigation.navigate('ProfileScreen')}>
           {user?.photoURL ? (
-            <Avatar.Image size={50} source={{ uri: user.photoURL }} />
-          ) : (
-            <Avatar.Text size={50} label={getInitials(user?.name)} />
-          )}
+              <Avatar.Image size={50} source={{ uri: user.photoURL }} />
+            ) : (
+              <Avatar.Text size={50} label={getInitials(user?.name)} />
+            )}
           </TouchableOpacity>
-        </View>
-      
-        <View>
-          <Text style={styles.profileName}>
-            {user ? capitalizeName(user.name) : 'Guest'}
-          </Text>
-          <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>{user ? user.jobTitle : 'Job Title'}</Text>   
+          </View>
+        
+          <View>
+            <Text style={styles.profileName}>
+              {user ? capitalizeName(user.name) : 'Guest'}
+            </Text>
+            <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>{user ? user.jobTitle : 'Job Title'}</Text>    
         </View>
       </View>
 
       <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('ProfileScreen')} activeOpacity={0.5}>
-        <Icon2 name="account-circle-outline" size={25} style={styles.icon} />
-        <Title style={styles.titleStyle}>Profile</Title>
-      </TouchableOpacity>
+  <Icon2 name="account-circle-outline" size={25} style={styles.icon} />
+  <Title style={styles.titleStyle}>Profile</Title>
+  </TouchableOpacity>
 
-      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('InventoryScreen')}>
-        <Icon2 name="clipboard-list-outline" size={25} style={styles.icon} />
-        <Title style={styles.titleStyle}>Requisition</Title>
-      </TouchableOpacity>
+<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('InventoryScreen')}>
+  <Icon2 name="clipboard-list-outline" size={25} style={styles.icon} />
+  <Title style={styles.titleStyle}>Requisition</Title>
+</TouchableOpacity>
 
-      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('SearchItems')}>
-        <Icon2 name="magnify" size={25} style={styles.icon} />
-        <Title style={styles.titleStyle}>Search Items</Title>
-      </TouchableOpacity>
+<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('SearchItems')}>
+  <Icon2 name="magnify" size={25} style={styles.icon} />
+  <Title style={styles.titleStyle}>Search Items</Title>
+</TouchableOpacity>
 
-      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('UserHistoryLogScreen')}>
-        <Icon2 name="history" size={25} style={styles.icon} />
-        <Title style={styles.titleStyle}>Status Board</Title>
-      </TouchableOpacity>
+<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('UserHistoryLogScreen')}>
+  <Icon2 name="history" size={25} style={styles.icon} />
+  <Title style={styles.titleStyle}>Status Board</Title>
+</TouchableOpacity>
 
-      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('UserActivityLogScreen')}>
-        <Icon2 name="chart-timeline-variant" size={25} style={styles.icon} />
-        <Title style={styles.titleStyle}>Activity Log</Title>
-      </TouchableOpacity>
+<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('UserActivityLogScreen')}>
+  <Icon2 name="chart-timeline-variant" size={25} style={styles.icon} />
+  <Title style={styles.titleStyle}>Activity Log</Title>
+</TouchableOpacity>
 
-      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('CalendarScreen')}>
-        <Icon2 name="calendar-month" size={25} style={styles.icon} />
-        <Title style={styles.titleStyle}>Calendar</Title>
-      </TouchableOpacity>
+<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('CalendarScreen')}>
+  <Icon2 name="calendar-month" size={25} style={styles.icon} />
+  <Title style={styles.titleStyle}>Calendar</Title>
+</TouchableOpacity>
 
-      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('RequestListScreen')}>
-        <Icon2 name="file-document-outline" size={25} style={styles.icon} />
-        <Title style={styles.titleStyle}>Request List</Title>
-      </TouchableOpacity>
+<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('RequestListScreen')}>
+  <Icon2 name="file-document-outline" size={25} style={styles.icon} />
+  <Title style={styles.titleStyle}>Request List</Title>
+</TouchableOpacity>
 
-      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('PolicyScreen')}>
-        <Icon2 name="shield-outline" size={25} style={styles.icon} />
-        <Title style={styles.titleStyle}>Policy</Title>
-      </TouchableOpacity>
+<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('PolicyScreen')}>
+  <Icon2 name="shield-outline" size={25} style={styles.icon} />
+  <Title style={styles.titleStyle}>Policy</Title>
+</TouchableOpacity>
 
-      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('CapexRequestScreen')}>
-        <Icon2 name="cash-multiple" size={25} style={styles.icon} />
-        <Title style={styles.titleStyle}>Capex Request</Title>
-      </TouchableOpacity>
+<TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('CapexRequestScreen')}>
+  <Icon2 name="cash-multiple" size={25} style={styles.icon} />
+  <Title style={styles.titleStyle}>Capex Request</Title>
+</TouchableOpacity>
 
       <TouchableOpacity
         style={styles.logoutButton}
@@ -536,6 +536,7 @@ const CustomAdminDrawerContent = ({ navigation }) => {
   const { user, logout } = useAuth();  
 
   return (
+    
     <View style={styles.drawerContent}>
       <StatusBar
         translucent
@@ -544,15 +545,17 @@ const CustomAdminDrawerContent = ({ navigation }) => {
       />
       <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
         <View style={styles.profileSection}>
-          {user?.photoURL ? (
-            <Avatar.Image size={50} source={{ uri: user.photoURL }} />
-          ) : (
-            <Avatar.Text size={50} label={getInitials(user?.name)} />
-          )}
-          <Text style={styles.profileName}>
+            {user?.photoURL ? (
+              <Avatar.Image size={50} source={{ uri: user.photoURL }} />
+            ) : (
+              <Avatar.Text size={50} label={getInitials(user?.name)} />
+            )}
+
+            <Text style={styles.profileName}>
               {user ? capitalizeName(user.name) : 'Guest'}
-          </Text>
-          <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>{user ? user.jobTitle : 'Job Title'}</Text>    
+            </Text>
+
+            <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>{user ? user.jobTitle : 'Job Title'}</Text>    
         </View>
       </TouchableOpacity>
 
@@ -683,7 +686,7 @@ export default function App() {
               <PaperProvider>
                 <NavigationContainer>
                   <Stack.Navigator>
-                    <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name="Login" component={LoginScreen2} options={{ headerShown: false }} />
                     <Stack.Screen name="User" component={UserDrawer} options={{ headerShown: false }} />
                     <Stack.Screen name="Admin" component={AdminDrawer} options={{ headerShown: false }} />
                     <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }}/>
