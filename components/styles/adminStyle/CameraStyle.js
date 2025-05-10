@@ -32,6 +32,7 @@ export default StyleSheet.create({
     height: frameSize,
     position: 'relative',
     borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderWidth: frameBorderWidth,
   },
 
   corner: {
@@ -39,6 +40,7 @@ export default StyleSheet.create({
     width: 40,
     height: 40,
     borderColor: '#39FF14',
+    borderWidth: frameBorderWidth,
   },
 
   cornerTopLeft: {
@@ -74,6 +76,9 @@ export default StyleSheet.create({
     width: '100%',
     height: 5,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    top: '50%',
+    left: 0,
+    transform: [{ translateY: -2.5 }], // Center the scan line vertically
   },
 
   // Dark overlays to dim the area outside the scanning frame
@@ -117,6 +122,8 @@ export default StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     padding: 12,
     borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   text: {
