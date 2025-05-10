@@ -394,6 +394,7 @@ import CapexRequestScreen from './components/user/CapexRequestScreen';
 import CapexRequestList from './components/admin/CapexListScreen';
 import ReturnItems from './components/user/ReturnItems';
 import LoginScreen2 from './components/LoginScreen2';
+import RequestedItemsScreen from './components/admin/RequestedItemsScreen';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -672,6 +673,8 @@ const AdminDrawer = () => {
       <Drawer.Screen name="BorrowCatalogScreen" component={BorrowCatalogScreen} />
       <Drawer.Screen name="CapexRequestListScreen" component={CapexRequestList} />
       <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Drawer.Screen name="RequestorListScreen" component={RequestListScreen} />
+      <Drawer.Screen name="RequestedItemsScreen" component={RequestedItemsScreen} />
     </Drawer.Navigator>
   );
 };
