@@ -393,7 +393,7 @@ import { RequestMetadataProvider } from './components/contexts/RequestMetadataCo
 import CapexRequestScreen from './components/user/CapexRequestScreen';
 import CapexRequestList from './components/admin/CapexListScreen';
 import ReturnItems from './components/user/ReturnItems';
-import LoginScreen2 from './components/LoginScreen';
+import LoginScreen2 from './components/LoginScreen2';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
