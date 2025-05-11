@@ -174,10 +174,11 @@
 
 import React, { useState, useEffect, useRef } from "react"; 
 import { View, Text, TouchableOpacity, Animated, Dimensions, Alert } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 import { CameraView, useCameraPermissions } from "expo-camera";
 import CryptoJS from "crypto-js"; // 🔒 Import crypto-js for decryption
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../../backend/firebase/FirebaseConfig"; // Import your Firebase config
+import { db } from "../../backend/firebase/FirebaseConfig";
 import styles from "../styles/adminStyle/CameraStyle";
 import CONFIG from "../config";
 
@@ -185,12 +186,13 @@ const { width, height } = Dimensions.get("window");
 const frameSize = width * 0.7;
 const SECRET_KEY = CONFIG.SECRET_KEY;
 
-const CameraScreen = ({ navigation }) => {
+const CameraScreen = ({ onClose }) => {
   const [cameraType, setCameraType] = useState("back");
   const [scanned, setScanned] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef(null);
   const scanLinePosition = useRef(new Animated.Value(0)).current;
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (!permission) {
@@ -242,6 +244,9 @@ const CameraScreen = ({ navigation }) => {
     return `${year}-${month}-${day}`; // Format as "YYYY-MM-DD"
   };
 
+  const handleBackButton = () => {
+    onClose(); // Call onClose to reset the state and go back
+  };
   const handleBarCodeScanned = async ({ data }) => {
     if (scanned) return;
 
@@ -333,6 +338,10 @@ const CameraScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={handleBackButton}>
+        <Text style={styles.text}>Go Back</Text>
+      </TouchableOpacity>
+      
       <CameraView
         style={styles.camera}
         facing={cameraType}

@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../../backend/firebase/FirebaseConfig"; // Import Firebase config
-import CameraScreen from "./CameraScreen"; // QR scanner component
+import { db } from "../../backend/firebase/FirebaseConfig";
+import CameraScreen from "./CameraScreen";
+import styles from "../styles/adminStyle/RequestedItemsStyle";
+import Header from '../Header';
 
-const RequestedItemsScreen = ({ route }) => {
-  const { userName } = route.params; // Get the selected user's name from navigation props
+const getTodayDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = (today.getMonth() + 1).toString().padStart(2, "0");
+  const day = today.getDate().toString().padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const RequestedItemsScreen = ({ route, navigation }) => {
+  const { userName } = route.params;
   const [requestedItems, setRequestedItems] = useState([]);
   const [showScanner, setShowScanner] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -19,7 +29,7 @@ const RequestedItemsScreen = ({ route }) => {
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        if (data.userName === userName) {
+        if (data.userName === userName && data.requestList) {
           data.requestList.forEach((item) => {
             itemsData.push(item);
           });
@@ -34,24 +44,36 @@ const RequestedItemsScreen = ({ route }) => {
 
   const handleItemClick = (item) => {
     setSelectedItem(item);
-    setShowScanner(true); // Show the QR scanner when an item is clicked
+    setShowScanner(true);
+  };
+
+  const handleCloseScanner = () => {
+    setShowScanner(false);
+    setSelectedItem(null);  // Reset selected item when scanner is closed
   };
 
   return (
-    <View style={{ flex: 1, padding: 10 }}>
+    <View style={styles.container}>
+      <Header />
       {showScanner ? (
-        <CameraScreen item={selectedItem} />
+        <CameraScreen
+          item={selectedItem}
+          onClose={handleCloseScanner}
+        />
       ) : (
         <>
-          <Text style={{ fontSize: 24, marginBottom: 20 }}>Requested Items for {userName}</Text>
+          <Text style={styles.title}>Requested Items for {userName}</Text>
           <FlatList
             data={requestedItems}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleItemClick(item)}>
-                <Text style={{ fontSize: 18, marginVertical: 10 }}>{item.itemName}</Text>
+              <TouchableOpacity
+                style={styles.itemButton}
+                onPress={() => handleItemClick(item)}
+              >
+                <Text style={styles.itemText}>{item.itemName}</Text>
               </TouchableOpacity>
             )}
-            keyExtractor={(item) => item.itemName}
+            keyExtractor={(item, index) => `${item.itemName}-${index}`}
           />
         </>
       )}

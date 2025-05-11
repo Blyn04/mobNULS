@@ -2,25 +2,24 @@ import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "../../backend/firebase/FirebaseConfig";
+import styles from "../styles/adminStyle/RequestorListStyle";
+import Header from '../Header';
 
 const getTodayDate = () => {
   const today = new Date();
   const year = today.getFullYear();
-  const month = (today.getMonth() + 1).toString().padStart(2, '0');
-  const day = today.getDate().toString().padStart(2, '0');
-  return `${year}-${month}-${day}`; // "YYYY-MM-DD"
+  const month = (today.getMonth() + 1).toString().padStart(2, "0");
+  const day = today.getDate().toString().padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 const RequestorListScreen = ({ navigation }) => {
   const [requestors, setRequestors] = useState([]);
 
-  console.log("RequestorListScreen loaded");
-
-
   useEffect(() => {
-    const todayDate = getTodayDate(); // "2025-05-10"
+    const todayDate = getTodayDate();
     console.log("Today is:", todayDate);
-    Alert.alert("Today's Date", todayDate); // Show alert for debugging
+    Alert.alert("Today's Date", todayDate);
 
     const q = query(
       collection(db, "borrowcatalog"),
@@ -30,14 +29,9 @@ const RequestorListScreen = ({ navigation }) => {
     const unsubscribe = onSnapshot(
       q,
       (querySnapshot) => {
-        console.log("Snapshot size:", querySnapshot.size);
         const requestorsData = [];
-
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          console.log("DOC ID:", doc.id);
-          console.log("Full DOC:", JSON.stringify(data));
-
           if (data.userName && !requestorsData.includes(data.userName)) {
             requestorsData.push(data.userName);
           }
@@ -55,7 +49,7 @@ const RequestorListScreen = ({ navigation }) => {
       }
     );
 
-    return () => unsubscribe(); // Cleanup
+    return () => unsubscribe();
   }, []);
 
   const handleRequestorClick = (userName) => {
@@ -63,22 +57,27 @@ const RequestorListScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={{ flex: 1, padding: 10 }}>
-      <Text style={{ fontSize: 24, marginBottom: 20 }}>Requestors for Today</Text>
+    <View style={styles.container}>
+      <Header/>
+      <Text style={styles.title}>Requestors for Today</Text>
 
       <FlatList
         data={requestors}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleRequestorClick(item)}>
-            <Text style={{ fontSize: 18, marginVertical: 10 }}>{item}</Text>
+          <TouchableOpacity
+            style={styles.requestorButton}
+            onPress={() => handleRequestorClick(item)}
+          >
+            <Text style={styles.requestorText}>{item}</Text>
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item}
         ListEmptyComponent={
-          <Text style={{ fontSize: 16, marginTop: 20 }}>No requestors found.</Text>
+          <Text style={styles.emptyText}>No requestors found.</Text>
         }
       />
-          <Text style={{ fontSize: 18 }}>Component is rendering</Text>
+
+      <Text style={styles.debugText}>Component is rendering</Text>
     </View>
   );
 };
