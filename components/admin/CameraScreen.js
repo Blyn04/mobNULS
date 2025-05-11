@@ -507,6 +507,7 @@ const CameraScreen = ({ onClose }) => {
               });
             } else if (currentStatus === "deployed") {
               alreadyDeployed = true;
+
             } else {
               invalidStatus = true;
             }
@@ -537,9 +538,11 @@ const CameraScreen = ({ onClose }) => {
           Alert.alert("Item not found", "No records found for this item on today's date.");
 
         }
+
       } else {
         Alert.alert("No data found", "No records found for today in the borrow catalog.");
       }
+      
     } catch (error) {
       Alert.alert("Error", "Invalid or unauthorized QR Code.");
     }

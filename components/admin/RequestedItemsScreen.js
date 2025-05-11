@@ -49,7 +49,7 @@ const RequestedItemsScreen = ({ route, navigation }) => {
 
   const handleCloseScanner = () => {
     setShowScanner(false);
-    setSelectedItem(null);  // Reset selected item when scanner is closed
+    setSelectedItem(null); 
   };
 
   return (
