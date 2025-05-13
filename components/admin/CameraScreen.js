@@ -568,9 +568,11 @@ const CameraScreen = ({ onClose, selectedItem }) => {
                 await updateDoc(doc(db, `accounts/${requestorUserId}/userrequestlog`, docSnap.id), {
                   status: "Deployed"
                 });
+
                 console.log("✅ userrequestlog status updated to 'Deployed'");
               }
             });
+            
           } catch (err) {
             console.error("❌ Failed to update userrequestlog:", err);
           }

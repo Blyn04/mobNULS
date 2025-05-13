@@ -184,6 +184,7 @@ const ReturnItems = () => {
         // Match the inventory item with request items
         requestItems.forEach((req) => {
             if (item.id === req.itemIdFromInventory) {
+              
             // Add the inventory item to the map
             inventoryMap[req.itemIdFromInventory] = item;
             }
