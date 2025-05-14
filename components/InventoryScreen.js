@@ -2055,8 +2055,8 @@
 // }
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, FlatList, TextInput, Image, Modal, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView , Platform, Keyboard, StatusBar} from 'react-native';
-import { getDocs, collection, onSnapshot, doc, setDoc, addDoc, query, where, Timestamp } from 'firebase/firestore';
+import { View, Text, TouchableOpacity, FlatList, TextInput, Image, Modal, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView , Platform, Keyboard, StatusBar, Alert } from 'react-native';
+import { getDocs, collection, onSnapshot, doc, setDoc, addDoc, query, where, Timestamp, collectionGroup } from 'firebase/firestore';
 import { db } from '../backend/firebase/FirebaseConfig';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Picker } from '@react-native-picker/picker';
@@ -2415,7 +2415,50 @@ export default function InventoryScreen({ navigation }) {
     usageType: false,
   });
   
-  const handleNext = () => {
+const isRoomTimeConflict = async (room, timeFrom, timeTo, dateRequired) => {
+    const roomLower = room.toLowerCase();
+
+    const checkConflict = (docs) => {
+      return docs.some((doc) => {
+        const data = doc.data();
+        const docRoom = data.room?.toLowerCase();
+        const docDate = data.dateRequired;
+        const docTimeFrom = data.timeFrom;
+        const docTimeTo = data.timeTo;
+
+        console.log('Checking conflict with:', {
+          docRoom, docDate, docTimeFrom, docTimeTo
+        });
+
+        return (
+          docRoom === roomLower &&
+          docDate === dateRequired &&
+          timeFrom === docTimeFrom &&
+          timeTo === docTimeTo
+        );
+      });
+    };
+
+    const userRequestsSnap = await getDocs(collectionGroup(db, 'userrequests'));
+    const borrowCatalogSnap = await getDocs(collection(db, 'borrowCatalog'));
+
+    const conflictInRequests = checkConflict(userRequestsSnap.docs);
+    const conflictInCatalog = checkConflict(borrowCatalogSnap.docs);
+
+    return conflictInRequests || conflictInCatalog;
+};
+
+  const handleNext = async () => {
+    const formattedStartTime = formatTime(selectedStartTime);
+    const formattedEndTime = formatTime(selectedEndTime);
+
+    console.log({
+      dateRequired: selectedDate,
+      timeFrom: formatTime(selectedStartTime),
+      timeTo: formatTime(selectedEndTime),
+      room
+    });
+
     const newErrors = {
       date: !selectedDate,
       startTime: !selectedStartTime,
@@ -2428,20 +2471,33 @@ export default function InventoryScreen({ navigation }) {
     setErrors(newErrors);
 
     const hasErrors = Object.values(newErrors).some(Boolean);
-    if (!hasErrors) {
-      setMetadata({
-        dateRequired: selectedDate,
-        timeFrom: selectedStartTime,
-        timeTo: selectedEndTime,
-        program,
-        room,
-        usageType: selectedUsageTypeInput,
-        reason
-      });
-      
-      setIsComplete(true);
+    if (hasErrors) return;
+
+    // 🔍 Conflict validation
+    const hasConflict = await isRoomTimeConflict(
+      room,
+      formattedStartTime,
+      formattedEndTime,
+      selectedDate
+    );
+
+    if (hasConflict) {
+      Alert.alert("Conflict Detected", "The selected room and time slot is already booked.");
+      return; 
     }
-    };
+
+    setMetadata({
+      dateRequired: selectedDate,
+      timeFrom: formattedStartTime,
+      timeTo: formattedEndTime,
+      program,
+      room,
+      usageType: selectedUsageTypeInput,
+      reason
+    });
+
+    setIsComplete(true);
+  };
 
   return (
     <View style={styles.container}>
