@@ -446,6 +446,7 @@ const CameraScreen = ({ onClose, selectedItem }) => {
       let requestorUserId = null;
       let requestorLogData = null;
       let allDeployed = false; // ✅ Moved outside the loop
+      let updatedRequestList = null; // Declare in outer scope
 
       if (!querySnapshot.empty) {
         for (const docSnap of querySnapshot.docs) {
@@ -464,7 +465,7 @@ const CameraScreen = ({ onClose, selectedItem }) => {
             const currentStatus = data.status?.toLowerCase();
 
             if (currentStatus === "borrowed") {
-              const updatedRequestList = data.requestList.map((item) => {
+                updatedRequestList = data.requestList.map((item) => {
                 if (item.itemName === itemName) {
                   const currentCount = item.scannedCount || 0;
                   const maxCount = item.quantity || 1;
@@ -533,10 +534,24 @@ const CameraScreen = ({ onClose, selectedItem }) => {
           Alert.alert("Item Deployed", detailsMessage);
 
           const firstDetail = borrowedItemsDetails[0];
+          // await logRequestOrReturn(
+          //   user.id,
+          //   user.name || "Unknown",
+          //   `Deployed "${itemName}" to ${firstDetail.borrower} in ${selectedItem.labRoom}`
+          // );
+
+          const updatedScannedItem = updatedRequestList.find(
+            (item) => item.itemName === itemName && item.selectedItemId === selectedItem.selectedItemId
+          );
+
+          const scannedCount = updatedScannedItem?.scannedCount || 0;
+
+          console.log("Scanned count after update:", scannedCount);
+
           await logRequestOrReturn(
             user.id,
             user.name || "Unknown",
-            `Deployed "${itemName}" to ${firstDetail.borrower} in ${selectedItem.labRoom}`
+            `Deployed "${itemName}" to ${firstDetail.borrower} in ${selectedItem.labRoom} (Scanned: ${scannedCount})`
           );
 
           if (allDeployed && requestorUserId && requestorLogData) {
@@ -547,6 +562,7 @@ const CameraScreen = ({ onClose, selectedItem }) => {
             } catch (error) {
               console.error("Failed to write to historylog:", error);
             }
+
           } else {
             console.warn("Missing requestorUserId or log data.");
           }

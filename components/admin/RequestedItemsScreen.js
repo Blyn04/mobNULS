@@ -157,7 +157,7 @@ const RequestedItemsScreen = ({ route, navigation }) => {
       if (
         data.userName === userName &&
         data.requestList &&
-        (data.status === "Deployed" || data.status === "Returned")
+        (data.status === "Deployed" || data.status === "Returned" || data.status === "Borrowed")
       ) {
         data.requestList.forEach((item, index) => {
           itemsData.push({

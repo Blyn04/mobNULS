@@ -1893,8 +1893,6 @@ export default function InventoryScreen({ navigation }) {
                 ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20}}>No items found</Text>}
               /> 
             </ScrollView>
-      
-              
               
 
         <View style={styles.bottomContainer}>
@@ -1919,12 +1917,7 @@ export default function InventoryScreen({ navigation }) {
   )}
 
 </KeyboardAvoidingView>
-      
-
     
-    
-    
-      
       <Modal visible={modalVisible} transparent animationType="fade">
         <TouchableWithoutFeedback onPress={closeModal}>
           <View style={styles.modalBackground}>
@@ -1946,8 +1939,6 @@ export default function InventoryScreen({ navigation }) {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-
-      
 
       <Modal
         visible={timeModalVisible}
