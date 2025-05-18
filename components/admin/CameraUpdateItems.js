@@ -87,6 +87,7 @@ const CameraUpdateItems = ({ onClose }) => {
             userName,
             timestamp: serverTimestamp(),
         });
+        
         } catch (error) {
         console.error("Error logging request or return activity:", error);
         }
@@ -104,6 +105,7 @@ const CameraUpdateItems = ({ onClose }) => {
       let parsedData;
       try {
         parsedData = JSON.parse(decryptedData);
+
       } catch {
         parsedData = decryptedData;
       }
@@ -111,10 +113,12 @@ const CameraUpdateItems = ({ onClose }) => {
       if (parsedData.itemName && parsedData.itemId && parsedData.labRoom) {
         setCurrentItem(parsedData);
         setModalVisible(true);
+
       } else {
         Alert.alert("Invalid QR", "QR does not contain valid item data.");
         setScanned(false);
       }
+      
     } catch (err) {
       console.error("QR Scan Error:", err);
       Alert.alert("Scan Failed", "Failed to read QR code.");
@@ -149,9 +153,11 @@ const CameraUpdateItems = ({ onClose }) => {
       }
 
       Alert.alert("Success", `Added ${addedQuantity} to "${itemName}"`);
+
     } catch (err) {
       console.error("Quantity update error:", err);
       Alert.alert("Error", "Failed to update quantity.");
+
     } finally {
       setModalVisible(false);
       setScanned(false);
