@@ -399,6 +399,7 @@ import RequestorListScreen from './components/admin/RequestorListScreen';
 import QRScanScreen from './components/admin/QRScanScreen';
 import CameraShowItems from './components/admin/CameraShowItems';
 import ItemListScreen from './components/admin/ItemListScreen';
+import CameraUpdateItems from './components/admin/CameraUpdateItems';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -683,6 +684,7 @@ const AdminDrawer = () => {
       <Drawer.Screen name="ItemListScreen" component={ItemListScreen} />
       <Drawer.Screen name="CameraShowItems" component={CameraShowItems} />
       <Drawer.Screen name="QRScanScreen" component={QRScanScreen} />
+      <Drawer.Screen name="CameraUpdateItems" component={CameraUpdateItems} />
     </Drawer.Navigator>
   );
 };

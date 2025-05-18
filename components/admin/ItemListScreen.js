@@ -31,8 +31,8 @@ const ItemListScreen = () => {
     fetchItems();
   }, []);
 
-  const handleItemPress = (item) => {
-    navigation.navigate("CameraShowItems");
+ const handleItemPress = (item) => {
+    navigation.navigate("CameraUpdateItems");
   };
 
   const renderItem = ({ item }) => (
