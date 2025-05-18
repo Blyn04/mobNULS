@@ -11,7 +11,8 @@ export const RequestMetadataProvider = ({ children }) => {
     course: '',
     room: '',
     reason: '',
-    usageType: ''
+    usageType:'',
+    usageTypeOther: '',
   });
 
   return (
