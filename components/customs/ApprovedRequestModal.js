@@ -36,7 +36,7 @@ const ApprovedRequestModal = ({ isVisible, onClose, request, formatDate }) => {
       <Text style={styles.tableCellHeader}>Qty</Text>
       <Text style={styles.tableCellHeader}>Dept</Text>
       <Text style={styles.tableCellHeader}>Category</Text>
-      <Text style={styles.tableCellHeader}>Condition</Text>
+      {/* <Text style={styles.tableCellHeader}>Condition</Text> */}
       <Text style={styles.tableCellHeader}>Lab Room</Text>
       <Text style={styles.tableCellHeader}>Usage Type</Text>
     </View>
@@ -54,7 +54,7 @@ const ApprovedRequestModal = ({ isVisible, onClose, request, formatDate }) => {
       <Text style={styles.tableCell}>{item.quantity}</Text>
       <Text style={styles.tableCell}>{item.department}</Text>
       <Text style={styles.tableCell}>{item.category}</Text>
-      <Text style={styles.tableCell}>{item.condition}</Text>
+      {/* <Text style={styles.tableCell}>{item.condition}</Text> */}
       <Text style={styles.tableCell}>{item.labRoom}</Text>
       <Text style={styles.tableCell}>{item.usageType}</Text>
     </View>
@@ -123,7 +123,7 @@ const ApprovedRequestModal = ({ isVisible, onClose, request, formatDate }) => {
                 <View style={styles.section}>
                   <Text style={styles.label}>Course:</Text>
                   <Text style={styles.value}>
-                    {courseCode} - {courseDescription}
+                    {course} - {courseDescription}
                   </Text>
                 </View>
 
