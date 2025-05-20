@@ -216,7 +216,7 @@ const ReturnItems = () => {
         const fullReturnData = {
         accountId: user.id,  // Use user.id for accountId
         approvedBy: selectedRequest.raw?.approvedBy || "N/A",
-        courseCode: selectedRequest.raw?.courseCode || "N/A",
+        courseCode: selectedRequest.raw?.course || "N/A",
         courseDescription: selectedRequest.raw?.courseDescription || "N/A",
         dateRequired: selectedRequest.raw?.dateRequired || "N/A",
         program: selectedRequest.raw?.program || "N/A",
@@ -348,7 +348,7 @@ const ReturnItems = () => {
                         <Text style={styles.headerCell}>Item Name</Text>
                         <Text style={styles.headerCell}>Quantity</Text>
                         <Text style={styles.headerCell}>Returned Qty</Text>
-                        <Text style={styles.headerCell}>Condition</Text>
+                        {/* <Text style={styles.headerCell}>Condition</Text> */}
                     </View>
 
                     {selectedRequest?.raw?.requestList?.map((item, index) => (
