@@ -90,8 +90,10 @@ export default function SearchItemsScreen({ navigation }) {
 
   const renderItem = ({ item, index }) => (
     <TouchableOpacity onPress={() => handleRowClick(item)} style={index % 2 === 0 ? styles.rowEven : styles.rowOdd}>
-      <View style={{ flex: 3 }}>
-        <Text style={styles.cellText} numberOfLines={1}>{item.itemName}</Text>
+      <View style={{ flex: 2}}>
+        <Text style={styles.cellText} numberOfLines={1}>{item.itemName}
+
+        </Text>
       </View>
       <View style={{ flex: 1 }}>
         <Text style={styles.cellText}>{item.quantity}</Text>
@@ -111,6 +113,14 @@ export default function SearchItemsScreen({ navigation }) {
       <View style={{ flex: 2 }}>
         <Text style={styles.cellText}>{item.category}</Text>
       </View>
+      <View style={{ flex: 2 }}>
+       <Text style={styles.cellText}>
+          {item.condition && typeof item.condition === 'object'
+            ? `G:${item.condition.Good ?? 0}, Df:${item.condition.Defect ?? 0}, Dmg:${item.condition.Damage ?? 0}`
+            : item.condition || 'N/A'}
+        </Text>
+
+      </View>
     </TouchableOpacity>
   );
 
@@ -122,7 +132,7 @@ export default function SearchItemsScreen({ navigation }) {
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
-        <Icon name="magnify" size={24} color="#777" style={styles.searchIcon} />
+        <Icon name="magnify" size={24} color="#799" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search items, category, location..."
@@ -134,11 +144,11 @@ export default function SearchItemsScreen({ navigation }) {
       {/* Table Header */}
       <View style={styles.tableContainer}>
         <View style={[styles.row, styles.headerRow]}>
-          <Text style={[styles.tableHeaderText, { flex: 1 }]}>Description</Text>
-          <Text style={[styles.tableHeaderText, { flex: 1 }]}>Qty</Text>
-          <Text style={[styles.tableHeaderText, { flex: 1 }]}>Status</Text>
-          <Text style={[styles.tableHeaderText, { flex: 1 }]}>Category</Text>
-          <Text style={[styles.tableHeaderText, { flex: 1 }]}>Location</Text>
+          <Text style={[styles.tableHeaderText, { flex: 1.1, }]}>Description </Text>
+          <Text style={[styles.tableHeaderText, { flex: .6 }]}>Qty </Text>
+          <Text style={[styles.tableHeaderText, { flex: 1.1 }]}>Status</Text>
+          <Text style={[styles.tableHeaderText, { flex: 1.1 }]}>Category</Text>
+          <Text style={[styles.tableHeaderText, { flex: 1.1 }]}>Condition</Text>
         </View>
 
         {/* Items List */}
@@ -164,7 +174,12 @@ export default function SearchItemsScreen({ navigation }) {
                 <Text>Status: {hoveredItem.status}</Text>
                 <Text>Category: {hoveredItem.category}</Text>
                 <Text>Location: {hoveredItem.labRoom}</Text>
-                <Text>Condition: {hoveredItem.condition || 'N/A'}</Text>
+                {/* <Text>Condition: {hoveredItem.condition || 'N/A'}</Text> */}
+                <Text>
+                  Condition: {hoveredItem.condition && typeof hoveredItem.condition === 'object'
+                    ? `Good: ${String(hoveredItem.condition.Good ?? 0)}, Defect: ${String(hoveredItem.condition.Defect ?? 0)}, Damage: ${String(hoveredItem.condition.Damage ?? 0)}`
+                    : "N/A"}
+                </Text>
                 <Text>Item Type: {hoveredItem.type || 'N/A'}</Text>
                 <Text>Date Acquired: {hoveredItem.entryCurrentDate || 'N/A'}</Text>
               </View>
