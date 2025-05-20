@@ -680,7 +680,7 @@ const pagerRef = useRef(null);
                     <Text style={[styles.tableHeaderText, { flex: 2 }]}>Item</Text>
                     <Text style={[styles.tableHeaderText, { flex: 1 }]}>Qty</Text>
                     <Text style={[styles.tableHeaderText, { flex: 1 }]}>Category</Text>
-                    <Text style={[styles.tableHeaderText, { flex: 1 }]}>Condition</Text>
+                    {/* <Text style={[styles.tableHeaderText, { flex: 1 }]}>Condition</Text> */}
                   </View>
       
                   {(selectedLog?.filteredMergedData || selectedLog?.requestList).map((item, index) => (
@@ -694,7 +694,7 @@ const pagerRef = useRef(null);
                       <Text style={[styles.tableCell, { flex: 2 }]}>{item.itemName}</Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>{item.quantity}</Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>{item.category || '—'}</Text>
-                      <Text style={[styles.tableCell, { flex: 1 }]}>{item.condition || '—'}</Text>
+                      {/* <Text style={[styles.tableCell, { flex: 1 }]}>{item.condition || '—'}</Text> */}
                     </View>
                   ))}
                 </View>
