@@ -824,7 +824,7 @@ import { Input, Text, Icon } from 'react-native-elements';
 import { TextInput, Card, HelperText, Menu, Provider, Button, Checkbox  } from 'react-native-paper';
 import { useAuth } from '../components/contexts/AuthContext';
 import { db, auth } from '../backend/firebase/FirebaseConfig';
-import { collection, query, where, getDocs, updateDoc, addDoc, serverTimestamp, Timestamp, setDoc, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, updateDoc, addDoc, serverTimestamp, Timestamp, setDoc, doc, onSnapshot } from 'firebase/firestore';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, getAuth } from 'firebase/auth';
 import styles from './styles/LoginStyle';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -859,7 +859,8 @@ export default function LoginScreen({navigation}) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isTermsModalVisible, setTermsModalVisible] = useState(false);
-
+  const [deptOptions, setDeptOptions] = useState([]);
+  const [departmentsAll, setDepartmentsAll] = useState([]);
   const [isLoginSignup, setIsLoginSignup] = useState(false)
   const nameBorderAnim = useRef(new Animated.Value(0)).current;
   const emailBorderAnim = useRef(new Animated.Value(0)).current;
@@ -875,6 +876,44 @@ export default function LoginScreen({navigation}) {
   confirmPassword: false,
 });
 
+useEffect(() => {
+  const unsubscribe = onSnapshot(
+    collection(db, "departments"),
+    (snapshot) => {
+      const depts = snapshot.docs
+        .map((doc) => doc.data().name)
+        .sort((a, b) => a.localeCompare(b));
+      setDepartmentsAll(depts);
+    },
+    (error) => {
+      console.error("Error fetching departments:", error);
+    }
+  );
+
+  return () => unsubscribe();
+}, []);
+
+useEffect(() => {
+  if (!jobTitle) {
+    setDeptOptions([]);
+    return;
+  }
+
+  if (jobTitle === "Faculty") {
+    setDeptOptions(departmentsAll); 
+
+  } else if (jobTitle === "Program Chair") {
+    setDeptOptions(departmentsAll.filter((dept) => dept !== "SHS"));
+
+  } else if (jobTitle === "Dean") {
+    setDeptOptions(["SAH", "SAS", "SOO", "SOD"]); 
+    
+  } else {
+    setDeptOptions([]); // default
+  }
+
+  setDepartment(""); 
+}, [jobTitle, departmentsAll]);
 
 const handleFocus = (field) => {
   setFocusStates((prev) => ({ ...prev, [field]: true }));
@@ -933,7 +972,7 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
 });
 
   const jobOptions = ['Dean', 'Program Chair', 'Laboratory Custodian', 'Faculty'];
-  const deptOptions = ['Medical Technology', 'Nursing', 'Dentistry', 'Optometry'];
+  // const deptOptions = ['Medical Technology', 'Nursing', 'Dentistry', 'Optometry'];
 
   const handleLogin = async () => {
     
@@ -1306,19 +1345,19 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
 
           {isLoginSignup && (
             <>
-<KeyboardAvoidingView
-    style={{ flex: 1}}
-    keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0} 
-    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-  >
-            <KeyboardAwareScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-        extraScrollHeight={0}
-        enableOnAndroid={true}
-        enableAutomaticScroll={true}
-      >
+              <KeyboardAvoidingView
+                style={{ flex: 1}}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0} 
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+              >
+                  <KeyboardAwareScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContainer}
+                    keyboardShouldPersistTaps="handled"
+                    extraScrollHeight={0}
+                    enableOnAndroid={true}
+                    enableAutomaticScroll={true}
+                  >
 
             {/* Sign Up Inputs */}  
             {isSignup 
@@ -1420,7 +1459,15 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
                 }
               >
                 {jobOptions.map(option => (
-                  <Menu.Item key={option} onPress={() => { setJobTitle(option); setJobMenuVisible(false); }} title={option} />
+                  // <Menu.Item key={option} onPress={() => { setJobTitle(option); setJobMenuVisible(false); }} title={option} />
+                  <Menu.Item
+                    key={option}
+                    onPress={() => {
+                      setJobTitle(option);
+                      setJobMenuVisible(false);
+                    }}
+                    title={option}
+                  />
                 ))}
               </Menu>
 
@@ -1447,8 +1494,18 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
                   </Button>
                 }
               >
-                {deptOptions.map(option => (
+                {/* {deptOptions.map(option => (
                   <Menu.Item key={option} onPress={() => { setDepartment(option); setDeptMenuVisible(false); }} title={option}/>
+                ))} */}
+                {deptOptions.map(option => (
+                  <Menu.Item
+                    key={option}
+                    onPress={() => {
+                      setDepartment(option);
+                      setDeptMenuVisible(false);
+                    }}
+                    title={option}
+                  />
                 ))}
               </Menu>
               </View>
