@@ -5,7 +5,7 @@ import {
   Button, TextInput, StyleSheet, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
 import {
   collection, getDocs, doc, updateDoc, getDoc, deleteDoc,
-  setDoc, addDoc, serverTimestamp, onSnapshot
+  setDoc, addDoc, serverTimestamp, onSnapshot, query, where
 } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig';
 import { useAuth } from '../contexts/AuthContext';
