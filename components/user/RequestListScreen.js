@@ -2048,7 +2048,40 @@ const RequestListScreen = ({navigation}) => {
       ],
       { cancelable: true }
     );
-  };  
+  };
+  
+    const handleSaveDraft = async () => {
+    try {
+      if (!user?.id) {
+        Alert.alert('Authentication Error', 'No user is currently logged in.');
+        return;
+      }
+
+      const draftId = Date.now().toString();
+      const draftRef = doc(db, 'accounts', user.id, 'draftRequests', draftId);
+
+      await setDoc(draftRef, {
+        ...metadata,
+        filteredMergedData: requestList.map((item) => ({
+          ...item,
+          program: metadata.program,
+          reason: metadata.reason,
+          room: metadata.room,
+          timeFrom: metadata.timeFrom,
+          timeTo: metadata.timeTo,
+          usageType: metadata.usageType,
+        })),
+        timestamp: new Date(),
+        status: 'draft',
+      });
+
+      Alert.alert('Draft Saved', 'Your request has been saved as a draft.');
+
+    } catch (error) {
+      console.error('Error saving draft request:', error);
+      Alert.alert('Error', 'Failed to save your draft request.');
+    }
+  };
 
   const renderItem = ({ item }) => (
     <View style={{flex: 1, flexDirection: 'row', marginBottom: 5, elevation: 1, backgroundColor: 'white', borderRadius: 10}}>
