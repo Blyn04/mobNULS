@@ -446,7 +446,7 @@ const CustomDrawerContent = ({ navigation }) => {
             <Text style={styles.profileName}>
               {user ? capitalizeName(user.name) : 'Guest'}
             </Text>
-            <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>{user ? user.jobTitle : 'Job Title'}</Text>    
+            <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>{user ? user.jobTitle : 'Job Title'} of {user.department}</Text>    
         </View>
       </View>
 
@@ -562,7 +562,7 @@ const CustomAdminDrawerContent = ({ navigation }) => {
               {user ? capitalizeName(user.name) : 'Guest'}
             </Text>
 
-            <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>{user ? user.jobTitle : 'Job Title'}</Text>    
+            <Text style={{fontSize: 13, color: '#dceaf2', marginTop: 0}}>{user ? user.jobTitle : 'Job Title'} of {user.department}</Text>    
         </View>
       </TouchableOpacity>
 
