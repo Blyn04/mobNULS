@@ -625,7 +625,7 @@ const RequestLogScreen = () => {
       </Text>
 
       <ScrollView style={{ maxHeight: 400, width: '100%' }}>
-        <Text style={styles.modalText}>By: {selectedLog?.userName || 'Unknown User'}</Text>
+        <Text style={styles.modalText}>Requestor: {selectedLog?.userName || 'Unknown User'}</Text>
         <Text style={styles.modalText}>Program: {selectedLog?.program || 'N/A'}</Text>
         <Text style={styles.modalText}>Course: {selectedLog?.course || 'N/A'}</Text>
         <Text style={styles.modalText}>Reason: {selectedLog?.reason || 'N/A'}</Text>
