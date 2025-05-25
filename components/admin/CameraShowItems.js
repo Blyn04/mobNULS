@@ -3323,97 +3323,154 @@ const CameraShowItems = ({ onClose }) => {
           Alert.alert("Item Not Found", `Could not find "${itemName}" in the inventory.`);
         }
 
-      } else if (parsedData.items && Array.isArray(parsedData.items) && parsedData.labRoom) {
-        // Instead of showing embedded QR code items, fetch live Firestore data for labRoom and filter archived
-        const roomId = parsedData.labRoom;
-        const labRoomItemsRef = collection(db, `labRoom/${roomId}/items`);
-        const labRoomItemsSnapshot = await getDocs(labRoomItemsRef);
+      // } else if (parsedData.items && Array.isArray(parsedData.items) && parsedData.labRoom) {
+      //   // Instead of showing embedded QR code items, fetch live Firestore data for labRoom and filter archived
+      //   const roomId = parsedData.labRoom;
+      //   const labRoomItemsRef = collection(db, `labRoom/${roomId}/items`);
+      //   const labRoomItemsSnapshot = await getDocs(labRoomItemsRef);
 
-        if (labRoomItemsSnapshot.empty) {
-          Alert.alert("Room Details", `No items found in lab room ${roomId}.`);
-          //  showLabRoomDetails(roomId, items);
+      //   if (labRoomItemsSnapshot.empty) {
+      //     Alert.alert("Room Details", `No items found in lab room ${roomId}.`);
+      //     //  showLabRoomDetails(roomId, items);
 
-        } else {
-          const itemsDetailArray = [];
+      //   } else {
+      //     const itemsDetailArray = [];
 
-          labRoomItemsSnapshot.forEach(doc => {
-            const item = doc.data();
-            if (item.status !== "archived") { 
-              // itemsDetailArray.push(
-              //   `- ${item.itemName || "Unknown"} (ID: ${item.itemId || "N/A"}, Qty: ${item.quantity ?? "?"}, Condition: ${item.condition || "N/A"}, Status: ${item.status || "N/A"})`
-              // );
-              itemsDetailArray.push(item);
-            }
-          });
+      //     labRoomItemsSnapshot.forEach(doc => {
+      //       const item = doc.data();
+      //       if (item.status !== "archived") { 
+      //         // itemsDetailArray.push(
+      //         //   `- ${item.itemName || "Unknown"} (ID: ${item.itemId || "N/A"}, Qty: ${item.quantity ?? "?"}, Condition: ${item.condition || "N/A"}, Status: ${item.status || "N/A"})`
+      //         // );
+      //         itemsDetailArray.push(item);
+      //       }
+      //     });
 
-          const itemsDetail = itemsDetailArray.join("\n");
-          // await addBorrowedCountToItems(itemsDetailArray);
-          await addBorrowedAndDeployedCountToItems(itemsDetailArray)
-          // Alert.alert("Lab Room Inventory", `Room: ${roomId}\nItems:\n${itemsDetail}`);
-          showLabRoomDetails(roomId, itemsDetailArray);
-        }
+      //     const itemsDetail = itemsDetailArray.join("\n");
+      //     // await addBorrowedCountToItems(itemsDetailArray);
+      //     await addBorrowedAndDeployedCountToItems(itemsDetailArray)
+      //     // Alert.alert("Lab Room Inventory", `Room: ${roomId}\nItems:\n${itemsDetail}`);
+      //     showLabRoomDetails(roomId, itemsDetailArray);
+      //   }
 
-      } else if (typeof parsedData === "string") {
-        // It's a labRoom id string (e.g. "0430")
-        const roomId = parsedData;
+      // } else if (typeof parsedData === "string") {
+      //   // It's a labRoom id string (e.g. "0430")
+      //   const roomId = parsedData;
 
-        const labRoomItemsRef = collection(db, `labRoom/${roomId}/items`);
-        const labRoomItemsSnapshot = await getDocs(labRoomItemsRef);
+      //   const labRoomItemsRef = collection(db, `labRoom/${roomId}/items`);
+      //   const labRoomItemsSnapshot = await getDocs(labRoomItemsRef);
 
-        if (labRoomItemsSnapshot.empty) {
-          Alert.alert("Room Details", `No items found in lab room ${roomId}.`);
+      //   if (labRoomItemsSnapshot.empty) {
+      //     Alert.alert("Room Details", `No items found in lab room ${roomId}.`);
 
-        } else {
-          const itemsDetailArray = [];
+      //   } else {
+      //     const itemsDetailArray = [];
 
-          labRoomItemsSnapshot.forEach(doc => {
-            const item = doc.data();
-            if (item.status !== "archived") {
-              // itemsDetailArray.push(
-              //   `- ${item.itemName || "Unknown"} (ID: ${item.itemId || "N/A"}, Qty: ${item.quantity ?? "?"}, Condition: ${item.condition || "N/A"})`
-              // );
-              itemsDetailArray.push(item);
-            }
-          });
+      //     labRoomItemsSnapshot.forEach(doc => {
+      //       const item = doc.data();
+      //       if (item.status !== "archived") {
+      //         // itemsDetailArray.push(
+      //         //   `- ${item.itemName || "Unknown"} (ID: ${item.itemId || "N/A"}, Qty: ${item.quantity ?? "?"}, Condition: ${item.condition || "N/A"})`
+      //         // );
+      //         itemsDetailArray.push(item);
+      //       }
+      //     });
 
-          const itemsDetail = itemsDetailArray.join("\n");
+      //     const itemsDetail = itemsDetailArray.join("\n");
 
-          // await addBorrowedCountToItems(itemsDetailArray);
-          await addBorrowedAndDeployedCountToItems(itemsDetailArray)
-          // Alert.alert("Lab Room Inventory", `Room: ${roomId}\nItems:\n${itemsDetail}`);
-           showLabRoomDetails(roomId, itemsDetailArray);
-        }
+      //     // await addBorrowedCountToItems(itemsDetailArray);
+      //     await addBorrowedAndDeployedCountToItems(itemsDetailArray)
+      //     // Alert.alert("Lab Room Inventory", `Room: ${roomId}\nItems:\n${itemsDetail}`);
+      //      showLabRoomDetails(roomId, itemsDetailArray);
+      //   }
 
-      } else if (parsedData.roomNumber) {
-        // Your existing roomNumber object check (if needed)
-        const { roomNumber } = parsedData;
+      // } else if (parsedData.roomNumber) {
+      //   // Your existing roomNumber object check (if needed)
+      //   const { roomNumber } = parsedData;
 
-        const labRoomItemsRef = collection(db, `labRoom/${roomNumber}/items`);
-        const labRoomItemsSnapshot = await getDocs(labRoomItemsRef);
+      //   const labRoomItemsRef = collection(db, `labRoom/${roomNumber}/items`);
+      //   const labRoomItemsSnapshot = await getDocs(labRoomItemsRef);
 
-        if (labRoomItemsSnapshot.empty) {
-          Alert.alert("Room Details", `No items found in lab room ${roomNumber}.`);
+      //   if (labRoomItemsSnapshot.empty) {
+      //     Alert.alert("Room Details", `No items found in lab room ${roomNumber}.`);
 
-        } else {
-          const itemsDetailArray = [];
+      //   } else {
+      //     const itemsDetailArray = [];
 
-          labRoomItemsSnapshot.forEach(doc => {
-            const item = doc.data();
-            if (item.status !== "archived") {
-              // itemsDetailArray.push(
-              //   `- ${item.itemName || "Unknown"} (ID: ${item.itemId || "N/A"}, Qty: ${item.quantity ?? "?"}, Condition: ${item.condition || "N/A"})`
-              // );
-              itemsDetailArray.push(item);
-            }
-          });
+      //     labRoomItemsSnapshot.forEach(doc => {
+      //       const item = doc.data();
+      //       if (item.status !== "archived") {
+      //         // itemsDetailArray.push(
+      //         //   `- ${item.itemName || "Unknown"} (ID: ${item.itemId || "N/A"}, Qty: ${item.quantity ?? "?"}, Condition: ${item.condition || "N/A"})`
+      //         // );
+      //         itemsDetailArray.push(item);
+      //       }
+      //     });
           
-          const itemsDetail = itemsDetailArray.join("\n");
+      //     const itemsDetail = itemsDetailArray.join("\n");
 
-          // await addBorrowedCountToItems(itemsDetailArray);
-          await addBorrowedAndDeployedCountToItems(itemsDetailArray)
+      //     // await addBorrowedCountToItems(itemsDetailArray);
+      //     await addBorrowedAndDeployedCountToItems(itemsDetailArray)
 
-          // Alert.alert("Lab Room Inventory", `Room: ${roomNumber}\nItems:\n${itemsDetail}`);
-           showLabRoomDetails(roomId, itemsDetailArray);
+      //     // Alert.alert("Lab Room Inventory", `Room: ${roomNumber}\nItems:\n${itemsDetail}`);
+      //      showLabRoomDetails(roomId, itemsDetailArray);
+      //   }
+
+        
+    } else if (
+        typeof parsedData === "string" ||
+        parsedData.labRoom ||
+        parsedData.roomNumber
+
+    ) {
+        const roomNumber =
+          typeof parsedData === "string"
+            ? parsedData
+            : parsedData.labRoom || parsedData.roomNumber;
+
+        try {
+          if (!parsedData.items || parsedData.items.length === 0) {
+            Alert.alert("Error", "No items found in QR data.");
+            return;
+          }
+
+          const itemsDetailArray = [];
+          let labRoomFromInventory = null; 
+
+          for (const item of parsedData.items) {
+            const itemQuery = query(
+              collection(db, "inventory"),
+              where("itemId", "==", item.itemId)
+            );
+
+            const itemSnapshot = await getDocs(itemQuery);
+            if (!itemSnapshot.empty) {
+
+              const data = itemSnapshot.docs[0].data();
+              if (data.status !== "archived") {
+                itemsDetailArray.push(data);
+
+                          if (!labRoomFromInventory && data.labRoom) {
+                  labRoomFromInventory = data.labRoom;
+                }
+              }
+
+            } else {
+              console.warn(`Item ID ${item.itemId} not found in inventory`);
+            }
+          }
+
+          if (itemsDetailArray.length === 0) {
+            Alert.alert("Inventory", "No valid items found in inventory.");
+            return;
+          }
+
+          await addBorrowedAndDeployedCountToItems(itemsDetailArray);
+          showLabRoomDetails(labRoomFromInventory, itemsDetailArray);
+
+        } catch (error) {
+          console.error("Error fetching inventory items:", error);
+          Alert.alert("Error", "Failed to fetch inventory item details.");
         }
 
       } else {
