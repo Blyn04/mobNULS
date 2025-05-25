@@ -1108,7 +1108,7 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
                 break;
   
               case "super-user":
-                navigation.replace("Admin");
+                navigation.replace("Super-User");
                 console.log("Login Succesfull!")
                 break;
   
