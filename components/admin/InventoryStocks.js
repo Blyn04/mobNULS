@@ -228,9 +228,6 @@ export default function InventoryStocks({ navigation }) {
   }
 }, []);
 
-
-
-
 const handleOpen = (id) => {
   LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   setIsOpen(prev => (prev === id ? null : id));
