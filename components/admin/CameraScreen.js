@@ -1327,6 +1327,7 @@ const CameraScreen = ({ onClose, selectedItem }) => {
           const borrowedItem = data.requestList.find(
             (item) =>
               item.itemName === itemName &&
+              item.itemDetails === itemDetails &&
               item.selectedItemId === selectedItem.selectedItemId &&
               item.labRoom === selectedItem.labRoom &&
               item.quantity === selectedItem.quantity &&
@@ -1375,6 +1376,7 @@ const CameraScreen = ({ onClose, selectedItem }) => {
               updatedRequestList = data.requestList.map((item) => {
                 if (
                   item.itemName === itemName &&
+                  item.itemDetails === itemDetails &&
                   item.selectedItemId === selectedItem.selectedItemId &&
                   item.labRoom === selectedItem.labRoom &&
                   item.quantity === selectedItem.quantity &&
@@ -1689,6 +1691,7 @@ const CameraScreen = ({ onClose, selectedItem }) => {
               const hasMatchingItem = docData.requestList?.some(item => {
                 const matches =
                   item.itemName === itemName &&
+                  item.itemDetails === itemDetails &&
                   item.selectedItemId === selectedItem.selectedItemId &&
                   item.labRoom === selectedItem.labRoom &&
                   item.quantity === selectedItem.quantity &&
@@ -1697,6 +1700,7 @@ const CameraScreen = ({ onClose, selectedItem }) => {
 
                 console.log("Comparing item:");
                 console.log("  itemName:", item.itemName, "==", itemName);
+                console.log("  itemDetails:", item.itemDetails, "==", itemDetails);
                 console.log("  selectedItemId:", item.selectedItemId, "==", selectedItem.selectedItemId);
                 console.log("  labRoom:", item.labRoom, "==", selectedItem.labRoom);
                 console.log("  quantity:", item.quantity, "==", selectedItem.quantity);
