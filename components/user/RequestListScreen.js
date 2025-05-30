@@ -2167,6 +2167,10 @@ const RequestListScreen = ({navigation}) => {
                 </Text>
 
                 <Text style={styles.modalDetail}>
+                  <Text style={styles.bold}>Item Description:</Text> {selectedItem.itemDetails}
+                </Text>
+
+                <Text style={styles.modalDetail}>
                   <Text style={styles.bold}>Quantity:</Text>
                 </Text>
 
@@ -2239,6 +2243,7 @@ const RequestListScreen = ({navigation}) => {
                       {/* Table Header */}
                       <View style={styles.tableRowHeader}>
                         <Text style={[styles.tableCellHeader, { width: 150 }]}>Item Name</Text>
+                        <Text style={[styles.tableCellHeader, { width: 150 }]}>Item Description</Text>
                         <Text style={[styles.tableCellHeader, { width: 100 }]}>Qty</Text>
                         <Text style={[styles.tableCellHeader, { width: 120 }]}>Category</Text>
                         <Text style={[styles.tableCellHeader, { width: 120 }]}>Status</Text>
@@ -2248,6 +2253,7 @@ const RequestListScreen = ({navigation}) => {
                       {requestList.map((item) => (
                         <View key={item.id} style={styles.tableRow}>
                           <Text style={[styles.tableCell, { width: 150 }]}>{item.selectedItem?.label}</Text>
+                          <Text style={[styles.tableCell, { width: 100 }]}>{item.itemDetails}</Text>
                           <Text style={[styles.tableCell, { width: 100 }]}>{item.quantity}</Text>
                           <Text style={[styles.tableCell, { width: 120 }]}>{item.category}</Text>
                           <Text style={[styles.tableCell, { width: 120 }]}>{item.status}</Text>
