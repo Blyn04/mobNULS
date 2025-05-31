@@ -5869,7 +5869,7 @@ export default function InventoryScreen({ navigation }) {
                 </View>
           </View>
 
-          <View style={styles.programSection}>
+          {/* <View style={styles.programSection}>
             <Text style={styles.label}>Course Code:</Text>
             <View
                 style={[
@@ -5891,6 +5891,38 @@ export default function InventoryScreen({ navigation }) {
                     <Picker.Item label="SAH - BSMT" value="SAH - BSMT" style={{fontSize: 15}} />
                     <Picker.Item label="SAH - BSN" value="SAH - BSN"  style={{fontSize: 15}}/>
                     <Picker.Item label="SHS" value="SHS"  style={{fontSize: 15}}/>
+                  </Picker>
+
+                  <Icon2
+                    name="chevron-down"
+                    size={20}
+                    color="white"
+                    style={styles.arrowIcon}
+                    pointerEvents="none"
+                  />
+                </View>
+          </View> */}
+
+                    <View style={styles.programSection}>
+            <Text style={styles.label}>Course Code:</Text>
+            <View
+                style={[
+                  styles.programPicker,
+                  errors.course && { borderColor: 'red', borderWidth: 1 }
+                ]}
+              >
+                  <Picker
+                    selectedValue={course}
+                    onValueChange={(itemValue) => {
+                      setCourse(itemValue);
+                      setMetadata((prevMetadata) => ({ ...prevMetadata, course: itemValue }));
+                      setDescription(courseMap[itemValue]);
+                    }}
+                  >
+                    <Picker.Item label="Select Course Code" value="" />
+                    {Object.entries(courseMap).map(([code, desc]) => (
+                      <Picker.Item key={code} label={code} value={code} />
+                    ))}
                   </Picker>
 
                   <Icon2
