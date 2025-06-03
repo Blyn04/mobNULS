@@ -2008,15 +2008,18 @@ export default function RequestScreen() {
           backgroundColor={'transparent'}
           />
           <ScrollView style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Request Details - {selectedRequest?.id}</Text>
+            <Text style={styles.modalTitle}>Request Details</Text>
             <Text><Text style={styles.label}>Requester:</Text> {selectedRequest?.requester}</Text>
             <Text><Text style={styles.label}>Requisition Date:</Text> {selectedRequest?.dateRequested?.toLocaleDateString()}</Text>
             <Text><Text style={styles.label}>Date Required:</Text> {selectedRequest?.dateRequired}</Text>
             <Text><Text style={styles.label}>Time Needed:</Text> {selectedRequest?.timeNeeded}</Text>
             <Text><Text style={styles.label}>Course Code:</Text> {selectedRequest?.course}</Text>
             <Text><Text style={styles.label}>Course Description:</Text> {selectedRequest?.courseDescription}</Text>
-            <Text><Text style={styles.label}>Room:</Text> {selectedRequest?.labRoom}</Text>
-            <Text style={styles.tableCell}>{selectedRequest?.usageType}</Text>
+            <Text>
+              <Text style={styles.label}>Room: </Text>
+              {selectedRequest?.labRoom || selectedRequest?.room || 'N/A'}
+            </Text>
+            <Text><Text style={styles.label}>Room:</Text> {selectedRequest?.usageType}</Text>
 
             <Text style={styles.subTitle}>Requested Items:</Text>
               <View style={styles.table}>
@@ -2047,12 +2050,46 @@ export default function RequestScreen() {
 
             <Text><Text style={styles.label}>Message:</Text> {selectedRequest?.message || 'No message provided.'}</Text>
 
-            <View style={styles.modalButtons}>
+            {/* <View style={styles.modalButtons}>
               <TouchableOpacity onPress={cancelRequest} style={styles.cancelButton}>
                 <Text style={styles.cancelText}>Cancel Request</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setModal2Visible(false)} style={styles.closeButton}>
                 <Text style={styles.closeText}>Close</Text>
+              </TouchableOpacity>
+            </View> */}
+
+            <View style={styles.modalButtons}>
+              {/* <TouchableOpacity onPress={cancelRequest} style={styles.cancelButton}>
+                <Text style={styles.cancelText}>Cancel Request</Text>
+              </TouchableOpacity> */}
+
+              <TouchableOpacity
+                onPress={() => {
+                  Alert.alert(
+                    'Confirm Cancellation',
+                    'Are you sure you want to cancel this request?',
+                    [
+                      {
+                        text: 'No',
+                        style: 'cancel',
+                      },
+                      {
+                        text: 'Yes, Cancel',
+                        style: 'destructive',
+                        onPress: cancelRequest, // calls your existing function
+                      },
+                    ],
+                    { cancelable: true }
+                  );
+                }}
+                style={styles.cancelButton1}
+              >
+                <Text style={styles.cancelButton}>Cancel Request</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setModal2Visible(false)} style={styles.closeButton}>
+                <Text style={styles.closeText1}>Close</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
