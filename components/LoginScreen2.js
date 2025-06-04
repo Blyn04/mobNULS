@@ -1,3 +1,4 @@
+// VERSION 1
 // import React, { useState, useEffect, useRef } from 'react';
 // import { SafeAreaView, View, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ImageBackground, TouchableOpacity, UIManager, LayoutAnimation, StatusBar, Image, BackHandler } from 'react-native';
 // import { Input, Text, Icon } from 'react-native-elements';
@@ -817,9 +818,9 @@
 //   );
 // }
 
-
+// VERSION 2
 import React, { useState, useEffect, useRef } from 'react';
-import { SafeAreaView, View, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ImageBackground, TouchableOpacity, UIManager, LayoutAnimation, StatusBar, Image, BackHandler } from 'react-native';
+import { SafeAreaView, View, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ImageBackground, TouchableOpacity, UIManager, LayoutAnimation, StatusBar, Image, BackHandler, Alert } from 'react-native';
 import { Input, Text, Icon } from 'react-native-elements';
 import { TextInput, Card, HelperText, Menu, Provider, Button, Checkbox  } from 'react-native-paper';
 import { useAuth } from '../components/contexts/AuthContext';
@@ -834,7 +835,6 @@ import TermsModal from './customs/TermsModal';
 import {Animated} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
 
 export default function LoginScreen({navigation}) {
   const [showPassword, setShowPassword] = useState(false);
@@ -862,6 +862,7 @@ export default function LoginScreen({navigation}) {
   const [deptOptions, setDeptOptions] = useState([]);
   const [departmentsAll, setDepartmentsAll] = useState([]);
   const [isLoginSignup, setIsLoginSignup] = useState(false)
+  const [emailError, setEmailError] = useState('');
   const nameBorderAnim = useRef(new Animated.Value(0)).current;
   const emailBorderAnim = useRef(new Animated.Value(0)).current;
   const employeeIDBorderAnim = useRef(new Animated.Value(0)).current;
@@ -1075,7 +1076,7 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
             //   await updateDoc(userDoc.ref, { loginAttempts: newAttempts });
             //   setError(`Invalid password. ${4 - newAttempts} attempts left.`);
             // }
-
+            
             setError(`Invalid password.`);
             setLoading(false);
             return;
@@ -1107,6 +1108,7 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
                 console.log("Login Succesfull!")
                 break;
   
+
               case "super-user":
                 navigation.replace("Super-User");
                 console.log("Login Succesfull!")
@@ -1139,8 +1141,8 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
             //   await updateDoc(userDoc.ref, { loginAttempts: newAttempts });
             //   setError(`Invalid password. ${4 - newAttempts} attempts left.`);
             // }
-
-            setError("Invalid password.");
+    
+            setError(`Invalid password.`);
             setLoading(false);
             return;
           }
@@ -1289,6 +1291,8 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
           setJobTitle("");
           setDepartment("");
           setError("");
+
+          Alert.alert("Sign Up Succesfull!");
       
         } catch (error) {
           console.error("Sign up error:", error.message);
@@ -1345,24 +1349,23 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
 
           {isLoginSignup && (
             <>
-              <KeyboardAvoidingView
-                style={{ flex: 1}}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0} 
-                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-              >
-                  <KeyboardAwareScrollView
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.scrollContainer}
-                    keyboardShouldPersistTaps="handled"
-                    extraScrollHeight={0}
-                    enableOnAndroid={true}
-                    enableAutomaticScroll={true}
-                  >
+            <KeyboardAvoidingView
+              style={{ flex: 1}}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0} 
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            >
+                <KeyboardAwareScrollView
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={styles.scrollContainer}
+                  keyboardShouldPersistTaps="handled"
+                  extraScrollHeight={0}
+                  enableOnAndroid={true}
+                  enableAutomaticScroll={true}
+                >
 
             {/* Sign Up Inputs */}  
             {isSignup 
             && (
-              
               
               <View style={[styles.inner, {padding: 20}]}>
                 <View style={{alignItems: 'center', paddingTop: 30, paddingBottom: 25, borderBottomWidth: 2, marginBottom: 25, borderColor: '#395a7f'}}>
@@ -1388,7 +1391,19 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
                 <Input
                   placeholder="Enter Email Address (NU account)"
                   value={signUpEmail}
-                  onChangeText={setSignUpEmail}
+                  onChangeText={(text) => {
+                    setSignUpEmail(text);
+
+                    const validDomains = ["nu-moa.edu.ph", "students.nu-moa.edu.ph"];
+                    const parts = text.split("@");
+                    const domain = parts.length > 1 ? parts[1] : "";
+
+                    if (!validDomains.includes(domain)) {
+                      setEmailError("Only @nu-moa.edu.ph or @students.nu-moa.edu.ph emails are allowed.");
+                    } else {
+                      setEmailError('');
+                    }
+                  }}
                   keyboardType="email-address"
                   autoCapitalize="none"
                    onFocus={() => handleFocus('email')}
@@ -1396,9 +1411,14 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
                   inputContainerStyle={[styles.inputContainer, {paddingTop: 3}]} // removes underline
                 inputStyle={styles.inputText}
                 />
-                {signUpEmail.length > 0 && !signUpEmail.includes('@') ? (
+                {/* {signUpEmail.length > 0 && !signUpEmail.includes('@') ? (
                 <HelperText type="error" style={{ marginTop: '-25', marginBottom: '10'}}>Enter a valid email address.</HelperText>
-                    ) : null}
+                    ) : null} */}
+                    {emailError !== '' && (
+                      <HelperText type="error" style={{ marginTop: -10, marginBottom: 10 }}>
+                        {emailError}
+                      </HelperText>
+                    )}
               </Animated.View>
 
 
@@ -1510,56 +1530,6 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
               </Menu>
               </View>
                 
-
-                {/* Password Inputs */}
-                {/* <Text style={styles.label}>Password:<Text style={{color:'red'}}>*</Text></Text>
-                  <Animated.View style={[styles.animatedInputContainer, { borderColor: passwordBorderColor, width: '100%' }]}>
-                <Input
-                  placeholder="Password"
-                  leftIcon={{ type: 'material', name: 'lock', color: '#9CA3AF' }}
-                  rightIcon={
-                    <Icon
-                      type="material"
-                      name={secureTextEntry ? 'visibility' : 'visibility-off'}
-                      color="#9CA3AF"
-                      onPress={() => setSecureTextEntry(!secureTextEntry)}
-                    />
-                  }
-                  value={signUpPassword}
-                  onChangeText={setSignUpPassword}
-                  secureTextEntry={secureTextEntry}
-                  onFocus={() => handleFocus('password')}
-                onBlur={() => handleBlur('password')}
-                  inputContainerStyle={[styles.inputContainer]} // removes underline
-                inputStyle={styles.inputText}
-                />
-                </Animated.View>
-
-
-                <Text style={styles.label}>Confirm Password:<Text style={{color:'red'}}>*</Text></Text>
-                
-                 <Animated.View style={[styles.animatedInputContainer, { borderColor: confirmPasswordBorderColor, width: '100%' }]}>
-                <Input
-                  placeholder="confirm password"
-                  leftIcon={{ type: 'material', name: 'lock', color: '#9CA3AF' }}
-                  rightIcon={
-                    <Icon
-                      type="material"
-                      name={secureTextEntry ? 'visibility' : 'visibility-off'}
-                      color="#9CA3AF"
-                      onPress={() => setSecureTextEntry(!secureTextEntry)}
-                    />
-                  }
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry={secureTextEntry}
-                 onFocus={() => handleFocus('confirmPassword')}
-                  onBlur={() => handleBlur('confirmPassword')}
-                  inputContainerStyle={[styles.inputContainer]} // removes underline
-                inputStyle={styles.inputText}
-                />
-                </Animated.View> */}
-
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                   <Checkbox
                     status={agreedToTerms ? 'checked' : 'unchecked'}
