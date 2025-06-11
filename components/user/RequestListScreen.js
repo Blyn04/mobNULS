@@ -2452,6 +2452,7 @@ const RequestListScreen = ({navigation}) => {
       !metadata?.timeTo ||
       !metadata?.program ||
       !metadata?.course ||
+      !metadata?.courseDescription ||
       !metadata?.room ||
       !metadata?.usageType
       
@@ -2512,6 +2513,7 @@ const RequestListScreen = ({navigation}) => {
         timeTo: metadata.timeTo,
         program: metadata.program,
         course: metadata.course,
+        courseDescription: metadata.courseDescription,
         room: metadata.room,
         reason: metadata.reason,
         filteredMergedData: requestList.map((item) => ({
