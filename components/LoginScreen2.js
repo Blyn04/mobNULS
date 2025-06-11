@@ -975,7 +975,189 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
   const jobOptions = ['Dean', 'Program Chair', 'Laboratory Custodian', 'Faculty'];
   // const deptOptions = ['Medical Technology', 'Nursing', 'Dentistry', 'Optometry'];
 
-  const handleLogin = async () => {
+  // const handleLogin = async () => {
+    
+  //     if (!email || !password) {
+  //       setError('Please enter both email and password');
+  //       return;
+  //     }
+    
+  //     setError('');
+  //     setLoading(true);
+    
+  //     try {
+  //       const usersRef = collection(db, "accounts");
+  //       const q = query(usersRef, where("email", "==", email));
+  //       const querySnapshot = await getDocs(q);
+    
+  //       let userDoc, userData, isSuperAdmin = false;
+    
+  //       // First check regular accounts
+  //       if (!querySnapshot.empty) {
+  //         userDoc = querySnapshot.docs[0];
+  //         userData = userDoc.data();
+  
+  //       } else {
+  //         // Then check if it's a super-admin
+  //         const superAdminRef = collection(db, "super-admin");
+  //         const superAdminQuery = query(superAdminRef, where("email", "==", email));
+  //         const superAdminSnapshot = await getDocs(superAdminQuery);
+    
+  //         if (!superAdminSnapshot.empty) {
+  //           userDoc = superAdminSnapshot.docs[0];
+  //           userData = userDoc.data();
+  //           isSuperAdmin = true;
+  //         }
+  //       }
+    
+  //       if (!userData) {
+  //         setError("User not found. Please contact admin.");
+  //         setLoading(false);
+  //         return;
+  //       }
+    
+  //       if (userData.disabled) {
+  //         setError("Your account has been disabled.");
+  //         await signOut(auth);
+  //         setLoading(false);
+  //         return;
+  //       }
+    
+  //       // If password not set yet (new user)
+  //       if (!isSuperAdmin && !userData.uid) {
+  //         setError("Password not set. Please login through website first.");
+  //         setLoading(false);
+  //         return;
+  //       }
+    
+  //       // Block check
+  //       // if (userData.isBlocked && userData.blockedUntil) {
+  //       //   const now = Timestamp.now().toMillis();
+  //       //   const blockedUntil = userData.blockedUntil.toMillis();
+    
+  //       //   if (now < blockedUntil) {
+  //       //     const remainingTime = Math.ceil((blockedUntil - now) / 1000);
+  //       //     setError(`Account is blocked. Try again after ${remainingTime} seconds.`);
+  //       //     setLoading(false);
+  //       //     return;
+  
+  //       //   } else {
+  //       //     await updateDoc(userDoc.ref, {
+  //       //       isBlocked: false,
+  //       //       loginAttempts: 0,
+  //       //       blockedUntil: null,
+  //       //     });
+  
+  //       //     console.log("Account unblocked.");
+  //       //   }
+  //       // }
+    
+  //       if (isSuperAdmin) {
+  //         if (userData.password === password) {
+  //           await updateDoc(userDoc.ref, { loginAttempts: 0 });
+    
+  //           login({ ...userData, id: userDoc.id, role: "Super Admin" });
+    
+  //           navigation.replace("SuperAdminDashboard");
+    
+  //         } else {
+  //           // const newAttempts = (userData.loginAttempts || 0) + 1;
+    
+  //           // if (newAttempts >= 4) {
+  //           //   const unblockTime = Timestamp.now().toMillis() + 30 * 60 * 1000;
+  //           //   await updateDoc(userDoc.ref, {
+  //           //     isBlocked: true,
+  //           //     blockedUntil: Timestamp.fromMillis(unblockTime),
+  //           //   });
+    
+  //           //   setError("Account blocked for 30 minutes.");
+  
+  //           // } else {
+  //           //   await updateDoc(userDoc.ref, { loginAttempts: newAttempts });
+  //           //   setError(`Invalid password. ${4 - newAttempts} attempts left.`);
+  //           // }
+            
+  //           setError(`Invalid password.`);
+  //           setLoading(false);
+  //           return;
+  //         }
+    
+  //       } else {
+  //         // ✅ Firebase Auth login for regular users/admins
+  //         try {
+  //           await signInWithEmailAndPassword(auth, email, password);
+  //           await updateDoc(userDoc.ref, { loginAttempts: 0 });
+    
+  //           const role = (userData.role || "user").toLowerCase();
+  //           login({ ...userData, id: userDoc.id });
+
+  //           console.log("Login Succesfull!")
+    
+  //           await addDoc(collection(db, `accounts/${userDoc.id}/activitylog`), {
+  //             action: "User Logged In (Mobile)",
+  //             userName: userData.name || "User",
+  //             timestamp: serverTimestamp(),
+              
+  //           });
+    
+  //           switch (role) {
+  //             case "admin1":
+  //             case "admin2":
+  //             case "admin":
+  //               navigation.replace("Admin");
+  //               console.log("Login Succesfull!")
+  //               break;
+  
+
+  //             case "super-user":
+  //               navigation.replace("Super-User");
+  //               console.log("Login Succesfull!")
+  //               break;
+  
+  //             case "user":
+  //               navigation.replace('User')
+  //               console.log("Login Succesfull!")
+  //               break;
+  
+  //             default:
+  //               setError("Unknown role. Contact admin.");
+  //           }
+    
+  //         } catch (authError) {
+  //           // console.error("Auth login failed:", authError.message);
+    
+  //           // const newAttempts = (userData.loginAttempts || 0) + 1;
+    
+  //           // if (newAttempts >= 4) {
+  //           //   const unblockTime = Timestamp.now().toMillis() + 30 * 60 * 1000;
+  //           //   await updateDoc(userDoc.ref, {
+  //           //     isBlocked: true,
+  //           //     blockedUntil: Timestamp.fromMillis(unblockTime),
+  //           //   });
+    
+  //           //   setError("Account blocked after 4 failed attempts.");
+              
+  //           // } else {
+  //           //   await updateDoc(userDoc.ref, { loginAttempts: newAttempts });
+  //           //   setError(`Invalid password. ${4 - newAttempts} attempts left.`);
+  //           // }
+    
+  //           setError(`Invalid password.`);
+  //           setLoading(false);
+  //           return;
+  //         }
+  //       }
+    
+  //     } catch (error) {
+  //       console.error("Login error:", error);
+  //       setError("Unexpected error. Try again.");
+  
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+    const handleLogin = async () => {
     
       if (!email || !password) {
         setError('Please enter both email and password');
@@ -1085,19 +1267,46 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
         } else {
           // ✅ Firebase Auth login for regular users/admins
           try {
-            await signInWithEmailAndPassword(auth, email, password);
-            await updateDoc(userDoc.ref, { loginAttempts: 0 });
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const signedInUser = userCredential.user;
+            
+            // await signInWithEmailAndPassword(auth, email, password);
+            // await updateDoc(userDoc.ref, { loginAttempts: 0 });
     
+            // const role = (userData.role || "user").toLowerCase();
+            // login({ ...userData, id: userDoc.id });
+
+            // console.log("Login Succesfull!")
+    
+            // await addDoc(collection(db, `accounts/${userDoc.id}/activitylog`), {
+            //   action: "User Logged In (Mobile)",
+            //   userName: userData.name || "User",
+            //   timestamp: serverTimestamp(),
+              
+            // });
+
+            // 🔁 Force reload to ensure latest email verification status
+            await signedInUser.reload();
+            const refreshedUser = auth.currentUser;
+
+            if (!refreshedUser || !refreshedUser.emailVerified) {
+              await signOut(auth);
+              setError("Please verify your email before logging in.");
+              setLoading(false);
+              return;
+            }
+
+            await updateDoc(userDoc.ref, { loginAttempts: 0 });
+
             const role = (userData.role || "user").toLowerCase();
             login({ ...userData, id: userDoc.id });
 
-            console.log("Login Succesfull!")
-    
+            console.log("Login Successful!");
+
             await addDoc(collection(db, `accounts/${userDoc.id}/activitylog`), {
               action: "User Logged In (Mobile)",
               userName: userData.name || "User",
               timestamp: serverTimestamp(),
-              
             });
     
             switch (role) {
