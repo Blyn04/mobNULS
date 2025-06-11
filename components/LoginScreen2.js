@@ -1458,9 +1458,29 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
           // const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           // const firebaseUser = userCredential.user;
       
-          let role = "user";
+          // let role = "user";
+          // if (jobTitle.toLowerCase() === "dean") {
+          //   role = "admin";
+
+          // } else if (jobTitle.toLowerCase() === "program chair") {
+          //   role = "admin";
+
+          // } else if (jobTitle.toLowerCase().includes("custodian")) {
+          //   role = "super-user";
+
+          // } else if (jobTitle.toLowerCase() === "faculty") {
+          //   role = "user";
+          // }
+
+           let role = "user";
+
           if (jobTitle.toLowerCase() === "dean") {
-            role = "admin";
+            if (department.toLowerCase() === "sah") {
+              role = "admin";
+
+            } else {
+              role = "user";
+            }
 
           } else if (jobTitle.toLowerCase() === "program chair") {
             role = "admin";
