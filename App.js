@@ -854,6 +854,7 @@ import ItemListScreen from './components/admin/ItemListScreen';
 import CameraShowItems from './components/admin/CameraShowItems';
 import QRScanScreen from './components/admin/QRScanScreen';
 import CameraUpdateItems from './components/admin/CameraUpdateItems';
+import Notifications from './components/Notification';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -1210,6 +1211,7 @@ function UserDrawer() {
       <Drawer.Screen name="CapexRequestScreen" component={CapexRequestScreen} />
       <Drawer.Screen name="ReturnItemsScreen" component={ReturnItems} />
       <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Drawer.Screen name="Notifications" component={Notifications} />
     </Drawer.Navigator>
   );
 }
@@ -1240,6 +1242,7 @@ const AdminDrawer = () => {
       <Drawer.Screen name="CameraShowItems" component={CameraShowItems} />
       <Drawer.Screen name="QRScanScreen" component={QRScanScreen} />
       <Drawer.Screen name="CameraUpdateItems" component={CameraUpdateItems} />
+      <Drawer.Screen name="Notifications" component={Notifications} />
     </Drawer.Navigator>
   );
 };
@@ -1269,6 +1272,7 @@ const SuperUserDrawer = () => {
       <Drawer.Screen name="CameraShowItems" component={CameraShowItems} />
       <Drawer.Screen name="QRScanScreen" component={QRScanScreen} />
       <Drawer.Screen name="CameraUpdateItems" component={CameraUpdateItems} />
+      <Drawer.Screen name="Notifications" component={Notifications} />
     </Drawer.Navigator>
   );
 };
