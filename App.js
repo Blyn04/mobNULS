@@ -976,6 +976,11 @@ const CustomDrawerContent = ({ navigation }) => {
         <Icon2 name="cash-multiple" size={25} style={styles.icon} />
         <Title style={styles.titleStyle}>Capex Request</Title>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('Notifications')} activeOpacity={0.5}>
+        <Icon2 name="account-circle-outline" size={25} style={styles.icon} />
+        <Title style={styles.titleStyle}>Notifications</Title>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -1080,6 +1085,11 @@ const CustomAdminDrawerContent = ({ navigation }) => {
       <TouchableOpacity onPress={() => navigation.navigate('CapexRequestListScreen')} style={styles.drawerItem}>
         <Icon2 name="cash-multiple" size={25} style={styles.icon} />
         <Title style={styles.titleStyle}>Capex Request List</Title>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('Notifications')} activeOpacity={0.5}>
+        <Icon2 name="account-circle-outline" size={25} style={styles.icon} />
+        <Title style={styles.titleStyle}>Notifications</Title>
       </TouchableOpacity>
 
     </View>
@@ -1187,6 +1197,11 @@ const CustomSuperUserDrawerContent = ({ navigation }) => {
         <Icon2 name="cash-multiple" size={25} style={styles.icon} />
         <Title style={styles.titleStyle}>Capex Request List</Title>
       </TouchableOpacity> */}
+
+      <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('Notifications')} activeOpacity={0.5}>
+        <Icon2 name="account-circle-outline" size={25} style={styles.icon} />
+        <Title style={styles.titleStyle}>Notifications</Title>
+      </TouchableOpacity>
     </View>
   );
 };
