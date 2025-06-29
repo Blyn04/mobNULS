@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, SafeAreaView } from 'react-native';
-import styles from './notificationStyles'; // Import external stylesheet
+import styles from './styles/NotificationsStyle';
 
 const notifications = [
   {
