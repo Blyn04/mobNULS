@@ -1,149 +1,234 @@
-    import { StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 
-    const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: '#f5f5f5',
-    },
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 7,
+    backgroundColor: '#f9f9f9',
+    gap: 7,
+  },
 
-    filterContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 16,
-        marginBottom: 12,
-    },
+      inventoryStocksHeader:{
+        position: 'absolute',
+            backgroundColor: '#fff',
+            flex: 1,
+            paddingTop: StatusBar.currentHeight+15,
+            left: 0,
+            right:0,
+            flexDirection: 'row',
+            paddingBottom: 10,
+            paddingHorizontal: 15,
+            alignItems: 'center',
+            justifyContent:'space-between',
+            borderBottomWidth: 1,
+            borderColor: '#e9ecee',
+            zIndex: 999,
+      },
 
-    filterButton: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        backgroundColor: '#d3d3d3',
-        borderRadius: 6,
-    },
+  filterContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    padding: 10,
+    justifyContent: 'center',
+    gap: 20,
+    borderRadius: 10,
+    elevation: 3,
 
-    activeButton: {
-        backgroundColor: '#007bff',
-    },
+  },
 
-    filterText: {
-        color: '#000',
-        fontWeight: '600',
-    },
+  filterButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    backgroundColor: '#dfdfdf',
+    borderRadius: 20,
+  },
 
-    tableContainer1: {
-        marginTop: 10,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        backgroundColor: '#fff',
-        overflow: 'hidden',
-        height: '70%',
-    },
+  activeButton: {
+    backgroundColor: '#2187ab',
+  },
 
-    tableContainer2: {
-        marginTop: 10,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        backgroundColor: '#fff',
-        overflow: 'hidden',
-        height: '60%',
-    },
+  activeText:{
+    color: '#fff'
+  },
 
-    tableHeader: {
-        flexDirection: 'row',
-        backgroundColor: '#e0e0e0',
-        paddingVertical: 10,
-        paddingHorizontal: 4,
-    },
+  filterText: {
+    color: '#000',
+    fontWeight: '600',
+  },
 
-    tableRow: {
-        flexDirection: 'row',
-        paddingVertical: 10,
-        paddingHorizontal: 4,
-        borderBottomWidth: 1,
-        borderColor: '#ddd',
-    },
+  tableContainer1: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    paddingBottom: 10,
+    flex: 1,
+  },
 
-    headerCell: {
-        flex: 1,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: '#333',
-    },
+  tableContainer2: {
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 12,
+    backgroundColor: '#fafafa',
+    paddingBottom: 8,
+    paddingHorizontal: 4,
+  },
 
-    cell: {
-        flex: 1,
-        textAlign: 'center',
-        color: '#555',
-    },
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: '#e8e8e8',
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+  },
 
-    linkText: {
-        color: 'blue',
-    },    
+ 
 
-    modalContent: {
-        backgroundColor: '#fff',
-        width: '100%',
-        height: '70%',
-        borderRadius: 0,
-        padding: 20,
-    },
-      
-    modalTitle: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 16,
-        textAlign: 'center',
-        color: '#333',
-    }, 
+  tableRow: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderColor: '#eee',
+  },
 
-    itemRow: {
-        marginBottom: 15,
-    },
+  // Columns flex for alignment
+  headerCellDate: {
+    flex: 2,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: '#222',
+    paddingHorizontal: 6,
+  },
 
-    boldText: {
-        fontWeight: 'bold',
-        marginTop: 10,
-    },
+  headerCellStatus: {
+    flex: 2,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: '#222',
+    paddingHorizontal: 6,
+  },
 
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 4,
-        padding: 6,
-        fontSize: 14,
-        backgroundColor: '#fff',
-    },
+  headerCellAction: {
+    flex: 1,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: '#222',
+  },
 
-    picker: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 4,
-        height: 40,
-        backgroundColor: '#fff',
-    },
+  cellDate: {
+    flex: 2,
+    textAlign: 'center',
+    color: '#444',
+    fontSize: 13,
+  },
 
-    inputCell: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 4,
-    },
+  cellStatus: {
+    flex: 2,
+    textAlign: 'center',
+    color: '#444',
+    fontSize: 13,
+  },
 
-    modalButtons: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
-    },
+  cellAction: {
+    flex: 1,
+    textAlign: 'center',
+    color: '#444',
+    fontSize: 13,
+  },
 
-    modalOverlay: {
-        flex: 1,
-        justifyContent: 'center',  // Center the modal vertically
-        alignItems: 'center',      // Center the modal horizontally
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Optional: dim the background
-        width: '100%',
-    },  
+  linkText: {
+    color: '#007bff',
+    fontWeight: '600',
+  },
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Dark overlay for focus
+    paddingHorizontal: 20,
+    paddingTop: 200,
+  },
+
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    padding: 24,
+    maxHeight: '85%',
+    width: '100%',
+    elevation: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+  },
+
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#222',
+  },
+
+  boldText: {
+    fontWeight: '700',
+    marginVertical: 14,
+    fontSize: 17,
+    color: '#333',
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    padding: 8,
+    fontSize: 14,
+    backgroundColor: '#fefefe',
+    marginTop: 4,
+  },
+
+  picker: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    height: 42,
+    backgroundColor: '#fefefe',
+    marginTop: 4,
+  },
+
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 24,
+  },
+
+/* ----------  T A B L E   (modal)  ---------- */
+
+  headerCell: {           // generic header text
+    flex: 1,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: '#222',
+    paddingHorizontal: 6,
+  },
+
+  cell: {                 // generic body text
+    flex: 1,
+    fontSize: 13,
+    textAlign: 'center',
+    color: '#444',
+    paddingHorizontal: 6,
+  },
+
+  /* –– reusable widths so header and rows always match –– */
+  colName: { flex: 3 },       // wider for long names
+  colQty: { flex: 1 },
+  colCondition: { flex: 2 },
+
 });
 
-    export default styles;
+export default styles;

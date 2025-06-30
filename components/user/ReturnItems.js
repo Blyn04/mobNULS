@@ -540,7 +540,7 @@ const ReturnItems = () => {
             </View>
         </Modal> */}
 
-        <Modal visible={modalVisible} animationType="slide" onRequestClose={closeModal} transparent={true}>
+        {/* <Modal visible={modalVisible} animationType="slide" onRequestClose={closeModal} transparent={true}>
           <View style={styles.modalOverlay}>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -563,12 +563,12 @@ const ReturnItems = () => {
                   </View>
 
                   {selectedRequest?.raw?.requestList?.map((item, index) => {
-                    // Create an array of length item.quantity to render each quantity separately
+           
                     const quantityArray = Array.from({ length: item.quantity }, (_, i) => i + 1);
                     return quantityArray.map((q, i) => (
                       <View key={`${index}-${i}`} style={styles.tableRow}>
                         <Text style={[styles.cell, { flex: 1 }]}>{item.itemName}</Text>
-                        {/* Show quantity as 1 since it's separate */}
+                 
                         <Text style={[styles.cell, { flex: 0.7 }]}>1</Text>
 
                         <View style={{ flex: 1, paddingHorizontal: 4 }}>
@@ -579,7 +579,7 @@ const ReturnItems = () => {
                             value={returnQuantities[`${item.itemIdFromInventory}-${i}`] || ""}
                             onChangeText={(text) => {
                               const input = parseInt(text, 10);
-                              const max = 1; // since we split quantities as individual
+                              const max = 1; 
 
                               if (!isNaN(input) && input <= max) {
                                 setReturnQuantities((prev) => ({
@@ -628,6 +628,111 @@ const ReturnItems = () => {
               </ScrollView>
             </KeyboardAvoidingView>
           </View>
+        </Modal> */}
+
+        <Modal
+          visible={modalVisible}
+          animationType="slide"
+          onRequestClose={closeModal}
+          transparent={true}
+        >
+          <TouchableWithoutFeedback onPress={closeModal}>
+            <View style={styles.modalOverlay}>
+              <TouchableWithoutFeedback>
+                <KeyboardAvoidingView
+                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                  style={{ flex: 1, width: '90%', maxWidth: 600 }}
+                >
+                  <ScrollView
+                    contentContainerStyle={styles.modalContent}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                  >
+                    <Text style={styles.modalTitle}>Returning Items</Text>
+                    {/* <Text>Name: {selectedRequest?.raw?.userName}</Text>
+                    <Text>Requisition ID: {selectedRequest?.requisitionId}</Text> */}
+                    <Text>Request Date: {selectedRequest?.timestamp}</Text>
+
+                    <Text style={styles.boldText}>Requested Items:</Text>
+
+                    <View style={styles.tableContainer2}>
+                      <View style={styles.tableHeader}>
+                        <Text style={styles.headerCell}>Item Name</Text>
+                        <Text style={styles.headerCell}>Quantity</Text>
+                        <Text style={styles.headerCell}>Returned Qty</Text>
+                        <Text style={styles.headerCell}>Condition</Text>
+                      </View>
+
+                      {selectedRequest?.raw?.requestList?.map((item, index) => {
+                        const quantityArray = Array.from({ length: item.quantity }, (_, i) => i + 1);
+                        return quantityArray.map((q, i) => (
+                          <View key={`${index}-${i}`} style={styles.tableRow}>
+                            <Text style={styles.cell}>{item.itemName}</Text>
+                            <Text style={styles.cell}>1</Text>
+
+                            <View style={{ flex: 1, paddingHorizontal: 6 }}>
+                              <TextInput
+                                placeholder="Returned Qty"
+                                keyboardType="number-pad"
+                                style={styles.input}
+                                value={returnQuantities[`${item.itemIdFromInventory}-${i}`] || ''}
+                                onChangeText={(text) => {
+                                  const input = parseInt(text, 10);
+                                  const max = 1;
+                                  if (!isNaN(input) && input <= max) {
+                                    setReturnQuantities((prev) => ({
+                                      ...prev,
+                                      [`${item.itemIdFromInventory}-${i}`]: input.toString(),
+                                    }));
+                                  } else if (input > max) {
+                                    alert(`Returned quantity cannot exceed borrowed quantity (${max}).`);
+                                  } else {
+                                    setReturnQuantities((prev) => ({
+                                      ...prev,
+                                      [`${item.itemIdFromInventory}-${i}`]: '',
+                                    }));
+                                  }
+                                }}
+                              />
+                            </View>
+
+                            <View style={{ flex: 1, paddingHorizontal: 6 }}>
+                              <Picker
+                                selectedValue={itemConditions[`${item.itemIdFromInventory}-${i}`] || 'Good'}
+                                style={styles.picker}
+                                onValueChange={(value) => {
+                                  setItemConditions((prev) => ({
+                                    ...prev,
+                                    [`${item.itemIdFromInventory}-${i}`]: value,
+                                  }));
+                                }}
+                              >
+                                <Picker.Item label="Good" value="Good" />
+                                <Picker.Item label="Defect" value="Defect" />
+                                <Picker.Item label="Damage" value="Damage" />
+                                <Picker.Item label="Lost" value="Lost" />
+                              </Picker>
+                            </View>
+                          </View>
+                        ));
+                      })}
+                    </View>
+
+                    <View style={styles.modalButtons}>
+                      <View style={styles.modalButton}>
+                        <Button title="Back" onPress={closeModal} />
+                      </View>
+                      {selectedRequest?.status === 'Deployed' && (
+                        <View style={styles.modalButton}>
+                          <Button title="Return" onPress={handleReturn} />
+                        </View>
+                      )}
+                    </View>
+                  </ScrollView>
+                </KeyboardAvoidingView>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
         </Modal>
     </View>
   );
