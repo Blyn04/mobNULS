@@ -1313,12 +1313,28 @@ const confirmPasswordBorderColor = confirmPasswordBorderAnim.interpolate({
               case "admin1":
               case "admin2":
               case "admin":
+                try {
+                  await registerForPushNotificationsAsync(userDoc.id);
+                  console.log("Push token registered.");
+                  
+                } catch (e) {
+                  console.log("Push token registration failed:", e);
+                }
+
                 navigation.replace("Admin");
                 console.log("Login Succesfull!")
                 break;
   
 
               case "super-user":
+                try {
+                  await registerForPushNotificationsAsync(userDoc.id);
+                  console.log("Push token registered.");
+                  
+                } catch (e) {
+                  console.log("Push token registration failed:", e);
+                }
+
                 navigation.replace("Super-User");
                 console.log("Login Succesfull!")
                 break;
