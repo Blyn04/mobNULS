@@ -609,7 +609,8 @@
 
 // VERSION 3
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Modal, LayoutAnimation, Platform, UIManager } from 'react-native';
+
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Modal, LayoutAnimation, Platform, UIManager, ActivityIndicator} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { getDocs, collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig'; 
@@ -629,7 +630,7 @@ export default function InventoryStocks({ }) {
   const [filterCategory, setFilterCategory] = useState('All');
   const [isOpen, setIsOpen] = useState(null)
   const [selectedCategory, setSelectedCategory] = useState('All');
-
+  const [isLoading, setIsLoading] = useState(true);
   const navigation = useNavigation()
 
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -705,6 +706,8 @@ export default function InventoryStocks({ }) {
   // VERSION NI RICH WITH DATE EXPIRY CONDITION
   useEffect(() => {
     const fetchInventory = async () => {
+      setIsLoading(true);
+
       try {
         const inventoryRef = collection(db, "inventory");
         const snapshot = await getDocs(inventoryRef);
@@ -758,6 +761,9 @@ export default function InventoryStocks({ }) {
         setInventoryItems(validItems);
       } catch (err) {
         console.error("Error fetching inventory with expiry filter:", err);
+
+      } finally {
+      setIsLoading(false); // End loading
       }
     };
 
@@ -911,6 +917,13 @@ const formatCondition = (cond) => {
 
       <View style={[styles.container2]}>
 
+      {isLoading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <ActivityIndicator size="large" color="#395a7f" />
+          <Text style={{ marginTop: 10, fontSize: 16, color: '#395a7f' }}>Loading Inventory...</Text>
+        </View>
+      ) : (
+
       <ScrollView style={{paddingHorizontal: 8, paddingVertical: 10}}>
         {filteredItems.map((item) => (
           <View key={item.id} style={styles.card}>
@@ -1026,6 +1039,7 @@ const formatCondition = (cond) => {
           </View>
         ))}
       </ScrollView>
+      )}
       </View>
 
 
