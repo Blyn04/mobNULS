@@ -1047,7 +1047,7 @@ const ReturnItems = () => {
     
   return (
     <View style={styles.container}>
-            <View style={styles.inventoryStocksHeader} onLayout={handleHeaderLayout}>
+            {/* <View style={styles.inventoryStocksHeader} onLayout={handleHeaderLayout}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                                 <Icon name="keyboard-backspace" size={28} color="black" />
                               </TouchableOpacity>
@@ -1060,7 +1060,27 @@ const ReturnItems = () => {
                 <TouchableOpacity style={{padding: 2}}>
                   <Icon name="information-outline" size={24} color="#000" />
                 </TouchableOpacity>
-              </View>
+              </View> */}
+
+      <View style={styles.inventoryStocksHeader} onLayout={handleHeaderLayout}>
+        {/* Back Button */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Icon name="keyboard-backspace" size={28} color="black" />
+        </TouchableOpacity>
+
+        {/* Title (Centered) */}
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ textAlign: 'center', fontWeight: '800', fontSize: 18, color: '#395a7f' }}>
+            Return Items
+          </Text>
+          <Text style={{ fontWeight: '300', fontSize: 13, textAlign: 'center' }}>
+            Return Your Borrowed Items
+          </Text>
+        </View>
+
+        {/* Spacer or Hidden Icon for alignment balance */}
+        <View style={{ width: 28 }} />
+      </View>
       
       <View style={[styles.filterContainer, {marginTop: headerHeight}]}>
         {["All", "Approved", "Deployed"].map((status) => (
