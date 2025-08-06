@@ -1086,7 +1086,10 @@ const ReturnItems = () => {
             {/* Data Rows */}
             {filteredData.map((item) => (
               <View key={item.id} style={styles.tableRow}>
-                <Text style={[{ flex: 2 }]}>{item.rawTimestamp}</Text>
+                {/* <Text style={[{ flex: 2 }]}>{item.rawTimestamp}</Text> */}
+                <Text style={[{ flex: 2 }]}>
+                  {item.rawTimestamp?.split(',')[0] || 'N/A'}
+                </Text>
                 <Text style={[{ flex: 2 }]}>{item.status}</Text>
                 <TouchableOpacity style={{ flex: 1 }} onPress={() => handleViewDetails(item)}>
                   <Text style={[styles.linkText, { textAlign: 'center' }]}>View</Text>
