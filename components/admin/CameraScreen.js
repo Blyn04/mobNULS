@@ -1586,11 +1586,17 @@ const CameraScreen = ({ onClose, selectedItem }) => {
               const returnQty = borrowedItem.returnedQuantity || 1; // ✅ SAFER
 
               // ✅ Use itemUnitConditions if available, else conditions, else default to "Good"
-              const returnedConditions = Array.isArray(borrowedItem.itemUnitConditions) && borrowedItem.itemUnitConditions.length > 0
+              // const returnedConditions = Array.isArray(borrowedItem.itemUnitConditions) && borrowedItem.itemUnitConditions.length > 0
+              //   ? borrowedItem.itemUnitConditions
+              //   : (Array.isArray(borrowedItem.conditions) && borrowedItem.conditions.length > 0
+              //       ? borrowedItem.conditions
+              //       : Array(returnQty).fill("Good")); // default all units to "Good"
+
+              const returnedConditions = Array.isArray(borrowedItem?.itemUnitConditions) && borrowedItem.itemUnitConditions.length > 0
                 ? borrowedItem.itemUnitConditions
-                : (Array.isArray(borrowedItem.conditions) && borrowedItem.conditions.length > 0
+                : (Array.isArray(borrowedItem?.conditions) && borrowedItem.conditions.length > 0
                     ? borrowedItem.conditions
-                    : Array(returnQty).fill("Good")); // default all units to "Good"
+                    : Array(borrowedItem?.returnedQuantity || 1).fill("Good"));
 
               // 🔹 Store these conditions back to Firestore for record-keeping
               await updateDoc(borrowDocRef, {
@@ -1694,6 +1700,18 @@ const CameraScreen = ({ onClose, selectedItem }) => {
                 console.warn(`❌ Inventory item not found for ID: ${inventoryId}`);
               }
             }
+
+              // 🔹 Save all conditions for the returned item into Firestore
+              await updateDoc(borrowDocRef, {
+                requestList: data.requestList.map((item) =>
+                  item.itemName === itemName &&
+                  item.itemDetails === itemDetails &&
+                  item.selectedItemId === borrowedItem.selectedItemId
+                    // ? { ...item, conditions: itemUnitConditions[item.itemId] || [] }
+                    ? { ...item, conditions: returnedConditions }
+                    : item
+                ),
+              });
               
               await updateDoc(borrowDocRef, { status: "Return Approved" });
 
