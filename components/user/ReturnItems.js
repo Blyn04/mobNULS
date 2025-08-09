@@ -758,6 +758,7 @@ import styles from '../styles/userStyle/ReturnItemsStyle';
 import Header from '../Header';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Checkbox, Dialog, Portal } from 'react-native-paper';
 
 const ReturnItems = () => {
   const { user } = useAuth();
@@ -769,6 +770,11 @@ const ReturnItems = () => {
   const [returnQuantities, setReturnQuantities] = useState({});
   const [itemConditions, setItemConditions] = useState({});
   const [itemUnitConditions, setItemUnitConditions] = useState({});
+  const [issuedStatus, setIssuedStatus] = useState({});
+  const [issueModalVisible, setIssueModalVisible] = useState(false);
+  const [currentIssueItem, setCurrentIssueItem] = useState(null);
+  const [issueQuantities, setIssueQuantities] = useState({});
+  const [glasswareIssues, setGlasswareIssues] = useState({});
 
   const navigation = useNavigation()
 
@@ -1134,7 +1140,7 @@ const ReturnItems = () => {
                   keyboardVerticalOffset={Platform.OS === 'android' ? 20 : 0}
                 >
                   <ScrollView
-                    contentContainerStyle={styles.modalContent}
+                    contentContainerStyle={{ ...styles.modalContent, flexGrow: 1 }}
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                   >
@@ -1273,6 +1279,8 @@ const ReturnItems = () => {
                       </ScrollView>
                     </View> */}
 
+                    {/* <Text style={styles.boldText}>Requested Items:</Text> */}
+
                     {/* Glasswares Table */}
                     {selectedRequest?.raw?.requestList?.some(
                       item => item.category?.toLowerCase() === 'glasswares'
@@ -1284,7 +1292,7 @@ const ReturnItems = () => {
                             <Text style={styles.headerCell}>Item Name</Text>
                             <Text style={styles.headerCell}>Quantity</Text>
                             <Text style={styles.headerCell}>Returned Qty</Text>
-                            <Text style={styles.headerCell}>Condition</Text>
+                            <Text style={styles.headerCell}>Issued</Text>
                           </View>
 
                           <ScrollView style={{ maxHeight: 150 }} nestedScrollEnabled>
@@ -1295,11 +1303,10 @@ const ReturnItems = () => {
                                 return quantityArray.map((q, i) => {
                                   const returnKey = `${item.itemIdFromInventory}-${i}`;
 
-                                  // 🔥 Auto-fill returnQty with 1 if not already set
                                   if (returnQuantities[returnKey] === undefined) {
                                     setReturnQuantities(prev => ({
                                       ...prev,
-                                      [returnKey]: "1", // matches the displayed quantity (1 per row here)
+                                      [returnKey]: "1",
                                     }));
                                   }
 
@@ -1316,7 +1323,7 @@ const ReturnItems = () => {
                                           value={returnQuantities[returnKey] || "1"}
                                           onChangeText={(text) => {
                                             const input = parseInt(text, 10);
-                                            const max = 1; // since quantityArray maps to single items
+                                            const max = 1;
                                             if (!isNaN(input) && input <= max) {
                                               setReturnQuantities(prev => ({
                                                 ...prev,
@@ -1334,22 +1341,29 @@ const ReturnItems = () => {
                                         />
                                       </View>
 
-                                      <View style={{ flex: 1, paddingHorizontal: 6 }}>
-                                        <Picker
-                                          selectedValue={itemConditions[returnKey] || 'Good'}
-                                          style={styles.picker}
-                                          onValueChange={(value) => {
-                                            setItemConditions(prev => ({
-                                              ...prev,
-                                              [returnKey]: value,
-                                            }));
+                                      {/* ✅ Checkbox with modal trigger */}
+                                      <View style={{ flex: 1, alignItems: 'center' }}>
+                                        <Checkbox
+                                          status={issuedStatus[returnKey] ? 'checked' : 'unchecked'}
+                                          onPress={() => {
+                                            setIssuedStatus(prev => {
+                                              const newStatus = { ...prev, [returnKey]: !prev[returnKey] };
+
+                                              if (newStatus[returnKey]) {
+                                                // Checkbox is now checked — open modal
+                                                setCurrentIssueItem(item);
+                                                setIssueQuantities({});
+                                                setIssueModalVisible(true);
+                                              } else {
+                                                // Checkbox is now unchecked — close modal
+                                                setIssueModalVisible(false);
+                                              }
+
+                                              return newStatus;
+                                            });
                                           }}
-                                        >
-                                          <Picker.Item label="Good" value="Good" />
-                                          <Picker.Item label="Defect" value="Defect" />
-                                          <Picker.Item label="Damage" value="Damage" />
-                                          <Picker.Item label="Lost" value="Lost" />
-                                        </Picker>
+                                          color="#1e7898"
+                                        />
                                       </View>
                                     </View>
                                   );
@@ -1359,7 +1373,6 @@ const ReturnItems = () => {
                         </View>
                       </>
                     )}
-
 
                     {/* Equipment Table */}
                     {selectedRequest?.raw?.requestList?.some(
@@ -1421,6 +1434,68 @@ const ReturnItems = () => {
                     </View>
                   </ScrollView>
                 </KeyboardAvoidingView>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+
+        <Modal
+          visible={issueModalVisible}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setIssueModalVisible(false)}
+        >
+          <TouchableWithoutFeedback onPress={() => setIssueModalVisible(false)}>
+            <View style={styles.modalOverlay}>
+              <TouchableWithoutFeedback>
+                <View style={styles.issueModalContent}>
+                  <Text style={styles.modalTitle}>
+                    Specify issues for: {currentIssueItem?.itemName || ""}
+                  </Text>
+
+                  {["Defect", "Damage", "Lost"].map(type => (
+                    <View key={type} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                      <Text style={{ flex: 1 }}>{type}:</Text>
+                      <TextInput
+                        style={{
+                          flex: 1,
+                          borderWidth: 1,
+                          borderColor: '#ccc',
+                          borderRadius: 4,
+                          paddingHorizontal: 8
+                        }}
+                        keyboardType="numeric"
+                        value={(issueQuantities[type] || 0).toString()}
+                        onChangeText={(val) =>
+                          setIssueQuantities(prev => ({
+                            ...prev,
+                            [type]: parseInt(val, 10) || 0,
+                          }))
+                        }
+                      />
+                    </View>
+                  ))}
+
+                  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 }}>
+                    <TouchableOpacity
+                      onPress={() => setIssueModalVisible(false)}
+                      style={[styles.dialogButton, { marginRight: 10 }]}
+                    >
+                      <Text style={styles.dialogButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => {
+                        // your OK logic here...
+
+                        setIssueModalVisible(false);
+                      }}
+                      style={styles.dialogButton}
+                    >
+                      <Text style={styles.dialogButtonText}>OK</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </TouchableWithoutFeedback>
             </View>
           </TouchableWithoutFeedback>
