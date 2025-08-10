@@ -298,6 +298,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#fff',
     paddingBottom: 10,
+    marginBottom: 10,
     flex: 1,
   },
 
@@ -498,6 +499,37 @@ const styles = StyleSheet.create({
   dialogButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+
+  headerCell: {
+    fontWeight: '700',
+    textAlign: 'center',
+    color: '#222',
+    paddingVertical: 8,
+    fontSize: 13,
+  },
+
+  cell: {
+    textAlign: 'center',
+    color: '#444',
+    paddingVertical: 8,
+    fontSize: 13,
+  },
+
+  colDate: { flex: 2 },
+  colStatus: { flex: 2 },
+  colAction: { flex: 1 },
+
+  tableHeader: {
+    backgroundColor: '#e8e8e8',
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+  },
+
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: '#eee',
   },
 
   /* –– reusable widths so header and rows always match –– */

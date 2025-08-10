@@ -742,12 +742,13 @@
 // export default ReturnItems;
 
 
+// VERSION 2
 import React, { useState, useEffect, useCallback } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import {
   View, Text, TouchableOpacity, Modal,
   Button, TextInput, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, 
-  StatusBar} from 'react-native';
+  StatusBar, Dimensions } from 'react-native';
 import {
   collection, getDocs, doc, updateDoc, getDoc, deleteDoc,
   setDoc, addDoc, serverTimestamp, onSnapshot, query, where
@@ -775,6 +776,9 @@ const ReturnItems = () => {
   const [currentIssueItem, setCurrentIssueItem] = useState(null);
   const [issueQuantities, setIssueQuantities] = useState({});
   const [glasswareIssues, setGlasswareIssues] = useState({});
+
+  const screenHeight = Dimensions.get("window").height;
+  const modalMaxHeight = screenHeight * 0.8; 
 
   const navigation = useNavigation()
 
@@ -1024,7 +1028,7 @@ const ReturnItems = () => {
   //     console.error("❌ Error processing return:", error);
   //   }
   // };
-  
+
   const handleReturn = async () => {
     try {
       const currentDate = new Date().toISOString();
@@ -1212,24 +1216,9 @@ const ReturnItems = () => {
       setReturnQuantities(newQuantities);
     }
   }, [glasswareData]);
-    
+
   return (
     <View style={styles.container}>
-            {/* <View style={styles.inventoryStocksHeader} onLayout={handleHeaderLayout}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                                <Icon name="keyboard-backspace" size={28} color="black" />
-                              </TouchableOpacity>
-      
-              <View>
-                <Text style={{textAlign: 'center', fontWeight: 800, fontSize: 18, color: '#395a7f'}}>Return Items</Text>
-                <Text style={{ fontWeight: 300, fontSize: 13, textAlign: 'center'}}>Return Your Borrowed Items</Text>
-              </View>
-      
-                <TouchableOpacity style={{padding: 2}}>
-                  <Icon name="information-outline" size={24} color="#000" />
-                </TouchableOpacity>
-              </View> */}
-
       <View style={styles.inventoryStocksHeader} onLayout={handleHeaderLayout}>
         {/* Back Button */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
@@ -1249,7 +1238,7 @@ const ReturnItems = () => {
         {/* Spacer or Hidden Icon for alignment balance */}
         <View style={{ width: 28 }} />
       </View>
-      
+
       <View style={[styles.filterContainer, {marginTop: headerHeight}]}>
         {["All", "Approved", "Deployed"].map((status) => (
           <TouchableOpacity
@@ -1263,7 +1252,7 @@ const ReturnItems = () => {
       </View>
 
         <View style={styles.tableContainer1}>
-          <ScrollView style={{ maxHeight: 500, padding: 5, }}>
+          <ScrollView style={{ maxHeight: 650, padding: 5, }}>
             {/* Header */}
             <View style={[styles.tableRow, styles.tableHeader]}>
               <Text style={[styles.cell, { flex: 2 }]}>Date</Text>
@@ -1278,6 +1267,7 @@ const ReturnItems = () => {
                 <Text style={[{ flex: 2 }]}>
                   {item.rawTimestamp?.split(',')[0] || 'N/A'}
                 </Text>
+
                 <Text style={[{ flex: 2 }]}>{item.status}</Text>
                 <TouchableOpacity style={{ flex: 1 }} onPress={() => handleViewDetails(item)}>
                   <Text style={[styles.linkText, { textAlign: 'center' }]}>View</Text>
@@ -1298,11 +1288,12 @@ const ReturnItems = () => {
               <TouchableWithoutFeedback>
                 <KeyboardAvoidingView
                   behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                  style={{ flex: 1, width: '90%', maxWidth: 600 }}
+                  style={{ width: '90%', maxWidth: 600 }}
                   keyboardVerticalOffset={Platform.OS === 'android' ? 20 : 0}
                 >
+                  <View style={[styles.modalContent, { maxHeight: modalMaxHeight }]}>
                   <ScrollView
-                    contentContainerStyle={{ ...styles.modalContent, flexGrow: 1 }}
+                    contentContainerStyle={{ paddingBottom: 20 }}
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                   >
@@ -1443,7 +1434,7 @@ const ReturnItems = () => {
 
                     {/* <Text style={styles.boldText}>Requested Items:</Text> */}
 
-                  {/* Glasswares Table */}
+                    {/* Glasswares Table */}
                   {selectedRequest?.raw?.requestList?.some(
                     item => item.category?.toLowerCase() === 'glasswares'
                   ) && (
@@ -1596,6 +1587,7 @@ const ReturnItems = () => {
                       )}
                     </View>
                   </ScrollView>
+                  </View>
                 </KeyboardAvoidingView>
               </TouchableWithoutFeedback>
             </View>
