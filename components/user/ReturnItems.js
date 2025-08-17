@@ -776,6 +776,7 @@ const ReturnItems = () => {
   const [currentIssueItem, setCurrentIssueItem] = useState(null);
   const [issueQuantities, setIssueQuantities] = useState({});
   const [glasswareIssues, setGlasswareIssues] = useState({});
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
 
   const screenHeight = Dimensions.get("window").height;
   const modalMaxHeight = screenHeight * 0.8; 
@@ -1152,6 +1153,7 @@ const ReturnItems = () => {
 
       console.log("✅ Return process completed.");
       closeModal();
+      setSuccessModalVisible(true);
 
     } catch (error) {
       console.error("❌ Error processing return:", error);
@@ -1688,6 +1690,23 @@ const ReturnItems = () => {
               </TouchableWithoutFeedback>
             </View>
           </TouchableWithoutFeedback>
+        </Modal>
+
+        <Modal
+          transparent={true}
+          visible={successModalVisible}
+          animationType="fade"
+          onRequestClose={() => setSuccessModalVisible(false)}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Successfully Returned!</Text>
+              <Button
+                title="Close"
+                onPress={() => setSuccessModalVisible(false)}
+              />
+            </View>
+          </View>
         </Modal>
     </View>
   );

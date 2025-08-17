@@ -532,6 +532,27 @@ const styles = StyleSheet.create({
     borderColor: '#eee',
   },
 
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+
+  modalContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    minWidth: 250,
+  },
+
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+
   /* –– reusable widths so header and rows always match –– */
   colName: { flex: 3 },       // wider for long names
   colQty: { flex: 1 },
