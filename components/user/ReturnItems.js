@@ -1137,7 +1137,31 @@ const ReturnItems = () => {
       await deleteDoc(userRequestLogRef);
 
       // Add to history and activity logs
-      const historyRef = doc(collection(db, `accounts/${user.id}/historylog`));
+      // const historyRef = doc(collection(db, `accounts/${user.id}/historylog`));
+      // await setDoc(historyRef, {
+      //   ...fullReturnData,
+      //   action: "Returned",
+      //   date: currentDate,
+      // });
+
+      const historyCollectionRef = collection(db, `accounts/${user.id}/historylog`);
+      const deployedHistoryQuery = query(
+        historyCollectionRef,
+        where("action", "==", "Deployed"),
+        where("userName", "==", selectedRequest.raw?.userName),
+        where("dateRequired", "==", selectedRequest.raw?.dateRequired),
+        where("room", "==", selectedRequest.raw?.room),
+        where("timeFrom", "==", selectedRequest.raw?.timeFrom),
+        where("timeTo", "==", selectedRequest.raw?.timeTo)
+      );
+
+      const deployedHistorySnapshot = await getDocs(deployedHistoryQuery);
+      for (const docSnap of deployedHistorySnapshot.docs) {
+        await deleteDoc(doc(db, `accounts/${user.id}/historylog`, docSnap.id));
+      }
+
+      // 📝 Add "Returned" to historylog
+      const historyRef = doc(historyCollectionRef);
       await setDoc(historyRef, {
         ...fullReturnData,
         action: "Returned",
