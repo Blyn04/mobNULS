@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, TouchableOpacity, Text, Modal, TextInput, Alert, ScrollView } from 'react-native';
+import { View, FlatList, TouchableOpacity, Text, Modal, TextInput, Alert, ScrollView, ActivityIndicator  } from 'react-native';
 import { Card } from 'react-native-paper';
 import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../backend/firebase/FirebaseConfig';
@@ -14,6 +14,7 @@ export default function PendingRequestScreen() {
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [viewModalVisible, setViewModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchPendingRequests();
@@ -32,6 +33,7 @@ export default function PendingRequestScreen() {
 
   const fetchPendingRequests = async () => {
     try {
+      setLoading(true);
       const querySnapshot = await getDocs(collection(db, 'userrequests'));
       const fetched = [];
   
@@ -71,6 +73,9 @@ export default function PendingRequestScreen() {
       setPendingRequests(fetched);
     } catch (error) {
       console.error('Error fetching pending requests:', error);
+
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -326,11 +331,16 @@ export default function PendingRequestScreen() {
     <View style={styles.container}>
       <Header />
       <Text style={styles.title}>Pending Requests</Text>
-      <FlatList
-        data={pendingRequests}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+
+      {loading ? ( // show loading spinner
+        <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />
+      ) : (
+        <FlatList
+          data={pendingRequests}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      )}
 
       <Modal
         visible={viewModalVisible}
@@ -392,7 +402,6 @@ export default function PendingRequestScreen() {
           </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
-
     </View>
   );
 }
